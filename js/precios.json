@@ -1,0 +1,12 @@
+{
+  "caballero": [
+    { "nombre": "sin barba", "precio": 11 },
+    { "nombre": "con barba", "precio": 14 },
+    { "nombre": "corte + cejas", "precio": 12 },
+    { "nombre": "mechas + corte", "precio": 35 },
+    { "nombre": "decoloración + corte", "precio": 50 }
+  ],
+  "nino": [
+    { "nombre": "corte", "precio": 10 }
+  ]
+}

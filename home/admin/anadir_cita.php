@@ -121,7 +121,7 @@ if($id_cliente_prefill){
         </select>
     </label>
 
-    <button type="submit">Guardar Cita</button>
+    <button type="submit">Guardar</button>
 </form>
 </div>
 

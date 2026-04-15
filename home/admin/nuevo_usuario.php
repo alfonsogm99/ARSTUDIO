@@ -70,16 +70,19 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <label>Nombre:</label>
     <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" required>
 
-    <label>DNI:</label>
-    <div class="dni-div">
+    <label for="dni">DNI:</label>
+    <div class="input-icon">
     <input type="text" name="dni" id="dni" required>
-    <button type="button" onclick="generarDNI()"><i class="fa-solid fa-dice-d20"></i></button>
+
+    <button type="button" onclick="generarDNI()">
+        <i class="fa-solid fa-dice-d20"></i>
+    </button>
     </div>
 
     <label>Email:</label>
     <input type="email" name="email" required>
 
-    <button type="submit">Crear cliente y enviar acceso</button>
+    <button type="submit">Crear</button>
 </form>
 
 </div>

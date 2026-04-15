@@ -1159,21 +1159,36 @@ body.light-mode .toggle_eye {
     user-select: none;
 }
 
-.dni-div{
-    display: flex;
-    gap: 10px;
-    align-items: center;
+.input-icon {
+  position: relative;
+  width: 100%;
 }
 
-.dni-div input{
-    flex: 1;
+.input-icon input {
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.dni-div button{
-    width: auto;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+/* botón dentro del input */
+.input-icon button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 /* =========================

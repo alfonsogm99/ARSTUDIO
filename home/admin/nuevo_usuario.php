@@ -71,7 +71,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" required>
 
     <label>DNI:</label>
-    <input type="text" name="dni" required>
+    <div class="dni-div">
+    <input type="text" name="dni" id="dni" required>
+    <button type="button" onclick="generarDNI()"><i class="fa-solid fa-dice-d20"></i></button>
+    </div>
 
     <label>Email:</label>
     <input type="email" name="email" required>
@@ -88,6 +91,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <footer class="copyright">
     <p>© 2026 alfonsogm</p>
 </footer>
+
+<script src="../../js/random.js"></script>
 
 </body>
 </html>

@@ -7,6 +7,11 @@ define('BASE_URL', '/arbarber_project/home');
 #$password = "8ni0JoHT4)";
 #$dbname = "alfgme7_ar_barber_project";
 
+#$host = "fdb1033.awardspace.net";
+#$user = "4751326_arstudio";
+#$password = "Jlb}}{Pw6y,OSoGB";
+#$dbname = "4751326_arstudio";
+
 $host = "localhost";
 $user = "root";
 $password = "";

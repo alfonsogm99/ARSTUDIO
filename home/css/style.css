@@ -483,7 +483,8 @@ citas
 }
 
 .appointment.pendiente { background: #f1c40f; }
-.appointment.confirmada { background: #2ecc71; }
+.appointment.confirmada { background: #3498db; }
+.appointment.completada { background: #2ecc71; }
 .appointment.cancelada { background: #e74c3c; }
 
 
@@ -684,7 +685,8 @@ body.light-mode .hour-slot:not(.occupied):hover {
 }
 
 .hour-slot .appointment.pendiente { background-color: #f1c40f; }
-.hour-slot .appointment.confirmada { background-color: #2ecc71; }
+.hour-slot .appointment.confirmada { background-color: #3498db; }
+.hour-slot .appointment.completada { background-color: #2ecc71; }
 .hour-slot .appointment.cancelada { background-color: #e74c3c; }
 
 /* =========================
@@ -1647,9 +1649,9 @@ body.light-mode #floating-filter .filter-btn.active {
     flex-shrink: 0;
 }
 
-.label-color.todos { background-color: #3498db; }
 .label-color.pendiente { background-color: #f1c40f; }
-.label-color.confirmada { background-color: #2ecc71; }
+.label-color.confirmada { background-color: #3498db; }
+.label-color.completada { background-color: #2ecc71; }
 .label-color.cancelada { background-color: #e74c3c; }
 .label-color[data-barbero] { background-color: #3498db; }
 

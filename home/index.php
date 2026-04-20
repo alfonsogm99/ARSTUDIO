@@ -41,7 +41,7 @@ $barberoFiltro = isset($_GET['barbero']) ? intval($_GET['barbero']) : 0;
 
 // Filtro estado
 $estadoFiltro = $_GET['estado'] ?? '';
-$estadosValidos = ['pendiente','confirmada','cancelada'];
+$estadosValidos = ['pendiente','confirmada', 'completada','cancelada'];
 if(!in_array($estadoFiltro, $estadosValidos)){
     $estadoFiltro = '';
 }
@@ -183,7 +183,6 @@ $monthNames = [
         <div class="filter-options estado-options">
             <button data-estado="" class="filter-btn todos active">
                 Todas
-                <span class="label-color todos"></span>
             </button>
             <button data-estado="pendiente" class="filter-btn pendiente">
                 Pendiente
@@ -193,6 +192,9 @@ $monthNames = [
                 Confirmada
                 <span class="label-color confirmada"></span>
             </button>
+            <button data-estado="completada" class="filter-btn completada">
+                Completada
+                <span class="label-color completada"></span>
             <button data-estado="cancelada" class="filter-btn cancelada">
                 Cancelada
                 <span class="label-color cancelada"></span>
@@ -207,7 +209,6 @@ $monthNames = [
             
             <button data-barbero="" class="filter-btn active">
                 Todos
-                <span class="label-color"></span>
             </button>
 
             <?php

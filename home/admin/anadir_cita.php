@@ -3,7 +3,7 @@ session_start();
 include 'config.php';
 
 if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero','admin'])){
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 
@@ -36,7 +36,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $stmt->bind_param("iissis",$id_cliente,$id_barbero,$fecha,$hora,$duracion,$estado);
         if($stmt->execute()){
             $success = "Cita creada correctamente!";
-            header("Location: ../control_panel.php");
+            header("Location: ../index.php");
             exit;
         } else {
             $error = "Error al crear la cita: ".$conn->error;

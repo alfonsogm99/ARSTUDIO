@@ -270,13 +270,20 @@ $monthNames = [
 
     while($currentDay<=$totalDays){
         $date = date('Y-m-d', strtotime("$year-$month-$currentDay"));
-        echo '<div class="day-cell" data-date="'.$date.'">'.$currentDay.'</div>';
+        $dayName = $dayNames[date('N', strtotime($date)) - 1];
+
+        echo '<div class="day-cell" 
+                data-date="'.$date.'" 
+                data-day-name="'.$dayName.'">
+                '.$currentDay.'
+            </div>';
         $currentDay++;
     }
 
     // Espacios vacíos al final
     $cellsFilled = ($startDayOfWeek-1 + $totalDays);
     for($i=$cellsFilled; $i%7!=0; $i++) echo '<div class="day-cell empty"></div>';
+
     ?>
 </div>
 
@@ -324,8 +331,25 @@ for($h = $inicio; $h < $fin; $h++){
     </div>
 </div>
 
+<?php
+$configFile = './admin/config.json';
+
+$config = [];
+
+if (file_exists($configFile)) {
+    $json = file_get_contents($configFile);
+    $decoded = json_decode($json, true);
+
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        $config = $decoded;
+    }
+}
+
+$version = $config['app']['version'] ?? '0.0.0';
+?>
+
 <footer class="version">
-    <p>v.1.0</p>
+    <p>v.<?= htmlspecialchars($version) ?></p>
 </footer>
 
 <footer class="copyright">

@@ -87,8 +87,25 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 </div>
 
+<?php
+$configFile = './config.json';
+
+$config = [];
+
+if (file_exists($configFile)) {
+    $json = file_get_contents($configFile);
+    $decoded = json_decode($json, true);
+
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        $config = $decoded;
+    }
+}
+
+$version = $config['app']['version'] ?? '0.0.0';
+?>
+
 <footer class="version">
-    <p>v.1.0</p>
+    <p>v.<?= htmlspecialchars($version) ?></p>
 </footer>
 
 <footer class="copyright">

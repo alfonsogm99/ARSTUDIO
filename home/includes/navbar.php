@@ -31,7 +31,21 @@ $rol = $_SESSION['user_type'];
         <?php endif; ?>
 
         <?php if ($rol === 'barbero'): ?>
-            <a href="<?php echo BASE_URL; ?>"><i class="fa-solid fa-home"></i></a>
+            <div class="menu-inline">
+                <div class="dropdown">
+                    <i class="fa-solid fa-plus"></i>
+                    <ul class="submenu">
+                        <p id="temp_txt">beta</p>
+                        <li>
+                            <a href="<?php echo BASE_URL . '/admin/nuevo_usuario.php';?>">Nuevo cliente</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="<?php echo BASE_URL; ?>">
+                    <i class="fa-solid fa-home"></i>
+                </a>
+            </div>
         <?php endif; ?>
 
         <?php if ($rol === 'cliente'): ?>

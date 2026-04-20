@@ -114,10 +114,6 @@ define('BASE_URL', '/arbarber_project/home'); // quitar /arbarber_project/
                 <h2 class="fluid"><br>coming soon</h2>
             </section>
             </main>
-            
-            <footer class="version">
-                <p>v.1.0</p>
-            </footer>
 
             <footer class="copyright">
                 <p>© 2026 alfonsogm</p>

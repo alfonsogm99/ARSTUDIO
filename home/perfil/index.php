@@ -4,7 +4,7 @@ session_start();
 include '../admin/config.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login/");
+    header("Location: ../login");
     exit;
 }
 

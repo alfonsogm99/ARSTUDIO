@@ -3,7 +3,7 @@ session_start();
 include 'config.php';
 
 if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero','admin'])){
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 
@@ -56,7 +56,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $success = "El cliente <strong>".htmlspecialchars($nombre)."</strong> recibirá un correo electrónico de verificación para la activación de su usuario.";
 
                 // Redirección automática en 5 segundos
-                header("Refresh:5; url=../control_panel.php");
+                header("Refresh:5; url=../index.php");
             } else {
                 $error = "Error al crear cliente: ".$conn->error;
             }

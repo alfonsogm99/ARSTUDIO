@@ -33,7 +33,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $stmt->bind_param("ssssi", $fecha, $hora, $estado, $notas, $id);
     $stmt->execute();
 
-    header("Location: ../control_panel.php");
+    header("Location: ../index.php");
     exit;
 }
 ?>

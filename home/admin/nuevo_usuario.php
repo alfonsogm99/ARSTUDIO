@@ -3,7 +3,7 @@ session_start();
 include 'config.php';
 
 if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero','admin'])){
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 

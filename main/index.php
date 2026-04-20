@@ -1,10 +1,3 @@
-<?php
-session_start();
-
-define('BASE_URL', '/arbarber_project/home'); // quitar /arbarber_project/
-
-?>
-
 <html lang="es">
     
     <head>
@@ -28,7 +21,7 @@ define('BASE_URL', '/arbarber_project/home'); // quitar /arbarber_project/
 
         <div class="menu">
             <i class="far fa-lightbulb"></i>
-            <a href="<?php echo BASE_URL; ?>/login"><i id="login-ico" class="far fa-user-circle"></i></a>
+            <a href="../home/login"><i id="login-ico" class="far fa-user-circle"></i></a>
         </div>
 
         <div class="content-wrap">

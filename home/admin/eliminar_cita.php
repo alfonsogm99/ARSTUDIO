@@ -4,7 +4,7 @@ include 'config.php';
 
 // 🔹 Verificar permisos
 if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero','admin'])){
-    header("Location: login.php");
+    header("Location: ../login");
     exit;
 }
 
@@ -14,7 +14,7 @@ $user_type = $_SESSION['user_type'];
 // 🔹 Verificar ID de cita
 if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
     $_SESSION['error'] = "Cita inválida.";
-    header("Location: ../control_panel.php");
+    header("Location: ../index.php");
     exit;
 }
 
@@ -28,7 +28,7 @@ if($user_type === 'barbero'){
     $result = $check->get_result();
     if($result->num_rows === 0){
         $_SESSION['error'] = "No tienes permisos para eliminar esta cita.";
-        header("Location: ../control_panel.php");
+        header("Location: ../index.php");
         exit;
     }
 } else {
@@ -39,7 +39,7 @@ if($user_type === 'barbero'){
     $result = $check->get_result();
     if($result->num_rows === 0){
         $_SESSION['error'] = "Cita no encontrada.";
-        header("Location: ../control_panel.php");
+        header("Location: ../index.php");
         exit;
     }
 }
@@ -56,9 +56,9 @@ if($delete->execute()){
 // 🔹 Redirigir a la vista diaria si se pasa fecha, si no a la mensual
 if(isset($_GET['fecha'])){
     $fecha = $_GET['fecha'];
-    header("Location: ../control_panel.php?day=" . date('d', strtotime($fecha)) . "&month=" . date('m', strtotime($fecha)) . "&year=" . date('Y', strtotime($fecha)));
+    header("Location: ../index.php?day=" . date('d', strtotime($fecha)) . "&month=" . date('m', strtotime($fecha)) . "&year=" . date('Y', strtotime($fecha)));
 } else {
-    header("Location: ../control_panel.php");
+    header("Location: ../index.php");
 }
 exit;
 ?>

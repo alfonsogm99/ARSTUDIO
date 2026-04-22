@@ -1,12 +1,7 @@
 <?php
-session_start();
 
-include '../admin/config.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login");
-    exit;
-}
+require_once '../admin/bootstrap.php';
+require_once '../admin/auth.php';
 
 $data = json_decode(file_get_contents('../admin/config.json'), true);
 
@@ -141,9 +136,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="icon" type="image/x-icon" href="../../img/favicon.ico">
 <link rel="stylesheet" href="../css/style.css">
 </head>
-<body class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
+<body id="perfil" class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
 
+<div id="top-fixed">
 <?php include '../includes/navbar.php'; ?>
+</div>
 
 <h1>Perfil</h1>
 
@@ -223,14 +220,16 @@ if (file_exists($configFile)) {
 $version = $config['app']['version'] ?? '0.0.0';
 ?>
 
-<footer class="version">
-    <p>v.<?= htmlspecialchars($version) ?></p>
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
 </footer>
 
-<footer class="copyright">
-    <p>© 2026 alfonsogm</p>
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
 </footer>
-
 
 <script src="../../js/editpasS.js"></script>
 <script src="../../js/lightmode.js"></script>

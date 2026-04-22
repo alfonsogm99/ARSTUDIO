@@ -83,14 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <img class="login logo"src="../../img/renewed_logo.png">
 
 <form method="post" class="form_class">
-    <div class="input_wrapper">
+    <div class="input-wrapper">
         <input type="text" name="username" placeholder="username" value="aaleexrp" required>
     </div><br>
 
-    <div class="input_wrapper">
+    <div class="input-wrapper">
         <input type="password" name="password" id="password" placeholder="password" value="ARBARBER01" required>
-        <i class="fa-solid fa-eye toggle_eye" onclick="togglePassword('password', this)"></i>
-    </div><br>
+        <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('password', this)"></i>
+    </div>
+    <br>
     <button type="submit">Aceptar</button>
 </form>
 
@@ -115,14 +116,32 @@ if (file_exists($configFile)) {
 $version = $config['app']['version'] ?? '0.0.0';
 ?>
 
-<footer class="version">
-    <p>v.<?= htmlspecialchars($version) ?></p>
+
+<section class="cookies">
+    <h2 class="cookies__titulo">🍪 ¿Aceptas nuestras Cookies?</h2>
+    <p class="cookies__texto">Este sitio utiliza cookies para mejorar la experiencia del usuario.</p>
+    <div class="cookies__botones">
+        <button class="cookies__boton cookies__boton--si">Si</button>
+        <button class="cookies__boton cookies__boton--no">No</button>
+    </div>
+</section>
+
+<!-- No borrar, aquí se generarán todas las etiquetas <script> si acepta el usuario -->
+<div id="nuevosScripts"></div>
+
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
 </footer>
 
-<footer class="copyright">
-    <p>© 2026 alfonsogm</p>
+<br><br>
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
 </footer>
 
 <script src="../../js/togglePassword.js"></script>
+<script src="../../js/cookies.js"></script>
 </body>
 </html>

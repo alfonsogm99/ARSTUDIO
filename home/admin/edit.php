@@ -41,5 +41,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 <button type="submit">Guardar cambios</button>
 </form>
 <p><a href="admin.php?tabla=<?php echo $tabla; ?>"><b>Volver</b></a></p>
+
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
+</footer>
+
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
+</footer>
+
 </body>
 </html>

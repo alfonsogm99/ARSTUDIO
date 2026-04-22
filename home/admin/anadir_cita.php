@@ -2,7 +2,8 @@
 session_start();
 include 'config.php';
 
-if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero','admin'])){
+// Verificación de sesión
+if (!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero', 'admin'])) {
     header("Location: ../login");
     exit;
 }
@@ -18,52 +19,143 @@ $user_id = $_SESSION['user_id'];
 $user_type = $_SESSION['user_type'];
 $hora_inicial = $_GET['hora'] ?? '08:00:00';
 $fecha = $_GET['fecha'] ?? date('Y-m-d');
-
 $id_cliente_prefill = isset($_GET['id_cliente']) ? intval($_GET['id_cliente']) : 0;
 
 $error = '';
 $success = '';
 
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    $hora = $_POST['hora'];
-    $id_cliente = intval($_POST['id_cliente']);
-    $duracion = intval($_POST['duracion']);
-    $estado = 'pendiente';
-    $id_barbero = ($user_type==='barbero') ? $user_id : intval($_POST['id_barbero']);
+// Verificar si ya está en proceso de crear cita
+if (isset($_SESSION['creating_cita']) && $_SESSION['creating_cita'] === true) {
+    $error = "Ya se está procesando la cita. Por favor, espera.";
+} else {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Marcar que estamos en proceso de crear una cita
+        $_SESSION['creating_cita'] = true;
 
-    if($id_cliente && $hora && $duracion>0){
-        $stmt = $conn->prepare("INSERT INTO cita (id_cliente,id_barbero,fecha,hora,duracion_total,estado) VALUES (?,?,?,?,?,?)");
-        $stmt->bind_param("iissis",$id_cliente,$id_barbero,$fecha,$hora,$duracion,$estado);
-        if($stmt->execute()){
-            $success = "Cita creada correctamente!";
-            header("Location: ../index.php");
-            exit;
+        $hora = $_POST['hora'];
+        $id_cliente = intval($_POST['id_cliente']);
+        $duracion = intval($_POST['duracion']);
+        $estado = 'pendiente';
+        $id_barbero = ($user_type === 'barbero') ? $user_id : intval($_POST['id_barbero']);
+
+        if ($id_cliente && $hora && $duracion > 0) {
+            $inicioNueva = strtotime($hora);
+            $finNueva = $inicioNueva + ($duracion * 60);
+
+            // Revalidar disponibilidad
+            $stmtCheck = $conn->prepare("
+                SELECT hora, duracion_total 
+                FROM cita 
+                WHERE fecha = ? AND id_barbero = ?
+            ");
+            $stmtCheck->bind_param("si", $fecha, $id_barbero);
+            $stmtCheck->execute();
+            $res = $stmtCheck->get_result();
+
+            $conflicto = false;
+            while ($cita = $res->fetch_assoc()) {
+                $inicioExistente = strtotime($cita['hora']);
+                $finExistente = $inicioExistente + ($cita['duracion_total'] * 60);
+                if ($inicioNueva < $finExistente && $finNueva > $inicioExistente) {
+                    $conflicto = true;
+                    break;
+                }
+            }
+
+            if ($conflicto) {
+                $error = "El horario seleccionado no está disponible.";
+            } else {
+
+                $usuario = $_SESSION['user_name'];
+                $ip = $_SERVER['REMOTE_ADDR'];
+
+                // MUY IMPORTANTE: setear variables de sesión MySQL
+                $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
+                $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
+            
+                // Insertar cita en la base de datos
+                $stmt = $conn->prepare("
+                    INSERT INTO cita (id_cliente, id_barbero, fecha, hora, duracion_total, estado)
+                    VALUES (?,?,?,?,?,?)
+                ");
+                $stmt->bind_param("iissis", $id_cliente, $id_barbero, $fecha, $hora, $duracion, $estado);
+
+                if ($stmt->execute()) {
+                    $usuario = $_SESSION['user_name']; // Obtener el nombre del usuario logueado
+                    $id_cita = $stmt->insert_id;
+
+                    // Limpiar el flag de la sesión antes de redirigir
+                    unset($_SESSION['creating_cita']);
+
+                    // Redireccionar a la página principal
+                    header("Location: ../index.php");
+                    exit;
+                } else {
+                    $error = "Error al crear la cita: " . $conn->error;
+                    // Limpiar el flag de la sesión en caso de error
+                    unset($_SESSION['creating_cita']);
+                }
+            }
         } else {
-            $error = "Error al crear la cita: ".$conn->error;
+            $error = "Por favor, complete todos los campos.";
+            unset($_SESSION['creating_cita']);  // Limpiar el flag si falta información
         }
-    } else {
-        $error = "Todos los campos son obligatorios.";
     }
 }
 
 $barberos = [];
-if($user_type==='admin'){
+if ($user_type === 'admin') {
     $res = $conn->query("SELECT * FROM barbero ORDER BY nombre ASC");
-    while($b = $res->fetch_assoc()) $barberos[] = $b;
+    while ($b = $res->fetch_assoc()) $barberos[] = $b;
 }
 
 $nombre_prefill = '';
-
-if($id_cliente_prefill){
+if ($id_cliente_prefill) {
     $stmt = $conn->prepare("SELECT nombre FROM cliente WHERE id_cliente=?");
     $stmt->bind_param("i", $id_cliente_prefill);
     $stmt->execute();
     $res = $stmt->get_result();
-
-    if($row = $res->fetch_assoc()){
+    if ($row = $res->fetch_assoc()) {
         $nombre_prefill = $row['nombre'];
     }
 }
+
+function minutos($h) {
+    $p = explode(':', $h);
+    return (int)$p[0] * 60 + (int)$p[1];
+}
+
+$inicioMin = minutos($hora_inicial);
+
+// Traer citas del día/barbero
+$stmtCheck = $conn->prepare("
+    SELECT hora, duracion_total 
+    FROM cita 
+    WHERE fecha = ? AND id_barbero = ?
+");
+$stmtCheck->bind_param("si", $fecha, $id_barbero);
+$stmtCheck->execute();
+$res = $stmtCheck->get_result();
+
+$ocupado = [];
+while ($c = $res->fetch_assoc()) {
+    $ini = minutos($c['hora']);
+    $fin = $ini + (int)$c['duracion_total'];
+    for ($m = $ini; $m < $fin; $m += 15) {
+        $ocupado[$m] = true;
+    }
+}
+
+$maxSlots = 0;
+for ($i = 0; $i < 10; $i++) { // máximo 10 bloques (2h30)
+    $slot = $inicioMin + ($i * 15);
+    if (isset($ocupado[$slot])) {
+        break;
+    }
+    $maxSlots++;
+}
+
+$maxMinutos = $maxSlots * 15;
 ?>
 
 <!DOCTYPE html>
@@ -76,9 +168,11 @@ if($id_cliente_prefill){
 <link rel="stylesheet" href="../css/style.css">
 <title>ARSTUDIO · Nueva Cita</title>
 </head>
-<body class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
+<body id="addcita" class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
 
+<div id="top-fixed">
 <?php include '../includes/navbar.php'; ?>
+</div>
 
 <h2>Añadir Cita</h2>
 
@@ -116,8 +210,13 @@ if($id_cliente_prefill){
 
     <label>Duración (minutos):
         <select name="duracion" required>
-            <option value="30" selected>30 min</option>
-            <option value="60">60 min (1h)</option>
+            <?php if($maxMinutos >= 30): ?>
+                <option value="30">30 min</option>
+            <?php endif; ?>
+
+            <?php if($maxMinutos >= 60): ?>
+                <option value="60">60 min (1h)</option>
+            <?php endif; ?>
         </select>
     </label>
 
@@ -142,12 +241,15 @@ if (file_exists($configFile)) {
 $version = $config['app']['version'] ?? '0.0.0';
 ?>
 
-<footer class="version">
-    <p>v.<?= htmlspecialchars($version) ?></p>
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
 </footer>
 
-<footer class="copyright">
-    <p>© 2026 alfonsogm</p>
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
 </footer>
 
 

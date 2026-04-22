@@ -1,12 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL . "/login");
-    exit;
-}
+require_once __DIR__ . '/../admin/bootstrap.php';
 
 $user = $_SESSION['user_name'];
 $rol = $_SESSION['user_type'];
@@ -26,6 +20,7 @@ $rol = $_SESSION['user_type'];
         <i id="lightmode" class="far fa-lightbulb"></i>
         
         <?php if ($rol === 'admin'): ?>
+            <a href="<?php echo BASE_URL; ?>/admin/registro.php"><i class="fa-solid fa-clock"></i></a>
             <a href="<?php echo BASE_URL; ?>/admin/admin.php"><i class="fa-solid fa-cogs"></i></a>
             <a href="<?php echo BASE_URL; ?>"><i class="fa-solid fa-home"></i></a>
         <?php endif; ?>

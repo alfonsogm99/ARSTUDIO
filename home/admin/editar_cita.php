@@ -29,6 +29,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $estado = $_POST['estado'];
     $notas = $_POST['notas'];
 
+    $usuario = $_SESSION['user_name'];
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
+    $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
+
     $stmt = $conn->prepare("UPDATE cita SET fecha=?, hora=?, estado=?, notas=? WHERE id_cita=?");
     $stmt->bind_param("ssssi", $fecha, $hora, $estado, $notas, $id);
     $stmt->execute();
@@ -44,16 +50,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="icon" type="image/x-icon" href="../img/favicon.ico">
+<link rel="icon" type="image/x-icon" href="../../img/favicon.ico">
 <link rel="stylesheet" href="../css/style.css">
-<title>Calendario</title>
+<title>ARSTUDIO · Editar Cita</title>
 </head>
-<body class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
+<body id="editcita" class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
 
+<div id="top-fixed">
 <?php include '../includes/navbar.php'; ?>
-<h2>Editar cita</h2>
+</div>
 
-<br>
+<h2>Editar cita</h2>
 
 <div class="perfil_wrapper">
 <form method="POST" class="perfil_box">
@@ -93,14 +100,15 @@ if (file_exists($configFile)) {
 $version = $config['app']['version'] ?? '0.0.0';
 ?>
 
-<footer class="version">
-    <p>v.<?= htmlspecialchars($version) ?></p>
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
 </footer>
 
-<footer class="copyright">
-    <p>© 2026 alfonsogm</p>
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
 </footer>
-
-
 </body>
 </html>

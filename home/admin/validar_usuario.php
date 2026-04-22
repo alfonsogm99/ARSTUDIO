@@ -75,7 +75,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </head>
 <body class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
 
+<div id="top-fixed">
 <?php include '../includes/navbar.php'; ?>
+</div>
 
 <h2>Crear tu cuenta</h2>
 
@@ -98,6 +100,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </form>
 </div>
 <?php endif; ?>
+
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
+</footer>
+
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
+</footer>
 
 </body>
 </html>

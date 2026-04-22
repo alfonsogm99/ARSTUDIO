@@ -45,6 +45,13 @@ if($user_type === 'barbero'){
 }
 
 // 🔹 Eliminar cita
+
+$usuario = $_SESSION['user_name'];
+$ip = $_SERVER['REMOTE_ADDR'];
+
+$conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
+$conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
+
 $delete = $conn->prepare("DELETE FROM cita WHERE id_cita = ?");
 $delete->bind_param("i", $cita_id);
 if($delete->execute()){

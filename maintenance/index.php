@@ -30,9 +30,10 @@
             </iframe>
         </div>
 
-        <footer class="copyright">
-            <p>© 2026 alfonsogm</p>
+        <footer class="site-footer">
+            <span class="copyright">© 2026 alfonsogm</span>
         </footer>
+        
     </body>
 
     <!-- alerta -->

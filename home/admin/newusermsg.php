@@ -49,7 +49,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 //$success = "El cliente <strong>".htmlspecialchars($nombre)."</strong> recibirá un correo electrónico de verificación para la activación de su usuario.";
 
                 // Redirección automática en 5 segundos
-                //header("Refresh:5; url=../control_panel.php");
+                //header("Refresh:5; url=../index.php");
 
 
                 $id_nuevo = $stmt->insert_id;
@@ -79,7 +79,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </head>
 <body class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
 
+<div id="top-fixed">
 <?php include '../includes/navbar.php'; ?>
+</div>
 
 <h2>Nuevo Cliente</h2>
 
@@ -114,12 +116,15 @@ if (file_exists($configFile)) {
 $version = $config['app']['version'] ?? '0.0.0';
 ?>
 
-<footer class="version">
-    <p>v.<?= htmlspecialchars($version) ?></p>
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
 </footer>
 
-<footer class="copyright">
-    <p>© 2026 alfonsogm</p>
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
 </footer>
 
 </body>

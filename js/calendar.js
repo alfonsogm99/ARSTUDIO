@@ -7,6 +7,8 @@ function horaToMin(h) {
 // DATOS DE CITAS DESDE PHP
 // =======================
 const appointments = window.calendarData.appointments;
+const appointmentMap = {};
+appointments.forEach(a => appointmentMap[a.id] = a);
 const csrf_token = window.calendarData.csrfToken;
 let selectedCita = null;
 
@@ -24,6 +26,76 @@ function cerrarModal() { modal.style.display = 'none'; }
 modal.onclick = e => { if(e.target.id === 'modal_cita') cerrarModal(); }
 
 const normalizarHora = h => h.substring(0,5);
+
+function resetModalButtons() {
+    btnPrimary.onclick = null;
+    btnDelete.onclick = null;
+
+    btnPrimary.disabled = false;
+    btnDelete.disabled = false;
+
+    btnPrimary.style.display = "inline-block";
+    btnDelete.style.display = "inline-block";
+
+    btnPrimary.textContent = "";
+    btnDelete.textContent = "";
+
+    // 🔥 RESTAURAR CLASE BASE
+    btnPrimary.className = "btn-primary";
+    btnDelete.className = "btn-danger";
+}
+
+function setModalCita(app) {
+    resetModalButtons();
+
+    modalTitle.textContent = "Detalles de la cita";
+    modalInfo.innerHTML = '';
+
+    const fields = {
+        "Cliente": app.cliente,
+        "Hora": app.hora,
+        "Duración": app.duracion + ' min',
+        "Estado": app.estado,
+        "Pago": app.estado_pago || 'Pendiente',
+        "Notas": app.notas || '-'
+    };
+
+    for (const [label, value] of Object.entries(fields)) {
+        const fDiv = document.createElement('div');
+        const strong = document.createElement('strong');
+        strong.textContent = label + ': ';
+        fDiv.appendChild(strong);
+        fDiv.appendChild(document.createTextNode(value));
+        modalInfo.appendChild(fDiv);
+    }
+
+    btnPrimary.textContent = "Editar";
+    btnPrimary.onclick = () =>
+        window.location.href = `admin/editar_cita.php?id=${app.id}&csrf=${csrf_token}`;
+
+    btnDelete.textContent = "Eliminar";
+    btnDelete.onclick = () =>
+        window.location.href = `admin/eliminar_cita.php?id=${app.id}&csrf=${csrf_token}`;
+}
+
+function setModalNuevaCita(fecha, hora) {
+    resetModalButtons();
+
+    modalTitle.textContent = "Nueva cita";
+
+    modalInfo.innerHTML = `
+        No hay ninguna cita programada en este horario.<br>
+        ¿Desea generar una nueva cita a las <strong>${hora}</strong>?
+    `;
+
+    btnPrimary.textContent = "Crear";
+    btnPrimary.onclick = () =>
+        window.location.href = `admin/anadir_cita.php?fecha=${fecha}&hora=${hora}&csrf=${csrf_token}`;
+
+    // 🔥 CLAVE: ocultar eliminar
+    btnDelete.style.display = "none";
+    btnDelete.onclick = null;
+}
 
 // =======================
 // VISTA MENSUAL
@@ -52,93 +124,60 @@ document.querySelectorAll('.day-cell[data-date]').forEach(cell => {
 document.querySelectorAll('.hour-slot').forEach(slot => {
 
     const hora = slot.dataset.hora;
-
     const slotMin = horaToMin(hora);
 
     const apps = appointments.filter(a => {
         const inicio = horaToMin(a.hora);
         const fin = inicio + parseInt(a.duracion);
-
         return slotMin >= inicio && slotMin < fin;
     });
 
     if(apps.length > 0) slot.classList.add('occupied');
 
+    // 👉 Guardar SOLO si empieza aquí
     apps.forEach(app => {
-
         const inicio = horaToMin(app.hora);
-        const fin = inicio + parseInt(app.duracion);
 
         const div = document.createElement('div');
         div.className = 'appointment ' + app.estado;
 
-        // 👉 texto solo en el primero (visual)
+        slot.dataset.appId = app.id;
+
         if (slotMin === inicio) {
-            div.textContent = app.cliente;
+
+            div.classList.add('line-only');
+
+            const label = document.createElement('div');
+            label.className = 'appointment-label';
+            label.textContent = app.cliente;
+
+            slot.appendChild(label);
         }
-
-        // 👉 TODOS los bloques abren la misma cita
-        div.addEventListener('click', (e) => {
-            e.stopPropagation();
-
-            selectedCita = app;
-
-            modalTitle.textContent = "Detalles de la cita";
-            modalInfo.innerHTML = '';
-
-            const fields = {
-                "Cliente": app.cliente,
-                "Hora": app.hora,
-                "Duración": app.duracion + ' min',
-                "Estado": app.estado,
-                "Pago": app.estado_pago || 'Pendiente',
-                "Notas": app.notas || '-'
-            };
-
-            for(const [label,value] of Object.entries(fields)){
-                const fDiv = document.createElement('div');
-                const strong = document.createElement('strong');
-                strong.textContent = label + ': ';
-                fDiv.appendChild(strong);
-                fDiv.appendChild(document.createTextNode(value));
-                modalInfo.appendChild(fDiv);
-            }
-
-            btnPrimary.textContent = "Editar";
-            btnPrimary.onclick = () => window.location.href = `admin/editar_cita.php?id=${app.id}&csrf=${csrf_token}`;
-
-            btnDelete.textContent = "Eliminar";
-            btnDelete.disabled = false;
-            btnDelete.onclick = () => window.location.href = `admin/eliminar_cita.php?id=${app.id}&csrf=${csrf_token}`;
-
-            abrirModal();
-        });
 
         slot.appendChild(div);
     });
 
-    slot.onclick = () => {
-        if(slot.classList.contains('occupied')) return;
-        selectedCita = null;
+slot.onclick = () => {
 
-        const year = window.calendarData.year;
-        const month = window.calendarData.month;
-        const day = window.calendarData.day;
+    const appId = slot.dataset.appId;
 
-        const fecha = slot.dataset.date ?? `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        
-        modalTitle.textContent = "Nueva cita";
-        modalInfo.innerHTML = `No hay ninguna cita programada en este horario.<br>¿Desea generar una nueva cita a las <strong>${hora}</strong>?`;
-
-        btnPrimary.textContent = "Crear";
-        btnPrimary.onclick = () => window.location.href = `admin/anadir_cita.php?fecha=${fecha}&hora=${hora}&csrf=${csrf_token}`;
-
-        btnDelete.textContent = "Eliminar";
-        btnDelete.disabled = true;
-        btnDelete.onclick = null;
-
+    if (appId) {
+        setModalCita(appointmentMap[appId]);
         abrirModal();
-    };
+        return;
+    }
+
+    const year = window.calendarData.year;
+    const month = window.calendarData.month;
+    const day = window.calendarData.day;
+
+    const fecha = slot.dataset.date ??
+        `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+    setModalNuevaCita(fecha, hora);
+    abrirModal();
+};
+
 });
 
 // =======================

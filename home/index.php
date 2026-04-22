@@ -1,12 +1,7 @@
 <?php
-session_start();
 
-include './admin/config.php';
-
-if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero','admin'])){
-    header("Location: " . BASE_URL . "/login/");
-    exit;
-}
+require_once './admin/bootstrap.php';
+require_once './admin/auth.php';
 
 $data = json_decode(file_get_contents('./admin/config.json'), true) ?? [];
 
@@ -300,7 +295,10 @@ $fin = 20;
 for($h = $inicio; $h < $fin; $h++){
     foreach([0,15,30,45] as $m){
         $hora = sprintf('%02d:%02d:00', $h, $m);
-        echo '<div class="hour-slot" data-hora="'.$hora.'">'.substr($hora,0,5).'</div>';
+        echo '
+            <div class="hour-slot" data-hora="'.$hora.'">
+                <span class="hour-label">'.substr($hora,0,5).'</span>
+            </div>';
     }
 }
 ?>
@@ -349,32 +347,16 @@ if (file_exists($configFile)) {
 $version = $config['app']['version'] ?? '0.0.0';
 ?>
 
-<footer class="version">
-    <p>v.<?= htmlspecialchars($version) ?></p>
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
 </footer>
 
-<footer class="copyright">
-    <p>© 2026 alfonsogm</p>
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
 </footer>
-
-<script>
-
-    const stars = document.querySelector(".logscroll_str");
-    const speedFactor = 0.5;
-
-    window.addEventListener("scroll", () => {
-
-        const scrollTop = window.scrollY;
-        const maxScroll = document.body.scrollHeight - window.innerHeight;
-
-        const progress = scrollTop / maxScroll;
-        
-        const rotation = progress * 360 * speedFactor;
-
-        stars.style.transform = `rotate(${rotation}deg)`;
-    });
-
-</script>
 
 <script>
 window.calendarData = {
@@ -389,6 +371,7 @@ window.calendarData = {
 </script>
 <script src="../js/calendar.js"></script>
 <script src="../js/lightmode.js"></script>
+<script src="../js/logoscroll.js"></script>
 
 </body>
 </html>

@@ -1,5 +1,5 @@
-CREATE DATABASE AR_BARBER_PROJECT;
-USE AR_BARBER_PROJECT;
+-- CREATE DATABASE AR_BARBER_PROJECT;
+-- USE AR_BARBER_PROJECT;
 
 -- =========================
 -- USUARIOS
@@ -155,3 +155,19 @@ CREATE TABLE historico_cliente (
 CREATE INDEX idx_cliente_google ON cliente(google_id);
 CREATE INDEX idx_cita_fecha ON cita(fecha);
 CREATE INDEX idx_cita_cliente ON cita(id_cliente);
+
+
+-- =========================
+-- REGISTROS (LOGS)
+-- =========================
+CREATE TABLE audit_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tabla VARCHAR(100) NOT NULL,
+    accion VARCHAR(20) NOT NULL,   -- INSERT / UPDATE / DELETE
+    registro_id INT DEFAULT NULL,
+    usuario VARCHAR(100) DEFAULT NULL,
+    datos_antes LONGTEXT DEFAULT NULL,
+    datos_despues LONGTEXT DEFAULT NULL,
+    ip VARCHAR(45) DEFAULT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

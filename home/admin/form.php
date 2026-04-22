@@ -1,5 +1,8 @@
 <?php
-include 'config.php';
+
+require_once './bootstrap.php';
+require_once './auth.php';
+
 $tabla = $_GET['tabla'];
 $id = $_GET['id'] ?? null;
 
@@ -14,7 +17,7 @@ while ($row = $res->fetch_assoc()) {
     $columns[$row['Field']] = $row['Type'];
 
     if(preg_match("/enum\((.*)\)/",$row['Type'],$matches)) {
-        $enums[$row['Field']] = str_getcsv($matches[1],',','\'');
+        $enums[$row['Field']] = array_map('trim', str_getcsv($matches[1], ',', "'", "\\"));
     }
 }
 
@@ -79,6 +82,16 @@ if ($_SERVER['REQUEST_METHOD']=='POST') {
     $sql = $id ? "UPDATE $tabla SET ".implode(',',$sets)." WHERE $pk='$id'" 
                : "INSERT INTO $tabla (".implode(',',$cols).") VALUES (".implode(',',$vals).")";
 
+    
+    $conn->begin_transaction();
+
+    $usuario = $_SESSION['user_name'] ?? $_SESSION['usuario'] ?? 'system';
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
+    $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");  
+
+
     if($conn->query($sql)){
         $new_user_id = $id ? $id : $conn->insert_id;
         $rol_usuario = $_POST['rol'] ?? $data['rol'] ?? '';
@@ -118,8 +131,14 @@ if ($_SERVER['REQUEST_METHOD']=='POST') {
             if(!$conn->query($sql_extra)) die("Error barbero: ".$conn->error);
         }
 
+        $conn->commit();
+
         header("Location: admin.php?tabla=$tabla");
         exit;
+
+    } else {
+        $conn->rollback();
+        die("Error SQL: " . $conn->error);
     }
 }
 ?>
@@ -130,29 +149,32 @@ if ($_SERVER['REQUEST_METHOD']=='POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="icon" type="image/x-icon" href="../img/favicon.ico">
-<link rel="stylesheet" href="./css/style.css">
-<title>ARSTUDIO · Form</title>
+<link rel="icon" type="image/x-icon" href="../../img/favicon.ico">
+<link rel="stylesheet" href="../css/style.css">
+<title>ARSTUDIO · sysadmin</title>
 </head>
-<body>
+<body id="admin_form">
 
+<div id="top-fixed">
 <?php include '../includes/navbar.php'; ?>
+</div>
 
 <h1><?php echo $id ? "Editar" : "Añadir"; ?> - <?php echo $tabla; ?></h1>
-
-<form method="post">
+ 
+<div class="perfil_wrapper">
+<form method="post" class="perfil_box">
 <?php foreach($columns as $col=>$type):
 if($col==$pk || $col=='id_usuario' || $col=='fecha_creacion') continue;
 $value = $data[$col] ?? '';
 
 if($col=='password'): ?>
 <label for="password">password:</label>
-<div class="input_wrapper">
+<div class="input-wrapper">
     <input type="password" name="password" id="password"
            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}"
            title="Mínimo 8 caracteres, mayúscula, minúscula, número y símbolo"
            <?php echo $id ? '' : 'required'; ?>>
-    <i class="fa-solid fa-eye toggle_eye" onclick="togglePassword('password', this)"></i>
+    <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('password', this)"></i>
 </div>
 <?php elseif(isset($enums[$col])): ?>
 <label><?php echo $col; ?>:</label>
@@ -189,6 +211,37 @@ foreach($campos_extra as $c):
 
 <button type="submit">Guardar</button>
 </form>
+</div>
+
+
+
+<?php
+$configFile = './config.json';
+
+$config = [];
+
+if (file_exists($configFile)) {
+    $json = file_get_contents($configFile);
+    $decoded = json_decode($json, true);
+
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        $config = $decoded;
+    }
+}
+
+$version = $config['app']['version'] ?? '0.0.0';
+?>
+
+<footer class="site-footer">
+    <span class="version">v.<?= htmlspecialchars($version) ?></span><br>
+    <span class="copyright">© 2026 alfonsogm</span>
+</footer>
+
+<footer class="policy">
+        <a href="#">Política de Privacidad</a> |
+        <a href="#">Política de Cookies</a> |
+        <a href="#">Términos y Condiciones</a>
+</footer>
 
 <script>
 const barbero = <?php echo json_encode($barbero_cols); ?>;

@@ -24,6 +24,11 @@ body#calendar {
     min-height: 100dvh;
 }
 
+body#admin_form {
+    padding-top: 20vh;
+    min-height: 100dvh;
+}
+
 body#perfil {
     padding-top: 20vh;
     min-height: 100dvh;

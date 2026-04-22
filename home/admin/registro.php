@@ -33,18 +33,42 @@ function getAccionTexto(accion) {
     }
 }
 
-function renderDatos(datos) {
+function renderDatos(tabla, datos) {
+
     if (!datos) return '-';
 
-    return `
+    switch (tabla) {
+
+        case 'cliente':
+            return `
+Nombre: ${datos.nombre ?? '-'}
+DNI: ${datos.dni ?? '-'}
+Email: ${datos.email ?? '-'}
+Teléfono: ${datos.telefono ?? '-'}
+            `;
+
+        case 'cita':
+            return `
 Cliente: ${datos.cliente_nombre ?? '-'}
 Barbero: ${datos.barbero_nombre ?? '-'}
 Fecha: ${datos.fecha ?? '-'}
 Hora: ${datos.hora ?? '-'}
 Estado: ${datos.estado ?? '-'}
-Pago: ${datos.estado_pago ?? '-'}
-Duración: ${datos.duracion_total ?? '-'} min
-    `;
+            `;
+
+        default:
+            if (typeof datos === 'object') {
+                return Object.entries(datos)
+                    .map(([key, val]) => `${key}: ${val ?? '-'}`)
+                    .join('\n');
+            }
+            return 'Datos no estructurados';
+    }
+}
+
+function getEntidadTexto(tabla) {
+    const articulo = (tabla === 'cita') ? 'la' : 'el';
+    return `${articulo} ${tabla ?? 'registro'}`;
 }
 
 function loadLogs() {
@@ -62,17 +86,17 @@ function loadLogs() {
             html += `
                 <div class="log ${typeClass}">
                     <b>${log.usuario ?? 'system'}</b>
-                    ${accionTexto} <b>la cita</b>
+                    ${accionTexto} <b>${getEntidadTexto(log.tabla)}</b>
                     (ID ${log.registro_id ?? '-'})
 
                     <div class="time">${log.fecha}</div>
 
                     <pre>
 ANTES:
-${renderDatos(log.datos_antes)}
+${renderDatos(log.tabla, log.datos_antes)}
 
 DESPUÉS:
-${renderDatos(log.datos_despues)}
+${renderDatos(log.tabla, log.datos_despues)}
                     </pre>
                 </div>
             `;

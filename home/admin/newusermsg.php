@@ -29,6 +29,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         if($check->num_rows > 0){
             $error = "Ya existe un cliente con ese DNI.";
         } else {
+
+            $usuario = $_SESSION['user_name'] ?? 'system';
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
+            $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
+
             $stmt = $conn->prepare("INSERT INTO cliente (nombre, dni, email) VALUES (?,?,?)");
             $stmt->bind_param("sss", $nombre, $dni, $email);
 

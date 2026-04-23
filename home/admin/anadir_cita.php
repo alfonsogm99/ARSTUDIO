@@ -88,7 +88,11 @@ if (isset($_SESSION['creating_cita']) && $_SESSION['creating_cita'] === true) {
                     unset($_SESSION['creating_cita']);
 
                     // Redireccionar a la página principal
-                    header("Location: ../index.php");
+                    $year = date('Y', strtotime($fecha));
+                    $month = date('m', strtotime($fecha));
+                    $day = date('d', strtotime($fecha));
+
+                    header("Location: ../index.php?year=$year&month=$month&day=$day");
                     exit;
                 } else {
                     $error = "Error al crear la cita: " . $conn->error;
@@ -304,7 +308,10 @@ clienteInput.addEventListener('input', function(){
 
                     document.getElementById('crear_cliente_btn').addEventListener('click', () => {
                         const nombre = encodeURIComponent(clienteInput.value.trim());
-                        window.location.href = 'nuevo_usuario.php?nombre=' + nombre;
+                        const fecha = "<?= $fecha ?>";
+                        const hora = "<?= $hora_inicial ?>";
+
+                        window.location.href = `nuevo_usuario.php?nombre=${nombre}&fecha=${fecha}&hora=${hora}`;
                     });
 
                     mostrarLista();

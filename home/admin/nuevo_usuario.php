@@ -8,6 +8,9 @@ if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero
 }
 
 $nombre = $_GET['nombre'] ?? '';
+$fecha = $_GET['fecha'] ?? '';
+$hora = $_GET['hora'] ?? '';
+
 $error = '';
 $success = '';
 
@@ -36,7 +39,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
             if($stmt->execute()){
                 $id_nuevo = $stmt->insert_id;
-                header("Location: añadir_cita.php?id_cliente=".$id_nuevo);
+                $params = "id_cliente=".$id_nuevo;
+
+                if($fecha) $params .= "&fecha=".$fecha;
+                if($hora) $params .= "&hora=".$hora;
+
+                header("Location: añadir_cita.php?".$params);
                 exit;
             } else {
                 $error = "Error al crear cliente: ".$conn->error;

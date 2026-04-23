@@ -75,7 +75,7 @@ function setModalCita(app) {
 
     btnDelete.textContent = "Eliminar";
     btnDelete.onclick = () =>
-        window.location.href = `admin/eliminar_cita.php?id=${app.id}&csrf=${csrf_token}`;
+        window.location.href = `admin/eliminar_cita.php?id=${app.id}&fecha=${app.fecha}&csrf=${csrf_token}`;
 }
 
 function setModalNuevaCita(fecha, hora) {

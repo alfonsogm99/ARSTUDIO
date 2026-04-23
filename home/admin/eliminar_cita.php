@@ -52,20 +52,35 @@ $ip = $_SERVER['REMOTE_ADDR'];
 $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
 $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
 
+$stmtFecha = $conn->prepare("SELECT fecha FROM cita WHERE id_cita = ?");
+$stmtFecha->bind_param("i", $cita_id);
+$stmtFecha->execute();
+$resFecha = $stmtFecha->get_result();
+$rowFecha = $resFecha->fetch_assoc();
+
+$fecha = $rowFecha['fecha'] ?? null;
+
 $delete = $conn->prepare("DELETE FROM cita WHERE id_cita = ?");
 $delete->bind_param("i", $cita_id);
 if($delete->execute()){
-    $_SESSION['success'] = "Cita eliminada correctamente.";
-} else {
-    $_SESSION['error'] = "Error al eliminar la cita.";
-}
 
-// 🔹 Redirigir a la vista diaria si se pasa fecha, si no a la mensual
-if(isset($_GET['fecha'])){
-    $fecha = $_GET['fecha'];
-    header("Location: ../index.php?day=" . date('d', strtotime($fecha)) . "&month=" . date('m', strtotime($fecha)) . "&year=" . date('Y', strtotime($fecha)));
+    $_SESSION['success'] = "Cita eliminada correctamente.";
+
+    if($fecha){
+        $year = date('Y', strtotime($fecha));
+        $month = date('m', strtotime($fecha));
+        $day = date('d', strtotime($fecha));
+
+        header("Location: ../index.php?year=$year&month=$month&day=$day");
+    } else {
+        header("Location: ../index.php");
+    }
+
 } else {
+
+    $_SESSION['error'] = "Error al eliminar la cita.";
     header("Location: ../index.php");
+
 }
 exit;
 ?>

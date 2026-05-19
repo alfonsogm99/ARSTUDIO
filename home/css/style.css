@@ -517,7 +517,7 @@ input, select, textarea {
     margin-bottom: 16px;
 }
 
-.error { color:red; }
+.error { color:rgb(214, 105, 105); }
 .success { color:green; }
 
 #cliente_suggestions {
@@ -766,6 +766,15 @@ citas
 .appointment.completada { background: #2ecc71; }
 .appointment.cancelada { background: #e74c3c; }
 
+.appointment.pendiente_cancelacion { background: #adadad; }
+
+.appointment.oculto {
+    background: #666 !important;
+    opacity: 0.4;
+    border: 1px dashed #999;
+    pointer-events: none;
+}
+
 
 
 /* =========================
@@ -934,6 +943,8 @@ body.light-mode .hour-slot:not(.occupied):hover {
 .hour-slot .appointment.confirmada { background-color: #3498db; }
 .hour-slot .appointment.completada { background-color: #2ecc71; }
 .hour-slot .appointment.cancelada { background-color: #e74c3c; }
+
+.hour-slot .appointment.pendiente_cancelacion { background: #adadad; }
 
 /* =========================
 modal
@@ -1176,7 +1187,7 @@ login
 }
 
 .error_input {
-    border: 2px solid red !important;
+    border: 2px solid rgb(214, 105, 105) !important;
 }
 
 /* =========================
@@ -1346,7 +1357,7 @@ perfil
 }
 
 .error_input { 
-    border:2px solid red !important; 
+    border:2px solid rgb(214, 105, 105) !important; 
 }
 
 .edit_icon { 
@@ -1540,6 +1551,76 @@ body.light-mode .toggle_eye {
   cursor: pointer;
 }
 
+
+.readonly-input {
+    cursor: not-allowed;
+    pointer-events: none;
+    font-weight: 500;
+
+    opacity: .7;
+}
+
+.disabled-hour {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.dia-block {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+.dia-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
+.horario-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.bloque {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bloque label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+#panel_ausencias form{
+    background-color:#242424;
+}
+
+
+.ausencia-item {
+    margin: 0;
+    padding: 10px 0;
+}
+
+.ausencia-item div {
+    margin: 2px 0;
+}
+
+.ausencia-form {
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+.ausencia-form button {
+    margin-top: 10px;
+}
+
 /* =========================
 enlaces tabla
 ========================= */
@@ -1552,7 +1633,7 @@ td a {
 mensaje de error
 ========================= */
 .error {
-    color: red;
+    color:rgb(214, 105, 105);
     font-weight: bold;
     margin-top: 10px;
 }
@@ -1965,6 +2046,8 @@ body.light-mode #floating-filter .filter-btn.active {
 .label-color.cancelada { background-color: #e74c3c; }
 .label-color[data-barbero] { background-color: #3498db; }
 
+.label-color.pendiente_cancelacion { background-color: #adadad; }
+
 
 #toggle-filters {
     position: fixed;
@@ -2123,4 +2206,155 @@ body.light-mode #toggle-filters:hover {
     to {
         transform: translateY(0);
     }
+}
+
+
+
+/* =========================
+client
+========================= */
+
+body#client-booking {
+    padding-top: 18vh;
+    min-height: 100dvh;
+}
+
+.client-container {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+}
+
+.booking-card {
+
+    background: #1e1e1e;
+    border: 1px solid #333;
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,.2);
+}
+
+#booking-form {
+    background: #1e1e1e;
+}
+
+body.light-mode .booking-card {
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.booking-card h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.input_group {
+    margin-bottom: 25px;
+}
+
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.service-item {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background: #2a2a2a;
+    border: 1px solid #444;
+
+    cursor: pointer;
+}
+
+body.light-mode .service-item {
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+}
+
+.service-item input {
+    margin-right: 10px;
+}
+
+.booking-summary {
+
+    display: flex;
+    justify-content: space-between;
+
+    margin: 20px 0;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    background: #181818;
+}
+
+body.light-mode .booking-summary {
+    background: #f2f2f2;
+}
+
+.slots-grid {
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(100px,1fr));
+
+    gap: 10px;
+}
+
+.slot-btn {
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    border: 1px solid #444;
+
+    background: #2a2a2a;
+    color: #fff;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.slot-btn:hover {
+    background: #3498db;
+}
+
+.slot-btn.active {
+    background: #2ecc71;
+}
+
+body.light-mode .slot-btn {
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+}
+
+.empty-msg {
+    opacity: .6;
+    font-size: 13px;
+}
+
+@media(max-width:768px){
+
+    .booking-card {
+        padding: 20px;
+    }
+
+    .slots-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+
 }

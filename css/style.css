@@ -467,7 +467,6 @@ main section:last-of-type {
     max-width: 100%;         
   }
 
-  .version p,
   .copyright p {
     font-size: 12px;
   }

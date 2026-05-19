@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $row = $res2->fetch_assoc();
                         $_SESSION['user_name'] = $row['nombre'];
                     }
-                    header("Location: ./cliente");
+                    header("Location: ../../home");
                     exit;
 
                 default:
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </div>
 
-<?php if($error) echo "<br/><p style='color:red; text-align:center; margin:auto;'>$error</p>"; ?>
+<?php if($error) echo "<br/><p style='color:rgb(214, 105, 105); text-align:center; margin:auto;'>$error</p>"; ?>
 
 <?php
 $configFile = '../admin/config.json';
@@ -136,9 +136,9 @@ $version = $config['app']['version'] ?? '0.0.0';
 
 <br><br>
 <footer class="policy">
-        <a href="#">Política de Privacidad</a> |
-        <a href="#">Política de Cookies</a> |
-        <a href="#">Términos y Condiciones</a>
+        <a href="../includes/privacidad.html">Política de Privacidad</a> |
+        <a href="../includes/cookies.html">Política de Cookies</a> |
+        <a href="../includes/terminos.html">Términos y Condiciones</a>
 </footer>
 
 <script src="../../js/togglePassword.js"></script>

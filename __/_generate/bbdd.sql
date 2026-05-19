@@ -89,7 +89,7 @@ CREATE TABLE cita (
   id_barbero INT,
   fecha DATE NOT NULL,
   hora TIME NOT NULL,
-  estado ENUM('pendiente','confirmada','completada','cancelada','fallida') DEFAULT 'pendiente',
+  estado ENUM('pendiente','confirmada','completada','cancelada','fallida', 'pendiente_cancelacion') DEFAULT 'pendiente',
   estado_pago ENUM('pendiente','pagado') DEFAULT 'pendiente',
   notas TEXT,
   fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -104,6 +104,76 @@ CREATE TABLE cita (
   FOREIGN KEY (id_barbero) REFERENCES barbero(id_barbero)
     ON DELETE SET NULL
 );
+
+-- ALTER TABLE cita MODIFY COLUMN estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada', 'fallida', 'pendiente_cancelacion' DEFAULT 'pendiente';
+
+-- =========================
+-- HORARIO
+-- =========================
+CREATE TABLE horario_barbero (
+    id_horario INT AUTO_INCREMENT PRIMARY KEY,
+    id_barbero INT NOT NULL,
+    dia_semana ENUM('lunes','martes','miercoles','jueves','viernes','sabado','domingo') NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    pausa_inicio TIME DEFAULT NULL,
+    pausa_fin TIME DEFAULT NULL,
+    nombre VARCHAR(100) NOT NULL,
+
+    FOREIGN KEY (id_barbero) REFERENCES barbero(id_barbero) ON DELETE CASCADE
+);
+
+-- ALTER TABLE horario_barbero ADD COLUMN pausa_inicio TIME NULL AFTER hora_fin, ADD COLUMN pausa_fin TIME NULL AFTER pausa_inicio;
+-- ALTER TABLE horario_barbero DROP COLUMN activo;
+
+
+
+-- =========================
+-- HORARIO
+-- =========================
+CREATE TABLE horario_general (
+    id_general INT AUTO_INCREMENT PRIMARY KEY,
+    id_barbero INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (id_barbero) REFERENCES barbero(id_barbero) ON DELETE CASCADE
+);
+
+ALTER TABLE horario_barbero ADD COLUMN id_general INT NULL, ADD FOREIGN KEY (id_general) REFERENCES horario_general(id_general) ON DELETE CASCADE;
+
+
+
+-- =========================
+-- BLOQUEAR HORARIO
+-- =========================
+CREATE TABLE bloqueo_horario (
+    id_bloqueo INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_barbero INT NOT NULL,
+
+    fecha DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+
+    tipo ENUM(
+        'descanso',
+        'ausencia',
+        'vacaciones',
+        'formacion',
+        'bloqueo_manual'
+    ) NOT NULL DEFAULT 'bloqueo_manual',
+
+    motivo VARCHAR(255) DEFAULT NULL,
+
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    -- 🔗 relación con barbero
+    CONSTRAINT fk_bloqueo_barbero
+        FOREIGN KEY (id_barbero)
+        REFERENCES barbero(id_barbero)
+        ON DELETE CASCADE
+);
+
 
 -- =========================
 -- DETALLE DE CITA (N:M)

@@ -128,9 +128,9 @@ $version = $config['app']['version'] ?? '0.0.0';
 </footer>
 
 <footer class="policy">
-        <a href="#">Política de Privacidad</a> |
-        <a href="#">Política de Cookies</a> |
-        <a href="#">Términos y Condiciones</a>
+        <a href="../includes/privacidad.html">Política de Privacidad</a> |
+        <a href="../includes/cookies.html">Política de Cookies</a> |
+        <a href="../includes/terminos.html">Términos y Condiciones</a>
 </footer>
 
 </body>

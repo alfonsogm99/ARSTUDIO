@@ -2,9 +2,28 @@
 session_start();
 include 'config.php';
 
-// Verificación de sesión
-if (!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero', 'admin'])) {
-    header("Location: ../login");
+
+if (!isset($_SESSION['user_type'])) {
+    header("Location: ../logout");
+    exit;
+}
+
+if ($_SESSION['user_type'] === 'cliente') {
+
+    $fecha = $_POST['fecha'] ?? $_GET['fecha'] ?? date('Y-m-d');
+    $hora  = $_POST['hora'] ?? $_GET['hora'] ?? '08:00';
+
+    $query = http_build_query([
+        'fecha' => $fecha,
+        'hora' => substr($hora, 0, 5)
+    ]);
+
+    header("Location: ./client.php?$query");
+    exit;
+}
+
+if (!in_array($_SESSION['user_type'], ['barbero', 'admin'])) {
+    header("Location: ../logout");
     exit;
 }
 
@@ -14,6 +33,7 @@ if (isset($_POST['theme'])) {
     $data['theme'] = $_POST['theme'];
     file_put_contents('config.json', json_encode($data));
 }
+
 
 $user_id = $_SESSION['user_id'];
 $user_type = $_SESSION['user_type'];
@@ -208,9 +228,9 @@ $maxMinutos = $maxSlots * 15;
         </label>
     <?php endif; ?>
 
-    <label>Hora:
-        <input type="time" name="hora" value="<?php echo substr($hora_inicial,0,5); ?>" required>
-    </label>
+    <label>Hora</label>
+    <input type="time" value="<?= substr($hora_inicial, 0, 5) ?>" readonly class="readonly-input">
+    <input type="hidden" name="hora" value="<?= substr($hora_inicial, 0, 5) ?>">
 
     <label>Duración (minutos):
         <select name="duracion" required>
@@ -251,9 +271,9 @@ $version = $config['app']['version'] ?? '0.0.0';
 </footer>
 
 <footer class="policy">
-        <a href="#">Política de Privacidad</a> |
-        <a href="#">Política de Cookies</a> |
-        <a href="#">Términos y Condiciones</a>
+        <a href="../includes/privacidad.html">Política de Privacidad</a> |
+        <a href="../includes/cookies.html">Política de Cookies</a> |
+        <a href="../includes/terminos.html">Términos y Condiciones</a>
 </footer>
 
 

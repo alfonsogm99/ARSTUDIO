@@ -6,6 +6,11 @@
 -- DROP TRIGGERS IF EXISTS
 -- =========================
 
+-- admin
+DROP TRIGGER IF EXISTS admin_after_insert;
+DROP TRIGGER IF EXISTS admin_after_update;
+DROP TRIGGER IF EXISTS admin_after_delete;
+
 -- usuario
 DROP TRIGGER IF EXISTS usuario_after_insert;
 DROP TRIGGER IF EXISTS usuario_after_update;
@@ -31,6 +36,11 @@ DROP TRIGGER IF EXISTS cita_after_insert;
 DROP TRIGGER IF EXISTS cita_after_update;
 DROP TRIGGER IF EXISTS cita_after_delete;
 
+-- bloqueo_horario
+DROP TRIGGER IF EXISTS bloqueo_horario_after_insert;
+DROP TRIGGER IF EXISTS bloqueo_horario_after_update;
+DROP TRIGGER IF EXISTS bloqueo_horario_after_delete;
+
 -- detalle_cita
 DROP TRIGGER IF EXISTS detalle_cita_after_insert;
 DROP TRIGGER IF EXISTS detalle_cita_after_update;
@@ -51,8 +61,15 @@ DROP TRIGGER IF EXISTS historico_cliente_after_insert;
 DROP TRIGGER IF EXISTS historico_cliente_after_update;
 DROP TRIGGER IF EXISTS historico_cliente_after_delete;
 
+-- horario_barbero
+DROP TRIGGER IF EXISTS horario_barbero_after_insert;
+DROP TRIGGER IF EXISTS horario_barbero_after_update;
+DROP TRIGGER IF EXISTS horario_barbero_after_delete;
 
-
+-- horario_general
+DROP TRIGGER IF EXISTS horario_general_after_insert;
+DROP TRIGGER IF EXISTS horario_general_after_update;
+DROP TRIGGER IF EXISTS horario_general_after_delete;
 
 
 
@@ -656,6 +673,132 @@ DELIMITER ;
 
 
 -- =========================
+-- TABLA BLOQUEO_HORARIO
+-- =========================
+
+-- =========================
+-- INSERT
+-- =========================
+
+DELIMITER $$
+
+CREATE TRIGGER bloqueo_horario_after_insert
+AFTER INSERT ON bloqueo_horario
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_despues
+    )
+    VALUES (
+        'bloqueo_horario',
+        'INSERT',
+        NEW.id_bloqueo,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_bloqueo', NEW.id_bloqueo,
+            'id_barbero', NEW.id_barbero,
+            'fecha', NEW.fecha,
+            'hora_inicio', NEW.hora_inicio,
+            'hora_fin', NEW.hora_fin,
+            'tipo', NEW.tipo,
+            'motivo', NEW.motivo
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+-- =========================
+-- UPDATE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER bloqueo_horario_after_update
+AFTER UPDATE ON bloqueo_horario
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_antes,
+        datos_despues
+    )
+    VALUES (
+        'bloqueo_horario',
+        'UPDATE',
+        NEW.id_bloqueo,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_barbero', OLD.id_barbero,
+            'fecha', OLD.fecha,
+            'hora_inicio', OLD.hora_inicio,
+            'hora_fin', OLD.hora_fin,
+            'tipo', OLD.tipo,
+            'motivo', OLD.motivo
+        ),
+        JSON_OBJECT(
+            'id_barbero', NEW.id_barbero,
+            'fecha', NEW.fecha,
+            'hora_inicio', NEW.hora_inicio,
+            'hora_fin', NEW.hora_fin,
+            'tipo', NEW.tipo,
+            'motivo', NEW.motivo
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+-- =========================
+-- DELETE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER bloqueo_horario_after_delete
+AFTER DELETE ON bloqueo_horario
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_antes
+    )
+    VALUES (
+        'bloqueo_horario',
+        'DELETE',
+        OLD.id_bloqueo,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_bloqueo', OLD.id_bloqueo,
+            'id_barbero', OLD.id_barbero,
+            'fecha', OLD.fecha,
+            'hora_inicio', OLD.hora_inicio,
+            'hora_fin', OLD.hora_fin,
+            'tipo', OLD.tipo,
+            'motivo', OLD.motivo
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+
+
+-- =========================
 -- TABLA detalle_cita
 -- =========================
 
@@ -1228,6 +1371,254 @@ BEGIN
             'id_cita', OLD.id_cita,
             'descripcion', OLD.descripcion,
             'fecha', OLD.fecha
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+
+
+-- =========================
+-- TABLA horario_barbero
+-- =========================
+
+-- =========================
+-- INSERT
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER horario_barbero_after_insert
+AFTER INSERT ON horario_barbero
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_despues
+    )
+    VALUES (
+        'horario_barbero',
+        'INSERT',
+        NEW.id_horario,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_horario', NEW.id_horario,
+            'id_barbero', NEW.id_barbero,
+            'dia_semana', NEW.dia_semana,
+            'hora_inicio', NEW.hora_inicio,
+            'hora_fin', NEW.hora_fin,
+            'pausa_inicio', NEW.pausa_inicio,
+            'pausa_fin', NEW.pausa_fin,
+            'nombre', NEW.nombre,
+            'id_general', NEW.id_general
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+
+-- =========================
+-- UPDATE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER horario_barbero_after_update
+AFTER UPDATE ON horario_barbero
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_antes,
+        datos_despues
+    )
+    VALUES (
+        'horario_barbero',
+        'UPDATE',
+        NEW.id_horario,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_barbero', OLD.id_barbero,
+            'dia_semana', OLD.dia_semana,
+            'hora_inicio', OLD.hora_inicio,
+            'hora_fin', OLD.hora_fin,
+            'pausa_inicio', OLD.pausa_inicio,
+            'pausa_fin', OLD.pausa_fin,
+            'nombre', OLD.nombre,
+            'id_general', OLD.id_general
+        ),
+        JSON_OBJECT(
+            'id_barbero', NEW.id_barbero,
+            'dia_semana', NEW.dia_semana,
+            'hora_inicio', NEW.hora_inicio,
+            'hora_fin', NEW.hora_fin,
+            'pausa_inicio', NEW.pausa_inicio,
+            'pausa_fin', NEW.pausa_fin,
+            'nombre', NEW.nombre,
+            'id_general', NEW.id_general
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+-- =========================
+-- DELETE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER horario_barbero_after_delete
+AFTER DELETE ON horario_barbero
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_antes
+    )
+    VALUES (
+        'horario_barbero',
+        'DELETE',
+        OLD.id_horario,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_horario', OLD.id_horario,
+            'id_barbero', OLD.id_barbero,
+            'dia_semana', OLD.dia_semana,
+            'hora_inicio', OLD.hora_inicio,
+            'hora_fin', OLD.hora_fin,
+            'pausa_inicio', OLD.pausa_inicio,
+            'pausa_fin', OLD.pausa_fin,
+            'nombre', OLD.nombre,
+            'id_general', OLD.id_general
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+
+
+-- =========================
+-- TABLA horario_barbero
+-- =========================
+
+-- =========================
+-- INSERT
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER horario_general_after_insert
+AFTER INSERT ON horario_general
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_despues
+    )
+    VALUES (
+        'horario_general',
+        'INSERT',
+        NEW.id_general,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_general', NEW.id_general,
+            'id_barbero', NEW.id_barbero,
+            'nombre', NEW.nombre,
+            'activo', NEW.activo
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+
+-- =========================
+-- UPDATE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER horario_general_after_update
+AFTER UPDATE ON horario_general
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_antes,
+        datos_despues
+    )
+    VALUES (
+        'horario_general',
+        'UPDATE',
+        NEW.id_general,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_barbero', OLD.id_barbero,
+            'nombre', OLD.nombre,
+            'activo', OLD.activo
+        ),
+        JSON_OBJECT(
+            'id_barbero', NEW.id_barbero,
+            'nombre', NEW.nombre,
+            'activo', NEW.activo
+        )
+    );
+
+END$$
+
+DELIMITER ;
+
+-- =========================
+-- DELETE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER horario_general_after_delete
+AFTER DELETE ON horario_general
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO audit_log (
+        tabla,
+        accion,
+        registro_id,
+        usuario,
+        datos_antes
+    )
+    VALUES (
+        'horario_general',
+        'DELETE',
+        OLD.id_general,
+        COALESCE(@usuario_actual, 'system'),
+        JSON_OBJECT(
+            'id_general', OLD.id_general,
+            'id_barbero', OLD.id_barbero,
+            'nombre', OLD.nombre,
+            'activo', OLD.activo
         )
     );
 

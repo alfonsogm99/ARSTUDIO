@@ -31,12 +31,20 @@ $csrf_token = $_SESSION['csrf_token'];
 // 🔹 Filtros GET con validación
 // =======================
 
-// Filtro barbero
-$barberoFiltro = isset($_GET['barbero']) ? intval($_GET['barbero']) : 0;
+// Filtro barbero, por defecto id barbero = 1
+$barberoFiltro = isset($_GET['barbero']) && intval($_GET['barbero']) > 0
+    ? intval($_GET['barbero'])
+    : 1;
 
 // Filtro estado
 $estadoFiltro = $_GET['estado'] ?? '';
-$estadosValidos = ['pendiente','confirmada', 'completada','cancelada'];
+$estadosValidos = [
+    'pendiente',
+    'confirmada',
+    'completada',
+    'cancelada',
+    'pendiente_cancelacion'
+];
 if(!in_array($estadoFiltro, $estadosValidos)){
     $estadoFiltro = '';
 }
@@ -57,31 +65,95 @@ $firstDay = date('Y-m-01', strtotime("$year-$month-01"));
 $lastDay = date('Y-m-t', strtotime($firstDay));
 $selectedDate = $day ? date('Y-m-d', strtotime("$year-$month-$day")) : null;
 
+$stmt = $conn->prepare("
+    SELECT id_cliente 
+    FROM cliente 
+    WHERE id_usuario = ?
+");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+
+$cliente_id = $row['id_cliente'] ?? null;
+
 // =======================
 // 🔹 Construcción de SQL con prepared statements
 // =======================
-function buildFilters($conn, $user_type, $user_id, $barberoFiltro, $estadoFiltro, $selectedDate, $firstDay, $lastDay, $day) {
+function buildFilters(
+    $conn,
+    $user_type,
+    $user_id,
+    $cliente_id,
+    $barberoFiltro,
+    $estadoFiltro,
+    $selectedDate,
+    $firstDay,
+    $lastDay,
+    $day
+) {
 
+    $params = [];
     $types = '';
     $where = [];
 
-    if($user_type === 'barbero'){
-        $where[] = 'c.id_barbero = ?';
-        $types .= 'i';
-        $params[] = $user_id;
-    } elseif($barberoFiltro > 0){
+    // =========================
+    // 🔹 CLIENTE
+    // =========================
+    if ($user_type === 'cliente') {
+
+        // El cliente puede VER todos los huecos ocupados
+        // NO filtramos por id_cliente
+
+        if ($barberoFiltro > 0) {
+            $where[] = 'c.id_barbero = ?';
+            $types .= 'i';
+            $params[] = $barberoFiltro;
+        }
+    }
+
+    // =========================
+    // 🔹 BARBERO
+    // =========================
+    elseif ($user_type === 'barbero') {
+
+        $stmt = $conn->prepare("SELECT id_barbero FROM barbero WHERE id_usuario = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $barbero = $stmt->get_result()->fetch_assoc();
+
+        if (!empty($barbero['id_barbero'])) {
+            $where[] = 'c.id_barbero = ?';
+            $types .= 'i';
+            $params[] = $barbero['id_barbero'];
+        } else {
+            $where[] = '1 = 0';
+        }
+    }
+
+    // =========================
+    // 🔹 FILTRO ADMIN BARBERO
+    // =========================
+    elseif ($barberoFiltro > 0) {
         $where[] = 'c.id_barbero = ?';
         $types .= 'i';
         $params[] = $barberoFiltro;
     }
 
-    if($estadoFiltro !== ''){
+    // =========================
+    // 🔹 ESTADO
+    // =========================
+    if (!empty($estadoFiltro)) {
         $where[] = 'c.estado = ?';
         $types .= 's';
         $params[] = $estadoFiltro;
     }
 
-    if($day && $selectedDate){
+    // =========================
+    // 🔹 FECHA
+    // =========================
+    if ($day && $selectedDate) {
         $where[] = 'c.fecha = ?';
         $types .= 's';
         $params[] = $selectedDate;
@@ -92,20 +164,23 @@ function buildFilters($conn, $user_type, $user_id, $barberoFiltro, $estadoFiltro
         $params[] = $lastDay;
     }
 
-    $whereSQL = implode(' AND ', $where);
+    $whereSQL = 'WHERE ' . implode(' AND ', $where);
 
-    if($user_type === 'barbero'){
-        $sql = "SELECT c.*, cl.nombre AS cliente_nombre 
+    // =========================
+    // 🔹 QUERY FINAL
+    // =========================
+    if ($user_type === 'barbero') {
+        $sql = "SELECT c.*, cl.nombre AS cliente_nombre
                 FROM cita c
                 JOIN cliente cl ON cl.id_cliente = c.id_cliente
-                WHERE $whereSQL
+                $whereSQL
                 ORDER BY " . ($day ? "c.hora ASC" : "c.fecha, c.hora ASC");
     } else {
         $sql = "SELECT c.*, cl.nombre AS cliente_nombre, b.nombre AS barbero_nombre
                 FROM cita c
                 JOIN cliente cl ON cl.id_cliente = c.id_cliente
                 JOIN barbero b ON b.id_barbero = c.id_barbero
-                WHERE $whereSQL
+                $whereSQL
                 ORDER BY " . ($day ? "c.hora ASC" : "c.fecha, c.hora ASC");
     }
 
@@ -113,7 +188,7 @@ function buildFilters($conn, $user_type, $user_id, $barberoFiltro, $estadoFiltro
 }
 
 // Preparar consulta
-list($sql, $types, $params) = buildFilters($conn, $user_type, $user_id, $barberoFiltro, $estadoFiltro, $selectedDate, $firstDay, $lastDay, $day);
+list($sql, $types, $params) = buildFilters($conn, $user_type, $user_id, $cliente_id, $barberoFiltro, $estadoFiltro, $selectedDate, $firstDay, $lastDay, $day);
 $stmt = $conn->prepare($sql);
 if($types){
     $stmt->bind_param($types, ...$params);
@@ -133,13 +208,14 @@ while($row = $citas->fetch_assoc()){
 
     $appointments[] = [
         'id' => $row['id_cita'],
+        'id_cliente' => $row['id_cliente'],
         'fecha' => $row['fecha'],
         'hora' => $row['hora'],
         'cliente' => $title,
         'estado' => $row['estado'],
         'duracion' => $row['duracion_total'],
         'estado_pago' => $row['estado_pago'],
-        'notas' => htmlspecialchars($row['notas'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')             
+        'notas' => htmlspecialchars($row['notas'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
     ];
 }
 
@@ -151,6 +227,81 @@ $monthNames = [
     1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
     7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
 ];
+
+$stmt = $conn->prepare("
+    SELECT 
+        hb.id_general,
+        hb.id_barbero,
+        hb.dia_semana,
+        hb.hora_inicio,
+        hb.hora_fin,
+        hb.pausa_inicio,
+        hb.pausa_fin
+    FROM horario_barbero hb
+    INNER JOIN horario_general hg
+        ON hb.id_general = hg.id_general
+    WHERE hb.id_barbero = ?
+    AND hg.activo = 1
+");
+
+$stmt->bind_param("i", $barberoFiltro);
+$stmt->execute();
+$res = $stmt->get_result();
+
+$horarios_array = [];
+
+while ($row = $res->fetch_assoc()) {
+
+    $horarios_array[] = [
+        'id_general' => $row['id_general'],
+        'id_barbero' => $row['id_barbero'],
+        'dia_semana' => $row['dia_semana'],
+        'hora_inicio' => $row['hora_inicio'],
+        'hora_fin' => $row['hora_fin'],
+        'pausa_inicio' => $row['pausa_inicio'],
+        'pausa_fin' => $row['pausa_fin']
+    ];
+}
+
+$stmt = $conn->prepare("
+    SELECT 
+        id_bloqueo,
+        fecha,
+        hora_inicio,
+        hora_fin,
+        tipo,
+        motivo
+    FROM bloqueo_horario
+    WHERE id_barbero = ?
+");
+
+$stmt->bind_param("i", $barberoFiltro);
+$stmt->execute();
+$res = $stmt->get_result();
+
+$bloqueos_array = [];
+
+while ($row = $res->fetch_assoc()) {
+    $bloqueos_array[] = $row;
+}
+
+
+$dias = [
+    1 => 'lunes',
+    2 => 'martes',
+    3 => 'miercoles',
+    4 => 'jueves',
+    5 => 'viernes',
+    6 => 'sabado',
+    7 => 'domingo'
+];
+
+$fechaReferencia = $selectedDate ?? 'now';
+$diaSemanaNum = date('N', strtotime($fechaReferencia));
+
+$dia = $dias[$diaSemanaNum] ?? 'lunes';
+
+
 ?>
 
 <!DOCTYPE html>
@@ -167,6 +318,7 @@ $monthNames = [
 
 <div id="top-fixed">
 <?php include 'includes/navbar.php'; ?>
+
 
 <button id="toggle-filters">
     <i class="fas fa-filter"></i>
@@ -190,6 +342,11 @@ $monthNames = [
             <button data-estado="completada" class="filter-btn completada">
                 Completada
                 <span class="label-color completada"></span>
+            </button>
+            <button data-estado="pendiente_cancelacion" class="filter-btn pendiente_cancelacion">
+                Pte. de Cancelar
+                <span class="label-color pendiente_cancelacion"></span>
+            </button>
             <button data-estado="cancelada" class="filter-btn cancelada">
                 Cancelada
                 <span class="label-color cancelada"></span>
@@ -202,9 +359,16 @@ $monthNames = [
         <label>Barbero:</label>
         <div class="filter-options barbero-options">
             
-            <button data-barbero="" class="filter-btn active">
-                Todos
-            </button>
+            <?php
+            $barberos = $conn->query("SELECT id_barbero, nombre FROM barbero");
+            $totalBarberos = $barberos->num_rows;
+
+            if ($totalBarberos > 1):
+            ?>
+                <button data-barbero="" class="filter-btn <?= $barberoFiltro == 0 ? 'active' : '' ?>">
+                    Todos
+                </button>
+            <?php endif; ?>
 
             <?php
             $barberos = $conn->query("SELECT id_barbero, nombre FROM barbero");
@@ -290,7 +454,7 @@ $monthNames = [
 <div class="day-view">
 <?php
 $inicio = 9;
-$fin = 20;
+$fin = 22;
 
 for($h = $inicio; $h < $fin; $h++){
     foreach([0,15,30,45] as $m){
@@ -353,21 +517,29 @@ $version = $config['app']['version'] ?? '0.0.0';
 </footer>
 
 <footer class="policy">
-        <a href="#">Política de Privacidad</a> |
-        <a href="#">Política de Cookies</a> |
-        <a href="#">Términos y Condiciones</a>
+        <a href="./includes/privacidad.html">Política de Privacidad</a> |
+        <a href="./includes/cookies.html">Política de Cookies</a> |
+        <a href="./includes/terminos.html">Términos y Condiciones</a>
 </footer>
 
 <script>
 window.calendarData = {
-    appointments: <?php echo json_encode($appointments); ?>,
+    appointments: <?= json_encode($appointments) ?>,
     csrfToken: "<?=$csrf_token?>",
     year: <?=$year?>,
     month: <?=$month?>,
     day: <?=($day ?? 'null')?>,
     estadoFiltro: "<?=$estadoFiltro?>",
-    barberoFiltro: "<?=$barberoFiltro?>"
+    barberoFiltro: "<?=$barberoFiltro?>",
+    userType: "<?= $_SESSION['user_type'] ?>",
+    userId: <?= $_SESSION['user_id'] ?>,
+    clienteId: <?= json_encode($cliente_id) ?>, 
+    horariosDisponibles: <?= json_encode($horarios_array ?? [], JSON_UNESCAPED_UNICODE) ?>,
+    horarioActivo: <?= json_encode($horario_activo ?? null, JSON_UNESCAPED_UNICODE) ?>,
+    diaSemana: "<?= $dia ?>",
+    bloqueos: <?= json_encode($bloqueos_array ?? [], JSON_UNESCAPED_UNICODE) ?>
 };
+</script>
 </script>
 <script src="../js/calendar.js"></script>
 <script src="../js/lightmode.js"></script>

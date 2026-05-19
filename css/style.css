@@ -78,6 +78,12 @@ body.maintenance-page .maintenance {
   overflow: visible; /* Safari */
 }
 
+.copyright{
+  font-size: 12px;
+  margin: 2px;
+  text-align: right;
+}
+
 header {
   min-height: 100vh;
   display: grid;
@@ -428,6 +434,10 @@ main section:last-of-type {
     flex-direction: column;
     justify-content: center;
     margin-left: 0; 
+  }
+
+  .slogan {
+    padding-top: 40px;
   }
 
   h1.slogan {

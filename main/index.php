@@ -19,11 +19,6 @@
             </div>
         </div>
 
-        <div class="menu">
-            <i class="far fa-lightbulb"></i>
-            <a href="../home/login"><i id="login-ico" class="far fa-user-circle"></i></a>
-        </div>
-
         <div class="content-wrap">
             
             <header>

@@ -62,7 +62,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $success = "El cliente <strong>".htmlspecialchars($nombre)."</strong> recibirá un correo electrónico de verificación para la activación de su usuario.";
 
                 // Redirección automática en 5 segundos
-                header("Refresh:5; url=../index.php");
+                header("Refresh:5; url=../../home");
             } else {
                 $error = "Error al crear cliente: ".$conn->error;
             }

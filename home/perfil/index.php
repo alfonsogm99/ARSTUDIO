@@ -261,17 +261,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <b>Contraseña:</b> ********
         <i class="fa-solid fa-pen edit_icon" data-target="password" onclick="editar(this)"></i>
         <div id="password_inputs" style="display:<?php echo $show_password_inputs?'block':'none'; ?>;">
-            <div class="input_wrapper">
-                <input type="password" id="current_password_input" name="current_password" class="editable_input <?php echo in_array('current_password_input',$input_errors)?'error_input':''; ?>" placeholder="Contraseña actual">
-                <i class="fa-solid fa-eye toggle_eye" data-target="current_password_input" onclick="togglePassword(this)"></i>
+            <div class="input-wrapper">
+                <input type="password" id="current_password_input" name="current_password" <?php echo in_array('current_password_input',$input_errors)?'error_input':''; ?>" placeholder="Contraseña actual">
+                <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('password', this)"></i>
             </div>
-            <div class="input_wrapper">
-                <input type="password" id="new_password_input" name="new_password" class="editable_input <?php echo in_array('new_password_input',$input_errors)?'error_input':''; ?>" placeholder="Nueva contraseña">
-                <i class="fa-solid fa-eye toggle_eye" data-target="new_password_input" onclick="togglePassword(this)"></i>
+            <div class="input-wrapper">
+                <input type="password" id="new_password_input" name="new_password" <?php echo in_array('new_password_input',$input_errors)?'error_input':''; ?>" placeholder="Nueva contraseña">
+                <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('password', this)"></i>
             </div>
-            <div class="input_wrapper">
-                <input type="password" id="confirm_password_input" name="confirm_password" class="editable_input <?php echo in_array('confirm_password_input',$input_errors)?'error_input':''; ?>" placeholder="Confirmar nueva contraseña">
-                <i class="fa-solid fa-eye toggle_eye" data-target="confirm_password_input" onclick="togglePassword(this)"></i>
+            <div class="input-wrapper">
+                <input type="password" id="confirm_password_input" name="confirm_password" <?php echo in_array('confirm_password_input',$input_errors)?'error_input':''; ?>" placeholder="Confirmar nueva contraseña">
+                <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('password', this)"></i>
             </div>
             <p style="font-size:10px; color:#555;">Contraseña: 8+ caracteres, mayúscula, minúscula, número y carácter especial.</p>
         </div>
@@ -287,8 +287,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p><input type="text" name="especialidad" value="<?php echo $especialidad; ?>" placeholder="Especialidad"></p>
     <?php endif; ?>
 
-
     <p><i class="fa-solid fa-user-shield"></i> <b>Rol:</b> <?php echo $rol; ?></p>
+
+    <button type="submit" id="btn_guardar_perfil" style="display:none;">
+        Guardar cambios
+    </button>
 
 
     <?php
@@ -363,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     ?>
 
-    <?php if($rol === 'barbero' || $rol === 'admin'): ?>
+    <?php if($rol === 'barbero'): ?>
 
     <hr><br>
 
@@ -654,7 +657,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="../../js/editpasS.js"></script>
     <script src="../../js/toggleHorario.js"></script>
-    <script src="../../js/lightmode.js"></script>
+    <script src="../../js/btn_guardar_perfil.js"></script>
+    <!-- <script src="../../js/lightmode.js"></script> -->
 
 </body>
 </html>

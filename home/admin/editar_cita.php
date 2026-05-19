@@ -22,12 +22,44 @@ if(!$cita){
     die("Cita no encontrada");
 }
 
+$pago = $conn->query("
+    SELECT * FROM pago WHERE id_cita = $id LIMIT 1
+")->fetch_assoc();
+
+// si no existe, lo dejamos vacío
+if(!$pago){
+    $pago = [
+        'total' => '',
+        'metodo' => 'efectivo'
+    ];
+}
+
+
+$columns = $conn->query("SHOW FULL COLUMNS FROM cita");
+
+$editableFields = [
+    'fecha',
+    'hora',
+    'estado',
+    'estado_pago',
+    'notas',
+    'duracion_total'
+];
+
+$fields = [];
+while($col = $columns->fetch_assoc()){
+    $fields[] = $col;
+}
+
+function getEnumValues($type){
+    preg_match("/^enum\((.*)\)$/", $type, $matches);
+    if(!isset($matches[1])) return [];
+
+    return array_map(fn($v) => trim($v, " '"), explode(",", $matches[1]));
+}
+
 // Actualizar
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    $fecha = $_POST['fecha'];
-    $hora = $_POST['hora'];
-    $estado = $_POST['estado'];
-    $notas = $_POST['notas'];
 
     $usuario = $_SESSION['user_name'];
     $ip = $_SERVER['REMOTE_ADDR'];
@@ -35,11 +67,61 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
     $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
 
-    $stmt = $conn->prepare("UPDATE cita SET fecha=?, hora=?, estado=?, notas=? WHERE id_cita=?");
-    $stmt->bind_param("ssssi", $fecha, $hora, $estado, $notas, $id);
-    $stmt->execute();
+    /* =========================
+       1. UPDATE CITA
+    ========================= */
 
-    header("Location: ../index.php");
+    $set = [];
+    $params = [];
+    $types = '';
+
+    foreach($editableFields as $field){
+
+        if(!isset($_POST[$field])) continue;
+
+        $set[] = "$field = ?";
+        $params[] = $_POST[$field];
+        $types .= 's';
+    }
+
+    if(!empty($set)){
+
+        $params[] = $id;
+        $types .= 'i';
+
+        $sql = "UPDATE cita SET " . implode(', ', $set) . " WHERE id_cita = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+    }
+
+    /* =========================
+       2. UPDATE / INSERT PAGO
+    ========================= */
+
+    if(isset($_POST['total_pago'], $_POST['metodo_pago'])){
+
+        $total = $_POST['total_pago'];
+        $metodo = $_POST['metodo_pago'];
+
+        $check = $conn->query("SELECT id_pago FROM pago WHERE id_cita=$id")->fetch_assoc();
+
+        if($check){
+            $stmt = $conn->prepare("
+                UPDATE pago SET total=?, metodo=? WHERE id_cita=?
+            ");
+            $stmt->bind_param("dsi", $total, $metodo, $id);
+            $stmt->execute();
+        } else {
+            $stmt = $conn->prepare("
+                INSERT INTO pago (id_cita, total, metodo) VALUES (?,?,?)
+            ");
+            $stmt->bind_param("ids", $id, $total, $metodo);
+            $stmt->execute();
+        }
+    }
+
+    header("Location: ../../home");
     exit;
 }
 ?>
@@ -64,22 +146,81 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 <div class="perfil_wrapper">
 <form method="POST" class="perfil_box">
-    Fecha: <input type="date" name="fecha" value="<?= $cita['fecha'] ?>"><br>
-    Hora: <input type="time" name="hora" value="<?= $cita['hora'] ?>"><br>
 
-    Estado:
-    <select name="estado">
-        <option value="pendiente">Pendiente</option>
-        <option value="confirmada">Confirmada</option>
-        <option value="completada">Completada</option>
-        <option value="cancelada">Cancelada</option>
-        <option value="fallida">Fallida</option>
-    </select><br>
+<h3>Cita</h3><br>
 
-    Notas:<br>
-    <textarea name="notas"><?= $cita['notas'] ?></textarea><br>
+<?php foreach($fields as $field):
 
-    <button type="submit">Guardar cambios</button>
+    $name = $field['Field'];
+    $type = $field['Type'];
+
+    // ❌ bloquear campos no editables
+    if(!in_array($name, $editableFields)) continue;
+
+    $value = $cita[$name] ?? '';
+?>
+
+    <label><?= htmlspecialchars($name) ?></label>
+
+    <?php if($name === 'duracion_total'): ?>
+
+        <select name="<?= $name ?>">
+            <option value="30" <?= $value == 30 ? 'selected' : '' ?>>30 minutos</option>
+            <option value="60" <?= $value == 60 ? 'selected' : '' ?>>60 minutos</option>
+        </select>
+
+    <?php elseif(str_starts_with($type, 'enum')): ?>
+
+        <?php $options = getEnumValues($type); ?>
+
+        <select name="<?= $name ?>">
+            <?php foreach($options as $opt): ?>
+                <option value="<?= $opt ?>" <?= $value == $opt ? 'selected' : '' ?>>
+                    <?= ucfirst($opt) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+    <?php elseif($name === 'fecha'): ?>
+
+        <input type="date" name="<?= $name ?>" value="<?= htmlspecialchars($value) ?>">
+
+    <?php elseif($name === 'hora'): ?>
+
+        <input type="time" name="<?= $name ?>" value="<?= htmlspecialchars($value) ?>">
+
+    <?php elseif(str_contains($type, 'text')): ?>
+
+        <textarea name="<?= $name ?>"><?= htmlspecialchars($value) ?></textarea>
+
+    <?php else: ?>
+
+        <input type="text" name="<?= $name ?>" value="<?= htmlspecialchars($value) ?>">
+
+    <?php endif; ?>
+
+    <br><br>
+
+<?php endforeach; ?>
+
+
+<h3>Pago</h3><br>
+
+<label>Total (€)</label>
+<input type="number" step="0.01" name="total_pago"
+value="<?= $pago['total'] ?? '' ?>"><br><br>
+
+<label>Método</label>
+<select name="metodo_pago">
+    <option value="efectivo" <?= ($pago['metodo'] ?? '') == 'efectivo' ? 'selected' : '' ?>>Efectivo</option>
+    <option value="tarjeta" <?= ($pago['metodo'] ?? '') == 'tarjeta' ? 'selected' : '' ?>>Tarjeta</option>
+    <option value="bizum" <?= ($pago['metodo'] ?? '') == 'bizum' ? 'selected' : '' ?>>Bizum</option>
+</select>
+
+<br><br>
+
+<button type="submit">Guardar cambios</button>
+
 </form>
 </div>
 

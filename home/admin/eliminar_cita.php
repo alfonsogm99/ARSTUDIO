@@ -14,7 +14,7 @@ $user_type = $_SESSION['user_type'];
 // 🔹 Verificar ID de cita
 if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
     $_SESSION['error'] = "Cita inválida.";
-    header("Location: ../index.php");
+    header("Location: ../../home");
     exit;
 }
 
@@ -28,7 +28,7 @@ if($user_type === 'barbero'){
     $result = $check->get_result();
     if($result->num_rows === 0){
         $_SESSION['error'] = "No tienes permisos para eliminar esta cita.";
-        header("Location: ../index.php");
+        header("Location: ../../home");
         exit;
     }
 } else {
@@ -39,7 +39,7 @@ if($user_type === 'barbero'){
     $result = $check->get_result();
     if($result->num_rows === 0){
         $_SESSION['error'] = "Cita no encontrada.";
-        header("Location: ../index.php");
+        header("Location: ../../home");
         exit;
     }
 }
@@ -73,13 +73,13 @@ if($delete->execute()){
 
         header("Location: ../index.php?year=$year&month=$month&day=$day");
     } else {
-        header("Location: ../index.php");
+        header("Location: ../../home");
     }
 
 } else {
 
     $_SESSION['error'] = "Error al eliminar la cita.";
-    header("Location: ../index.php");
+    header("Location: ../../home");
 
 }
 exit;

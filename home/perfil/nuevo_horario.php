@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
                 $pf     = $h['pausa_fin'] ?? null;
 
                 $conn->query("
-                    UPDATE horario_barbero
+                    UPDATE horario_general
                     SET activo = 0
                     WHERE id_barbero = $id_barbero
                 ");
@@ -83,5 +83,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
 $_SESSION['mensaje_horario'] = $mensaje;
 $_SESSION['errores_horario'] = $errores;
 
-header("Location: index.php");
+header("Location: ../perfil");
 exit;

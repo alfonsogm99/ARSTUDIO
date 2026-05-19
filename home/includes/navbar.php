@@ -37,6 +37,10 @@ $rol = $_SESSION['user_type'];
                     </ul>
                 </div> -->
 
+                <a href="<?php echo BASE_URL . '/admin/count.php';?>">
+                    <i class="fa-solid fa-dollar"></i>
+                </a>
+
                 <a href="<?php echo BASE_URL; ?>">
                     <i class="fa-solid fa-home"></i>
                 </a>

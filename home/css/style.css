@@ -429,11 +429,6 @@ label {
     text-align: center;
 }
 
-.input_wrapper {
-    position: relative;
-    margin-bottom: 20px;
-}
-
 /* inputs */
 input[type="time"],
 input[type="text"],
@@ -1177,15 +1172,6 @@ login
     text-align:center;
 }
 
-.editable_input {
-    width: 100%;
-    padding: 8px 35px;
-    font-size: 14px;
-    border: 1px solid #000;
-    border-radius: 2px;
-    box-sizing: border-box;
-}
-
 .error_input {
     border: 2px solid rgb(214, 105, 105) !important;
 }
@@ -1336,24 +1322,12 @@ perfil
     margin:10px 0; 
 }
 
-.input_wrapper { 
-    position: relative; 
-    margin-top:5px; 
-}
-
 .toggle_eye { 
     position:absolute; 
     right:10px; top:50%; 
     transform:translateY(-50%); 
     cursor:pointer; 
     color:#555; 
-}
-
-.editable_input { 
-    width: 100%; 
-    padding: 8px 35px; 
-    border:1px solid #000; 
-    border-radius:2px; 
 }
 
 .error_input { 
@@ -1377,6 +1351,44 @@ perfil
     min-height: 50vh;
     margin-top:10vh;
     flex: 1;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 42px;
+
+  padding: 0 40px;
+
+  background-color: #222;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  box-sizing: border-box;
+
+  color: #ccc;
+  font-size: 14px;
+
+  text-align: center; /* ahora sí funciona bien */
+
+  outline: none;
+}
+
+#btn_guardar_perfil{
+    margin: 15px;
+}
+
+.input-wrapper .toggle-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  cursor: pointer;
 }
 
 form.perfil_box{
@@ -1475,26 +1487,6 @@ body.light-mode form.perfil_box {
 
 body.light-mode .perfil_box p {
     background-color: #f9f9f9;
-}
-
-.input_wrapper input[type="password"],
-.input_wrapper input[type="text"],
-select {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #1a1a1a;
-  border-radius: 4px;
-  color:#eee;
-}
-
-body.light-mode .input_wrapper input[type="password"],
-body.light-mode .input_wrapper input[type="text"],
-select {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  color:#000;
 }
 
 .toggle_eye {

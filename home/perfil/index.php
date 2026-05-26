@@ -486,11 +486,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="horario-grid">
                         <div class="bloque">
                             <label for="inicio_<?php echo $dia; ?>">Inicio</label>
-                            <input type="time" id="inicio_<?php echo $dia; ?>" value="09:00">
+                            <input type="time" id="inicio_<?php echo $dia; ?>">
                         </div>
                         <div class="bloque">
                             <label for="fin_<?php echo $dia; ?>">Fin</label>
-                            <input type="time" id="fin_<?php echo $dia; ?>" value="17:00">
+                            <input type="time" id="fin_<?php echo $dia; ?>">
                         </div>
                         <div class="bloque">
                             <label for="pausa_inicio_<?php echo $dia; ?>">Pausa Inicio</label>

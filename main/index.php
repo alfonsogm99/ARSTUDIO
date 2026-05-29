@@ -99,9 +99,26 @@
                 </div>
             </section>
             <section>
-                <h2 class="fluid"><br>coming soon</h2>
+                <h2 class="fluid"><br>Me encuentro en</h2>
+
+                <div class="map-card">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.5199181579137!2d-3.8194895253215675!3d37.5899210227887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd6ddffecdb58f3b%3A0xb7db56329283d542!2sAR%20STUDIO!5e0!3m2!1ses!2ses!4v1780051583948!5m2!1ses!2ses"
+                        allowfullscreen=""
+                        loading="lazy">
+                    </iframe>
+                </div>
             </section>
+
+            <section>
+                <a href="" style="text-decoration:none;"><h2 class="fluid">Pide Cita <br><span class="break"><br></span>
+                <span style="font-size:20px;">(Próximamente)</span></h2></a>
+            </section>
+
+
             </main>
+
+            
 
             <footer class="copyright">
                 <p>© 2026 alfonsogm</p>

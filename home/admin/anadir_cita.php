@@ -54,7 +54,18 @@ if (isset($_SESSION['creating_cita']) && $_SESSION['creating_cita'] === true) {
 
         $hora = $_POST['hora'];
         $id_cliente = intval($_POST['id_cliente']);
-        $duracion = intval($_POST['duracion']);
+
+        $id_servicio = intval($_POST['id_servicio']);
+        $stmtServ = $conn->prepare("SELECT duracion FROM servicio WHERE id_servicio=?");
+        $stmtServ->bind_param("i", $id_servicio);
+        $stmtServ->execute();
+        $serv = $stmtServ->get_result()->fetch_assoc();
+
+        if(!$serv){
+            $error = "Servicio inválido.";
+        }
+        $duracion = (int)$serv['duracion'];
+        
         $estado = 'pendiente';
         $id_barbero = ($user_type === 'barbero') ? $user_id : intval($_POST['id_barbero']);
 
@@ -98,7 +109,51 @@ if (isset($_SESSION['creating_cita']) && $_SESSION['creating_cita'] === true) {
                     INSERT INTO cita (id_cliente, id_barbero, fecha, hora, duracion_total, estado)
                     VALUES (?,?,?,?,?,?)
                 ");
-                $stmt->bind_param("iissis", $id_cliente, $id_barbero, $fecha, $hora, $duracion, $estado);
+
+                $stmt->bind_param(
+                    "iissis",
+                    $id_cliente,
+                    $id_barbero,
+                    $fecha,
+                    $hora,
+                    $duracion,
+                    $estado
+                );
+
+                if ($stmt->execute()) {
+
+                    // ID de la cita recién creada
+                    $id_cita = $stmt->insert_id;
+
+                    // INSERT en tabla intermedia (detalle_cita)
+                    $stmtDet = $conn->prepare("
+                        INSERT INTO detalle_cita (id_cita, id_servicio)
+                        VALUES (?, ?)
+                    ");
+
+                    $stmtDet->bind_param(
+                        "ii",
+                        $id_cita,
+                        $id_servicio
+                    );
+
+                    $stmtDet->execute();
+
+                    // limpiar flag sesión
+                    unset($_SESSION['creating_cita']);
+
+                    // redirección
+                    $year = date('Y', strtotime($fecha));
+                    $month = date('m', strtotime($fecha));
+                    $day = date('d', strtotime($fecha));
+
+                    header("Location: ../index.php?year=$year&month=$month&day=$day");
+                    exit;
+
+                } else {
+                    $error = "Error al crear la cita: " . $conn->error;
+                    unset($_SESSION['creating_cita']);
+                }
 
                 if ($stmt->execute()) {
                     $usuario = $_SESSION['user_name']; // Obtener el nombre del usuario logueado
@@ -232,17 +287,18 @@ $maxMinutos = $maxSlots * 15;
     <input type="time" value="<?= substr($hora_inicial, 0, 5) ?>" readonly class="readonly-input">
     <input type="hidden" name="hora" value="<?= substr($hora_inicial, 0, 5) ?>">
 
-    <label>Duración (minutos):
-        <select name="duracion" required>
-            <?php if($maxMinutos >= 30): ?>
-                <option value="30">30 min</option>
-            <?php endif; ?>
-
-            <?php if($maxMinutos >= 60): ?>
-                <option value="60">60 min (1h)</option>
-            <?php endif; ?>
-        </select>
-    </label>
+    <label>Servicio:</label>
+    <select name="id_servicio" required>
+        <option value="">-- Selecciona servicio --</option>
+        <?php
+        $servicios = $conn->query("SELECT * FROM servicio ORDER BY nombre ASC");
+        while($s = $servicios->fetch_assoc()):
+        ?>
+            <option value="<?= $s['id_servicio'] ?>">
+                <?= htmlspecialchars($s['nombre']) ?> (<?= $s['duracion'] ?> min)
+            </option>
+        <?php endwhile; ?>
+    </select>
 
     <button type="submit">Guardar</button>
 </form>
@@ -276,100 +332,7 @@ $version = $config['app']['version'] ?? '0.0.0';
         <a href="../includes/terminos.html">Términos y Condiciones</a>
 </footer>
 
-
-<script>
-const clienteInput = document.getElementById('cliente_input');
-const idClienteInput = document.getElementById('id_cliente');
-const suggestionsContainer = document.getElementById('cliente_suggestions');
-
-let debounceTimeout;
-
-// Ajustar posición del contenedor
-function ajustarPosicion(){
-    const rect = clienteInput.getBoundingClientRect();
-    suggestionsContainer.style.top = (rect.bottom + window.scrollY) + 'px';
-    suggestionsContainer.style.left = (rect.left + window.scrollX) + 'px';
-    suggestionsContainer.style.width = rect.width + 'px';
-}
-
-// Mostrar / ocultar lista
-function mostrarLista() {
-    suggestionsContainer.style.display = 'block';
-}
-
-function ocultarLista() {
-    suggestionsContainer.style.display = 'none';
-    suggestionsContainer.innerHTML = '';
-}
-
-clienteInput.addEventListener('input', function(){
-    ocultarLista();
-
-    const query = this.value.trim();
-    if(query.length < 2) return;
-
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
-        ajustarPosicion();
-        fetch('buscar_cliente.php?q=' + encodeURIComponent(query))
-            .then(res => res.json())
-            .then(data => {
-                suggestionsContainer.innerHTML = '';
-                if(data.length === 0){
-                    const div = document.createElement('div');
-                    div.style.padding = '8px';
-
-                    div.innerHTML = `
-                        <p style="margin-bottom:5px;">No se encontró ningún cliente</p>
-                        <button type="button" id="crear_cliente_btn">Nuevo usuario</button>
-                    `;
-
-                    suggestionsContainer.appendChild(div);
-
-                    document.getElementById('crear_cliente_btn').addEventListener('click', () => {
-                        const nombre = encodeURIComponent(clienteInput.value.trim());
-                        const fecha = "<?= $fecha ?>";
-                        const hora = "<?= $hora_inicial ?>";
-
-                        window.location.href = `nuevo_usuario.php?nombre=${nombre}&fecha=${fecha}&hora=${hora}`;
-                    });
-
-                    mostrarLista();
-                    return;
-                }
-
-                data.forEach(c => {
-                    const div = document.createElement('div');
-                    div.textContent = c.nombre + " (DNI: " + c.dni + ")"; // se ve el DNI en la lista
-                    div.dataset.id = c.id_cliente;
-                    div.addEventListener('click', () => {
-                        clienteInput.value = c.nombre; // SOLO el nombre en el input
-                        idClienteInput.value = c.id_cliente; // el hidden guarda el ID real
-                        ocultarLista();
-                    });
-                    suggestionsContainer.appendChild(div);
-                });
-                mostrarLista();
-            });
-    }, 300);
-});
-
-// Evitar submit si no hay cliente seleccionado
-document.querySelector('form').addEventListener('submit', function(e){
-    if(!idClienteInput.value){
-        e.preventDefault();
-        alert('Selecciona un cliente válido de la lista.');
-        clienteInput.focus();
-    }
-});
-
-// Cerrar lista si se hace clic fuera
-document.addEventListener('click', function(e){
-    if(!clienteInput.contains(e.target) && !suggestionsContainer.contains(e.target)){
-        ocultarLista();
-    }
-});
-</script>
 <script src="../../js/lightmode.js"></script>
+<script src="../../js/search_clients.js"></script>
 </body>
 </html>

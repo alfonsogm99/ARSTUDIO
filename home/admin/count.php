@@ -8,30 +8,20 @@ if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['admin',
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| PANEL CONTABILIDAD
-|--------------------------------------------------------------------------
-| - Ganancias mensuales
-| - Pérdidas / cancelaciones
-| - Métodos de pago
-| - Últimos pagos
-| - Estadísticas rápidas
-|--------------------------------------------------------------------------
-*/
-
 $mes_actual = date('m');
 $year_actual = date('Y');
 
-/* =========================
-   GANANCIAS DEL MES
-========================= */
+
 $sqlGanancias = "
-SELECT 
-    IFNULL(SUM(total),0) AS total_mes
-FROM pago
-WHERE MONTH(fecha_pago)=?
-AND YEAR(fecha_pago)=?
+SELECT
+    IFNULL(SUM(p.total),0) AS total_mes
+FROM pago p
+INNER JOIN cita c
+    ON p.id_cita = c.id_cita
+WHERE MONTH(p.fecha_pago)=?
+AND YEAR(p.fecha_pago)=?
+AND c.estado_pago = 'pagado'
+AND c.estado NOT IN ('cancelada','pendiente_cancelacion')
 ";
 
 $stmt = $conn->prepare($sqlGanancias);
@@ -42,9 +32,26 @@ $resGanancias = $stmt->get_result()->fetch_assoc();
 $total_mes = $resGanancias['total_mes'];
 
 
-/* =========================
-   CITAS COMPLETADAS
-========================= */
+$sqlPendiente = "
+SELECT IFNULL(SUM(s.precio),0) AS pendiente
+FROM cita c
+LEFT JOIN detalle_cita dc ON c.id_cita = dc.id_cita
+LEFT JOIN servicio s ON dc.id_servicio = s.id_servicio
+WHERE c.estado_pago = 'pendiente'
+AND c.estado NOT IN ('cancelada','pendiente_cancelacion')
+AND s.precio IS NOT NULL
+AND MONTH(c.fecha)=?
+AND YEAR(c.fecha)=?
+";
+
+$stmt = $conn->prepare($sqlPendiente);
+$stmt->bind_param("ii", $mes_actual, $year_actual);
+$stmt->execute();
+$resPendiente = $stmt->get_result()->fetch_assoc();
+
+$total_pendiente = $resPendiente['pendiente'];
+
+
 $sqlCompletadas = "
 SELECT COUNT(*) AS total
 FROM cita
@@ -61,9 +68,6 @@ $resCompletadas = $stmt->get_result()->fetch_assoc();
 $total_completadas = $resCompletadas['total'];
 
 
-/* =========================
-   CITAS CANCELADAS
-========================= */
 $sqlCanceladas = "
 SELECT COUNT(*) AS total
 FROM cita
@@ -80,15 +84,19 @@ $resCanceladas = $stmt->get_result()->fetch_assoc();
 $total_canceladas = $resCanceladas['total'];
 
 
-/* =========================
-   MÉTODOS DE PAGO
-========================= */
 $sqlMetodos = "
-SELECT metodo, COUNT(*) as cantidad, SUM(total) as total
-FROM pago
-WHERE MONTH(fecha_pago)=?
-AND YEAR(fecha_pago)=?
-GROUP BY metodo
+SELECT
+    p.metodo,
+    COUNT(*) as cantidad,
+    SUM(p.total) as total
+FROM pago p
+INNER JOIN cita c
+    ON p.id_cita = c.id_cita
+WHERE MONTH(p.fecha_pago)=?
+AND YEAR(p.fecha_pago)=?
+AND c.estado_pago = 'pagado'
+AND c.estado NOT IN ('cancelada','pendiente_cancelacion')
+GROUP BY p.metodo
 ";
 
 $stmt = $conn->prepare($sqlMetodos);
@@ -97,24 +105,26 @@ $stmt->execute();
 $metodos = $stmt->get_result();
 
 
-/* =========================
-   ÚLTIMOS PAGOS
-========================= */
 $sqlPagos = "
-SELECT 
-    pago.id_pago,
-    pago.total,
-    pago.metodo,
-    pago.fecha_pago,
+SELECT
+    p.id_pago,
+    p.total,
+    p.metodo,
+    p.fecha_pago,
     cliente.nombre AS cliente_nombre
-FROM pago
-INNER JOIN cita ON pago.id_cita = cita.id_cita
-INNER JOIN cliente ON cita.id_cliente = cliente.id_cliente
-ORDER BY pago.fecha_pago DESC
+FROM pago p
+INNER JOIN cita c
+    ON p.id_cita = c.id_cita
+INNER JOIN cliente
+    ON c.id_cliente = cliente.id_cliente
+WHERE c.estado_pago = 'pagado'
+AND c.estado NOT IN ('cancelada','pendiente_cancelacion')
+ORDER BY p.fecha_pago DESC
 LIMIT 10
 ";
 
 $ultimosPagos = $conn->query($sqlPagos);
+$tienePagos = $ultimosPagos->num_rows > 0;
 
 ?>
 
@@ -127,212 +137,6 @@ $ultimosPagos = $conn->query($sqlPagos);
 <link rel="icon" type="image/x-icon" href="../../img/favicon.ico">
 <link rel="stylesheet" href="../css/style.css">
 <title>ARSTUDIO · Panel de Contabilidad</title>
-
-<style>
-
-/* =========================
-CONTABILIDAD
-========================= */
-
-body#contabilidad{
-    padding-top:20vh;
-    min-height:100dvh;
-}
-
-.contabilidad_wrapper{
-    width:min(1400px,95%);
-    margin:auto;
-}
-
-.contabilidad_title{
-    text-align:center;
-    margin-bottom:30px;
-}
-
-/* =========================
-STATS
-========================= */
-
-.stats_grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:20px;
-
-    margin-bottom:30px;
-}
-
-.stat_card{
-
-    background: #1e1e1e;
-    border:1px solid #333;
-
-    border-radius:16px;
-
-    padding:25px;
-
-    transition:.2s ease;
-
-    position:relative;
-    overflow:hidden;
-}
-
-.stat_card:hover{
-    transform:translateY(-3px);
-}
-
-.stat_card::after{
-    content:"";
-    position:absolute;
-    inset:0;
-
-    background:url('../../img/separator_negativo.png') no-repeat center center;
-    background-size:40px;
-
-    opacity:.04;
-    pointer-events:none;
-}
-
-.stat_icon{
-    font-size:22px;
-    margin-bottom:15px;
-
-    opacity:.8;
-}
-
-.stat_label{
-    font-size:13px;
-    opacity:.7;
-
-    margin-bottom:8px;
-}
-
-.stat_value{
-    font-size:30px;
-    font-weight:700;
-}
-
-.green{
-    color:#2ecc71;
-}
-
-.red{
-    color:#e74c3c;
-}
-
-.orange{
-    color:#f39c12;
-}
-
-/* =========================
-TABLAS CONTABILIDAD
-========================= */
-
-.contabilidad_box table {
-    width: 100%;
-    border-collapse: separate; /* importante para border-radius */
-    border-spacing: 0;
-    border: 0;
-    overflow: hidden;
-    background: #1a1a1a;
-    border-radius: 12px;
-}
-
-/* TH */
-.contabilidad_box th {
-    background: #111;
-    color: #fff;
-    padding: 12px;
-    text-align: left;
-
-    border: 0;
-    border-bottom: 1px solid #333;
-}
-
-/* efecto redondeado SOLO en esquinas */
-.contabilidad_box th:first-child {
-    border-top-left-radius: 12px;
-}
-
-.contabilidad_box th:last-child {
-    border-top-right-radius: 12px;
-}
-
-/* TD */
-.contabilidad_box td {
-    padding: 10px 12px;
-    border: 0;
-    border-bottom: 1px solid #2a2a2a;
-}
-
-/* hover filas */
-.contabilidad_box tr:hover td {
-    background: #222;
-}
-
-/* última fila sin borde */
-.contabilidad_box tr:last-child td {
-    border-bottom: none;
-}
-
-/* =========================
-BADGES
-========================= */
-
-.badge{
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:6px 10px;
-
-    border-radius:999px;
-
-    font-size:11px;
-    font-weight:600;
-
-    border:1px solid transparent;
-}
-
-.badge.efectivo{
-    background:rgba(46,204,113,.12);
-    color: #2ecc71;
-    border-color:rgba(46,204,113,.25);
-}
-
-.badge.tarjeta{
-    background:rgba(52,152,219,.12);
-    color: #3498db;
-    border-color:rgba(52,152,219,.25);
-}
-
-.badge.bizum{
-    background:rgba(155,89,182,.12);
-    color: #9b59b6;
-    border-color:rgba(155,89,182,.25);
-}
-
-/* =========================
-RESPONSIVE
-========================= */
-
-@media(max-width:768px){
-
-    .stats_grid{
-        grid-template-columns:1fr;
-    }
-
-    .stat_value{
-        font-size:24px;
-    }
-
-    .contabilidad_box{
-        overflow-x:auto;
-    }
-
-}
-
-</style>
 </head>
 <body id="contabilidad" class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
 
@@ -344,12 +148,8 @@ RESPONSIVE
 
 <h1 class="contabilidad_title">
     <i class="fa-solid fa-chart-line"></i>
-    Panel de Contabilidad
+    Resumen
 </h1>
-
-<!-- =========================
-STATS
-========================= -->
 
 <div class="stats_grid">
 
@@ -360,11 +160,28 @@ STATS
         </div>
 
         <div class="stat_label">
-            Ganancias del mes
+            Ganancias mensuales
         </div>
 
         <div class="stat_value green">
             <?= number_format($total_mes,2) ?>€
+            <span class="stat_brutos">/brutos</span>
+        </div>
+
+    </div>
+
+    <div class="stat_card">
+
+        <div class="stat_icon orange">
+            <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+
+        <div class="stat_label">
+            Pendiente de pago
+        </div>
+
+        <div class="stat_value orange">
+            <?= number_format($total_pendiente,2) ?>€
         </div>
 
     </div>
@@ -401,76 +218,8 @@ STATS
 
     </div>
 
-    <div class="stat_card">
-
-        <div class="stat_icon orange">
-            <i class="fa-solid fa-chart-pie"></i>
-        </div>
-
-        <div class="stat_label">
-            Balance estimado
-        </div>
-
-        <div class="stat_value orange">
-            <?= number_format($total_mes - ($total_canceladas * 10),2) ?>€
-        </div>
-
-    </div>
-
 </div>
 
-<!-- =========================
-METODOS DE PAGO
-========================= -->
-
-<div class="contabilidad_box">
-
-<h2>
-    <i class="fa-solid fa-credit-card"></i>
-    Métodos de pago
-</h2>
-
-<table>
-
-<thead>
-
-<tr>
-    <th>Método</th>
-    <th>Operaciones</th>
-    <th>Total</th>
-</tr>
-
-</thead>
-
-<tbody>
-
-<?php while($m = $metodos->fetch_assoc()): ?>
-
-<tr>
-
-<td>
-    <span class="badge <?= $m['metodo'] ?>">
-        <?= strtoupper($m['metodo']) ?>
-    </span>
-</td>
-
-<td><?= $m['cantidad'] ?></td>
-
-<td><?= number_format($m['total'],2) ?>€</td>
-
-</tr>
-
-<?php endwhile; ?>
-
-</tbody>
-
-</table>
-
-</div>
-
-<!-- =========================
-ULTIMOS PAGOS
-========================= -->
 
 <div class="contabilidad_box">
 
@@ -479,10 +228,11 @@ ULTIMOS PAGOS
     Últimos pagos
 </h2>
 
+<?php if($tienePagos): ?>
+
 <table>
 
 <thead>
-
 <tr>
     <th>ID</th>
     <th>Cliente</th>
@@ -490,7 +240,6 @@ ULTIMOS PAGOS
     <th>Total</th>
     <th>Fecha</th>
 </tr>
-
 </thead>
 
 <tbody>
@@ -499,7 +248,7 @@ ULTIMOS PAGOS
 
 <tr>
 
-<td>#<?= $p['id_pago'] ?></td>
+<td><strong>#<?= $p['id_pago'] ?></strong></td>
 
 <td><?= htmlspecialchars($p['cliente_nombre']) ?></td>
 
@@ -520,6 +269,14 @@ ULTIMOS PAGOS
 </tbody>
 
 </table>
+
+<?php else: ?>
+
+<p class="empty-state">
+    Aún no hay pagos registrados.
+</p>
+
+<?php endif; ?>
 
 </div>
 

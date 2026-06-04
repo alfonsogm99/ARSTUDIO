@@ -107,6 +107,9 @@ CREATE TABLE cita (
 
 -- ALTER TABLE cita MODIFY COLUMN estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada', 'fallida', 'pendiente_cancelacion' DEFAULT 'pendiente';
 
+-- ALTER TABLE cita
+-- ADD id_servicio INT NOT NULL;
+
 -- =========================
 -- HORARIO
 -- =========================
@@ -188,6 +191,19 @@ CREATE TABLE detalle_cita (
     ON DELETE CASCADE,
   FOREIGN KEY (id_servicio) REFERENCES servicio(id_servicio)
 );
+
+
+-- ALTER TABLE detalle_cita
+-- DROP FOREIGN KEY detalle_cita_ibfk_2;
+
+-- ALTER TABLE detalle_cita
+-- ADD CONSTRAINT detalle_cita_ibfk_2
+-- FOREIGN KEY (id_servicio)
+-- REFERENCES servicio(id_servicio)
+-- ON DELETE CASCADE;
+
+
+
 
 -- =========================
 -- PAGOS

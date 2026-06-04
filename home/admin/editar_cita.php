@@ -15,7 +15,6 @@ if (isset($_POST['theme'])) {
 
 $id = intval($_GET['id']);
 
-// Obtener cita
 $cita = $conn->query("SELECT * FROM cita WHERE id_cita=$id")->fetch_assoc();
 
 if(!$cita){
@@ -26,7 +25,6 @@ $pago = $conn->query("
     SELECT * FROM pago WHERE id_cita = $id LIMIT 1
 ")->fetch_assoc();
 
-// si no existe, lo dejamos vacío
 if(!$pago){
     $pago = [
         'total' => '',
@@ -58,7 +56,7 @@ function getEnumValues($type){
     return array_map(fn($v) => trim($v, " '"), explode(",", $matches[1]));
 }
 
-// Actualizar
+
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
     $usuario = $_SESSION['user_name'];
@@ -67,9 +65,29 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
     $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
 
-    /* =========================
-       1. UPDATE CITA
-    ========================= */
+
+    $id_servicio = !empty($_POST['id_servicio']) ? intval($_POST['id_servicio']) : 0;
+
+    $precio = 0;
+    $duracion = 0;
+
+    if($id_servicio > 0){
+
+        $stmt = $conn->prepare("
+            SELECT precio, duracion
+            FROM servicio
+            WHERE id_servicio = ?
+        ");
+        $stmt->bind_param("i", $id_servicio);
+        $stmt->execute();
+        $serv = $stmt->get_result()->fetch_assoc();
+
+        if($serv){
+            $precio = (float)$serv['precio'];
+            $duracion = (int)$serv['duracion'];
+        }
+    }
+    
 
     $set = [];
     $params = [];
@@ -84,6 +102,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $types .= 's';
     }
 
+
+    if($duracion > 0){
+        $set[] = "duracion_total = ?";
+        $params[] = $duracion;
+        $types .= 'i';
+    }
+
     if(!empty($set)){
 
         $params[] = $id;
@@ -95,28 +120,38 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $stmt->execute();
     }
 
-    /* =========================
-       2. UPDATE / INSERT PAGO
-    ========================= */
+    if($id_servicio > 0){
 
-    if(isset($_POST['total_pago'], $_POST['metodo_pago'])){
+        $conn->query("DELETE FROM detalle_cita WHERE id_cita = $id");
 
-        $total = $_POST['total_pago'];
+        $stmt = $conn->prepare("
+            INSERT INTO detalle_cita (id_cita, id_servicio, precio_aplicado)
+            VALUES (?, ?, ?)
+        ");
+        $stmt->bind_param("iid", $id, $id_servicio, $precio);
+        $stmt->execute();
+    }
+
+    if(isset($_POST['metodo_pago'])){
+
         $metodo = $_POST['metodo_pago'];
 
-        $check = $conn->query("SELECT id_pago FROM pago WHERE id_cita=$id")->fetch_assoc();
+        $check = $conn->query("
+            SELECT id_pago FROM pago WHERE id_cita = $id
+        ")->fetch_assoc();
 
         if($check){
             $stmt = $conn->prepare("
                 UPDATE pago SET total=?, metodo=? WHERE id_cita=?
             ");
-            $stmt->bind_param("dsi", $total, $metodo, $id);
+            $stmt->bind_param("dsi", $precio, $metodo, $id);
             $stmt->execute();
         } else {
             $stmt = $conn->prepare("
-                INSERT INTO pago (id_cita, total, metodo) VALUES (?,?,?)
+                INSERT INTO pago (id_cita, total, metodo)
+                VALUES (?,?,?)
             ");
-            $stmt->bind_param("ids", $id, $total, $metodo);
+            $stmt->bind_param("ids", $id, $precio, $metodo);
             $stmt->execute();
         }
     }
@@ -164,10 +199,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
     <?php if($name === 'duracion_total'): ?>
 
-        <select name="<?= $name ?>">
-            <option value="30" <?= $value == 30 ? 'selected' : '' ?>>30 minutos</option>
-            <option value="60" <?= $value == 60 ? 'selected' : '' ?>>60 minutos</option>
-        </select>
+        <input 
+            type="text" 
+            value="<?= htmlspecialchars($value) ?> minutos" 
+            readonly 
+            class="readonly-input">
 
     <?php elseif(str_starts_with($type, 'enum')): ?>
 
@@ -203,12 +239,34 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 <?php endforeach; ?>
 
+<?php 
+$servicios = $conn->query("SELECT * FROM servicio ORDER BY nombre ASC");
 
-<h3>Pago</h3><br>
+$servicio_actual = $conn->query("
+    SELECT id_servicio
+    FROM detalle_cita
+    WHERE id_cita = $id
+    LIMIT 1
+")->fetch_assoc();
 
-<label>Total (€)</label>
-<input type="number" step="0.01" name="total_pago"
-value="<?= $pago['total'] ?? '' ?>"><br><br>
+$id_servicio_actual = $servicio_actual['id_servicio'] ?? null;
+?>
+
+<h3>Servicio</h3><br>
+
+<select name="id_servicio" required>
+    <option value="">Selecciona un servicio</option>
+
+    <?php while($s = $servicios->fetch_assoc()): ?>
+        <option value="<?= $s['id_servicio'] ?>"
+            <?= ($id_servicio_actual == $s['id_servicio']) ? 'selected' : '' ?>>
+
+            <?= htmlspecialchars($s['nombre']) ?> - <?= number_format($s['precio'],2) ?>€
+
+        </option>
+    <?php endwhile; ?>
+</select>
+<br><br>
 
 <label>Método</label>
 <select name="metodo_pago">

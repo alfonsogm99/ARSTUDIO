@@ -41,6 +41,10 @@ $rol = $_SESSION['user_type'];
                     <i class="fa-solid fa-dollar"></i>
                 </a>
 
+                <a href="<?php echo BASE_URL . '/admin/servicios.php';?>">
+                    <i class="fa-solid fa-scissors"></i>
+                </a>
+
                 <a href="<?php echo BASE_URL; ?>">
                     <i class="fa-solid fa-home"></i>
                 </a>

@@ -49,7 +49,7 @@ Este correo ha sido enviado de forma automática, por lo que le rogamos no respo
 Para cualquier consulta, puede ponerse en contacto a través del correo electrónico 
 <a href="mailto:contacto@arstudiocutz.es">contacto@arstudiocutz.es</a>.
 </p>';
-    $mail->addEmbeddedImage('../__/ARSTUDIO.png', 'logo');
+    $mail->addEmbeddedImage('../../../img/arstudio_negativo.png', 'logo');
     $mail->AltBody = "No responder";
 
     // Enviar

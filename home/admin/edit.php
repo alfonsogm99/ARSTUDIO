@@ -1,46 +1,461 @@
 <?php
-include 'config.php';
-$tabla = $_GET['tabla'];
-$id = $_GET['id'];
+session_start();
+require_once 'config.php';
 
-// Tomar primer campo como PK
-$res = $conn->query("SHOW COLUMNS FROM $tabla");
-$columns = [];
-$pk = '';
-while($row = $res->fetch_assoc()) {
-    if($row['Extra'] == 'auto_increment') $pk = $row['Field'];
-    else $columns[] = $row['Field'];
+$rol = $_SESSION['user_type'] ?? null;
+$idUsuarioSesion = $_SESSION['user_id'] ?? null;
+
+if (!in_array($rol, ['admin', 'barbero'])) {
+    header("Location: ../logout");
+    exit;
 }
 
-// Obtener datos
-$data = $conn->query("SELECT * FROM $tabla WHERE $pk='$id'")->fetch_assoc();
+/* =========================
+   TABLAS PERMITIDAS
+========================= */
 
-// Procesar formulario
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $sets = [];
-    foreach($columns as $col) $sets[] = "$col='".$conn->real_escape_string($_POST[$col])."'";
-    $sql = "UPDATE $tabla SET ".implode(",",$sets)." WHERE $pk='$id'";
-    if($conn->query($sql)) header("Location: admin.php?tabla=$tabla");
-    else echo "Error: ".$conn->error;
+$tablasPermitidasAdmin = [
+    'usuario',
+    'cliente',
+    'barbero',
+    'servicio',
+    'cita',
+    'detalle_cita',
+    'pago',
+    'horario_barbero',
+    'horario_general',
+    'bloqueo_horario',
+    'vip_horario'
+];
+
+$tablasPermitidasBarbero = [
+    'usuario',
+    'cliente'
+];
+
+/* =========================
+   INPUTS
+========================= */
+
+$tabla = trim($_GET['tabla'] ?? '');
+
+$id = $_GET['id']
+    ?? $_GET['idusuario']
+    ?? null;
+
+if (!$id) {
+    die("Falta ID");
+}
+
+$id = (int)$id;
+
+if (empty($tabla)) {
+    die("Falta parámetro tabla");
+}
+
+/* =========================
+   PERMISOS
+========================= */
+
+if ($rol === 'admin') {
+    if (!in_array($tabla, $tablasPermitidasAdmin)) {
+        die("Tabla no permitida");
+    }
+}
+
+if ($rol === 'barbero') {
+    if (!in_array($tabla, $tablasPermitidasBarbero)) {
+        die("No tienes permisos para esta tabla");
+    }
+}
+
+/* =========================
+   DETECTAR PK (CORRECTO)
+========================= */
+
+$res = $conn->query("SHOW KEYS FROM `$tabla` WHERE Key_name = 'PRIMARY'");
+
+$pk = '';
+
+if ($row = $res->fetch_assoc()) {
+    $pk = $row['Column_name'];
+}
+
+if (!$pk) {
+    die("No se pudo detectar la clave primaria");
+}
+
+/* =========================
+   COLUMNAS
+========================= */
+
+
+$usuarioCols = [];
+$clienteCols = [];
+
+/* USUARIO */
+$res = $conn->query("DESCRIBE usuario");
+
+while ($row = $res->fetch_assoc()) {
+    $field = $row['Field'];
+
+    if (in_array($field, ['otp_code', 'otp_expires', 'status'])) continue;
+
+    $usuarioCols[] = $field;
+}
+
+/* CLIENTE */
+$res = $conn->query("DESCRIBE cliente");
+
+while ($row = $res->fetch_assoc()) {
+
+    $field = $row['Field'];
+
+    if (in_array($field, [
+        'id_cliente',
+        'id_usuario'
+    ])) {
+        continue;
+    }
+
+    $clienteCols[] = $field;
+}
+/* =========================
+   CARGAR DATOS (FIX REAL)
+========================= */
+
+$id = (int)$id;
+
+/* =========================
+   USUARIO (SIEMPRE EXISTE)
+========================= */
+$stmt = $conn->prepare("SELECT * FROM usuario WHERE id_usuario = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$usuario = $stmt->get_result()->fetch_assoc();
+
+if (!$usuario) {
+    die("Usuario no encontrado");
+}
+
+/* =========================
+   CLIENTE (PUEDE NO EXISTIR)
+========================= */
+$stmt = $conn->prepare("SELECT * FROM cliente WHERE id_usuario = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$cliente = $stmt->get_result()->fetch_assoc();
+
+/* =========================
+   DATA FINAL (SI NO EXISTE CLIENTE → VACÍO)
+========================= */
+$data = $usuario;
+
+/* añadir campos cliente aunque no exista */
+$clienteCampos = [
+    'telefono',
+    'direccion',
+    'dni',
+    'fecha_nacimiento',
+    'notas',
+    'activo'
+];
+
+foreach ($clienteCampos as $c) {
+    $data[$c] = $cliente[$c] ?? '';
+}
+
+/* =========================
+   CAMPOS BLOQUEADOS
+========================= */
+
+$columnasBloqueadas = [
+    'id_usuario',
+    'id_cliente',
+    'rol',
+    'fecha_creacion'
+];
+
+/* =========================
+   UPDATE
+========================= */
+
+$clienteOcultos = [
+    'email',
+    'nombre',
+    'apellidos'
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    /* ======================
+       USUARIO UPDATE
+    ====================== */
+    $uSets = [];
+
+    foreach ($usuarioCols as $col) {
+
+        if ($col === 'password') continue;
+
+        if ($col === 'activo') {
+            $val = isset($_POST['usuario']['activo']) ? 1 : 0;
+        } else {
+            $val = $conn->real_escape_string($_POST['usuario'][$col] ?? '');
+        }
+
+        $uSets[] = "`$col`='$val'";
+    }
+
+    if (!empty($uSets)) {
+        $conn->query("
+            UPDATE usuario
+            SET " . implode(",", $uSets) . "
+            WHERE id_usuario = $id
+        ");
+    }
+
+
+
+
+    $cCheck = $conn->query("SELECT id_cliente FROM cliente WHERE id_usuario = $id");
+    $exists = $cCheck->num_rows > 0;
+
+    $cSets = [];
+
+    /* =========================
+    CLIENTE CAMPOS NORMALES (FORM)
+    ========================= */
+    $clienteInput = $_POST['cliente'] ?? [];
+
+    foreach ($clienteCols as $col) {
+
+        if (in_array($col, ['id_cliente', 'id_usuario'])) {
+            continue;
+        }
+
+        if ($col === 'activo') {
+            $cSets[$col] = isset($clienteInput['activo']) ? 1 : 0;
+            continue;
+        }
+
+        $cSets[$col] = $conn->real_escape_string($clienteInput[$col] ?? '');
+    }
+
+    /* =========================
+    SIEMPRE SINCRONIZAR DESDE USUARIO
+    ========================= */
+
+    $cSets['email']  = $_POST['usuario']['email'] ?? '';
+
+    $fullPhone = trim($_POST['usuario']['phone'] ?? '');
+
+    if (str_starts_with($fullPhone, '+34')) {
+
+        $cSets['prefijo_pais'] = '+34';
+        $cSets['telefono'] = substr($fullPhone, 3);
+
+    } elseif (str_starts_with($fullPhone, '34')) {
+
+        $cSets['prefijo_pais'] = '+34';
+        $cSets['telefono'] = substr($fullPhone, 2);
+
+    } else {
+
+        $cSets['telefono'] = $fullPhone;
+    }
+
+
+
+    if ($exists) {
+
+        $updateParts = [];
+
+        foreach ($cSets as $k => $v) {
+            $updateParts[] = "`$k`='$v'";
+        }
+
+        $conn->query("
+            UPDATE cliente
+            SET " . implode(",", $updateParts) . "
+            WHERE id_usuario = $id
+        ");
+
+    } else {
+
+        $cols = array_keys($cSets);
+        $vals = array_values($cSets);
+
+        $cols[] = "id_usuario";
+        $vals[] = $id;
+
+        $conn->query("
+            INSERT INTO cliente (" . implode(",", $cols) . ")
+            VALUES ('" . implode("','", $vals) . "')
+        ");
+    }
+
+    header("Location: admin.php?tabla=usuario");
+    exit;
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
-    <meta charset="UTF-8"><title>Editar registro - <?php echo $tabla; ?></title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" type="image/x-icon" href="../../img/favicon.ico">
+<link rel="stylesheet" href="../css/style.css">
+<title>ARSTUDIO · Datos del cliente</title>
 </head>
-<body class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
-<h1>Editar registro de <?php echo $tabla; ?></h1>
-<form method="post">
-<?php foreach($columns as $col): ?>
-<label><?php echo $col; ?>: <input type="text" name="<?php echo $col; ?>" value="<?php echo $data[$col]; ?>"></label><br>
+<body id="editcita" class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
+
+<div id="top-fixed">
+<?php include '../includes/navbar.php'; ?>
+</div>
+
+<div class="perfil_wrapper">
+<form method="POST" class="perfil_box">
+<!--<h3>Usuario</h3>-->
+
+<?php foreach ($usuarioCols as $col): ?>
+
+<?php
+$isReadonly = in_array($col, [
+    'id_usuario',
+    'password',
+    'rol',
+    'fecha_creacion',
+    'status'
+]);
+?>
+
+<label>
+    <?= $col ?>:
+
+    <?php if ($col === 'activo'): ?>
+
+        <input type="hidden" name="usuario[activo]" value="0">
+
+        <input
+            type="checkbox"
+            name="usuario[activo]"
+            value="1"
+            <?= !empty($usuario['activo']) ? 'checked' : '' ?>
+        >
+
+    <?php else: ?>
+
+        <input
+            type="text"
+            name="usuario[<?= $col ?>]"
+            value="<?= htmlspecialchars($usuario[$col] ?? '') ?>"
+            class="<?= $isReadonly ? 'readonly-input' : '' ?>"
+            <?= $isReadonly ? 'readonly' : '' ?>
+        >
+
+    <?php endif; ?>
+
+</label>
+<br>
+
 <?php endforeach; ?>
+
+
+<!--<h3>Cliente</h3>-->
+
+<?php foreach ($clienteCols as $col): ?>
+
+<?php
+
+$isHidden = in_array($col, [
+    'otp_code',
+    'otp_expires',
+    'id_cliente',
+    'id_usuario',
+    'google_id',
+    'email',
+    'fecha_registro',
+    'prefijo_pais',
+    'telefono'
+]);
+$isReadonly = in_array($col, ['fecha_creacion']);
+$valor = $cliente[$col] ?? '';
+?>
+
+<?php if ($isHidden): ?>
+    <input type="hidden"
+           name="cliente[<?= $col ?>]"
+           value="<?= htmlspecialchars($valor) ?>">
+    <?php continue; ?>
+<?php endif; ?>
+
+<label>
+    <?= $col ?>:
+
+    <?php if ($col === 'activo'): ?>
+
+        <input type="hidden" name="cliente[activo]" value="0">
+
+        <input type="checkbox"
+               name="cliente[activo]"
+               value="1"
+               <?= (!empty($cliente['activo']) ? 'checked' : '') ?>>
+
+    <?php elseif ($isReadonly): ?>
+
+        <input type="text"
+               name="cliente[<?= $col ?>]"
+               value="<?= htmlspecialchars($valor) ?>"
+               readonly
+               class="readonly-input">
+
+    <?php else: ?>
+
+    <input
+        type="text"
+        name="cliente[<?= $col ?>]"
+        value="<?= htmlspecialchars($valor) ?>"
+        <?= $isReadonly ? 'readonly class="readonly-input"' : '' ?>
+        <?= $col === 'dni' ? 'required' : '' ?>
+    >
+
+    <?php endif; ?>
+
+</label>
+<br>
+
+<?php endforeach; ?>
+
 <button type="submit">Guardar cambios</button>
 </form>
-<p><a href="admin.php?tabla=<?php echo $tabla; ?>"><b>Volver</b></a></p>
+</div>
+
+<?php if ($rol === 'admin'): ?>
+    <p>
+        <a href="admin.php?tabla=<?php echo $tabla; ?>">
+            <b>Volver</b>
+        </a>
+    </p>
+<?php endif; ?>
+
+<?php
+$configFile = './config.json';
+
+$config = [];
+
+if (file_exists($configFile)) {
+    $json = file_get_contents($configFile);
+    $decoded = json_decode($json, true);
+
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        $config = $decoded;
+    }
+}
+
+$version = $config['app']['version'] ?? '0.0.0';
+?>
 
 <footer class="site-footer">
     <span class="version">v.<?= htmlspecialchars($version) ?></span><br>

@@ -95,6 +95,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="submit">Aceptar</button>
 </form>
 
+<div class="signup">
+  <p class="signup-text">
+    ¿Aún no tienes cuenta? <a href="register.php">Tu próxima cita te espera 💈</a>
+  </p>
+</div>
+
 </div>
 
 <?php if($error) echo "<br/><p style='color:rgb(214, 105, 105); text-align:center; margin:auto;'>$error</p>"; ?>

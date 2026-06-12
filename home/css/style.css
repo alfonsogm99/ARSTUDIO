@@ -136,7 +136,6 @@ body#admin table {
     color: #e0e0e0;
 }
 
-/* celdas */
 body#admin td {
     padding: 10px;
     font-size: 13px;
@@ -146,7 +145,6 @@ body#admin td {
     border-bottom: 1px solid #2a2a2a;
 }
 
-/* titulos */
 body#admin th {
     padding: 10px;
     font-size: 13px;
@@ -288,13 +286,9 @@ body.light-mode {
     padding: 20px;
     margin-right: 0.75%;
 
-    /* Safari */
     -webkit-overflow-scrolling: touch;
 }
 
-/* =========================
-titulos
-========================= */
 h1 {
     margin-bottom: 20px;
     font-size: 28px;
@@ -302,9 +296,6 @@ h1 {
     padding-bottom: 10px;
 }
 
-/* =========================
-menú de tablas
-========================= */
 p a {
     color: #000;
     text-decoration: none;
@@ -321,9 +312,6 @@ p a:hover {
     text-align: right;
 }
 
-/* =========================
-tabla de registros
-========================= */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -341,9 +329,6 @@ th {
     color: #fff;
 }
 
-/* =========================
-botones
-========================= */
 a.button, button {
     padding: 6px 12px;
     border: 1px solid #000;
@@ -402,9 +387,6 @@ button:hover {
     background-color: #111111;
 }
 
-/* =========================
-form
-========================= */
 form {
     max-width: 600px;
     margin: 20px auto 40px auto;
@@ -424,7 +406,6 @@ label {
     text-align: center;
 }
 
-/* inputs */
 input[type="time"],
 input[type="text"],
 input[type="email"],
@@ -487,7 +468,6 @@ select {
     -moz-appearance: none;
 }
 
-/* checkbox */
 label.checkbox_label {
     display: flex;
     align-items: center;
@@ -550,9 +530,7 @@ body.light-mode #cliente_suggestions div:hover {
     background: #f0f0f0;
 }
 
-/* =========================
-calendario
-========================= */
+
 .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -618,8 +596,6 @@ body.light-mode .day-header {
     content: "";
     position: absolute;
     inset: 0;
-    background: url('../../img/separator_negativo.png') no-repeat center center;
-    background-size: 30px 20px;
     opacity: 0.1;
     pointer-events: none;
 }
@@ -643,8 +619,6 @@ body.light-mode .day-cell::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: url('../../img/separator.png') no-repeat center center;
-    background-size: 30px 20px;
     opacity: 0.1;
     pointer-events: none;
 }
@@ -730,7 +704,6 @@ citas
     cursor: pointer;
 }
 
-/* name's appointment */
 .appointment.line-only {
     width: 85%;
     height: 15px;
@@ -740,7 +713,6 @@ citas
     border-radius: 8px;
 }
 
-/* texto fuera del bloque */
 .appointment-label {
     position: absolute;
 
@@ -936,6 +908,33 @@ body.light-mode .hour-slot:not(.occupied):hover {
 
 .hour-slot .appointment.pendiente_cancelacion { background: #adadad; }
 
+.vip-slot {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 215, 0, 0.08),
+        rgba(255, 215, 0, 0.02)
+    );
+    
+    border-left: 3px solid rgba(255, 215, 0, 0.9);
+    box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.15);
+    
+    position: relative;
+}
+
+.vip-slot::after {
+    content: "★";
+    position: absolute;
+    top: 6px;
+    right: 10px;
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+
+    color: rgba(255, 215, 0, 0.9);
+    opacity: 0.8;
+}
+
 /* =========================
 modal
 ========================= */
@@ -1041,9 +1040,7 @@ body.light-mode .modal_buttons button:hover:not(.disabled) {
     pointer-events: none;
 }
 
-/* =========================
-botones de navegación calendario
-========================= */
+
 .calendar_btn {
     display: flex;
     align-items: center;
@@ -1160,6 +1157,7 @@ body.light-mode .result_list li {
     background-color: transparent;
 }
 
+
 /* =========================
 login
 ========================= */
@@ -1171,9 +1169,7 @@ login
     border: 2px solid rgb(214, 105, 105) !important;
 }
 
-/* =========================
-control panel bar
-========================= */
+
 #control_panel_bar{
     text-align: right;
 }
@@ -1203,6 +1199,26 @@ body.light-mode #menu_bar a{
     align-items: center;
 }
 
+.menu-inline i,
+.menu-inline span{
+    margin-right: 15px;
+}
+
+.notif-icon {
+    position: relative;
+}
+
+.notif-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 5px;
+    height: 5px;
+    background: #ff2d2d;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255,0,0,0.6);
+}
+
 .add {
     list-style: none;
     padding: 0;
@@ -1215,39 +1231,102 @@ body.light-mode #menu_bar a{
     cursor: pointer;
 }
 
+
 .submenu {
     display: none;
     position: absolute;
-    list-style: none;
-
     top: 100%;
     right: 0;
-    
-    padding: 30px;
+
+    width: 320px;
+
+    max-height: 120px;
+    overflow-y: auto;
+
+    overscroll-behavior: contain; /* 👈 clave moderna */
+
+    padding: 8px;
     margin: 0;
 
     background: #1e1e1e;
     border: 1px solid #444;
+    border-radius: 10px;
+
+    list-style: none;
+
+    z-index: 9999;
+
+    text-align: center;
+
+    /* 🔥 CLAVE EXTRA */
+    box-sizing: border-box;
 }
 
 .dropdown:hover .submenu {
     display: block;
 }
 
-.submenu li a {
-    display: block;
-    width: max-content;
-    white-space: nowrap;
+.submenu .notif-link {
+    display: flex;
+    width: 100%;
     text-decoration: none;
-
-    color: #eee;                
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif !important;
-    font-size: 13px !important;
-    max-height: 55dvh !important;
-
-    margin-top: 10px;
-    text-align: center;        
+    color: inherit;
 }
+
+.submenu .notif-item {
+    padding: 8px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.submenu .notif-item:hover {
+    background: #252525;
+}
+
+.submenu .notif-user strong {
+    font-size: 12px;
+    color: #eee;
+}
+
+.submenu .notif-user small {
+    font-size: 11px;
+    opacity: 0.7;
+    color: #bbb;
+}
+
+
+.submenu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.submenu::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.submenu::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .submenu {
+        left: 50%;
+        right: auto;
+        transform: translateX(-55%);
+
+        width: min(320px, 90vw);
+
+        top:8px;
+
+        font-size: 13px;
+    }
+
+    .dropdown {
+        position: relative;
+    }
+}
+
+
+
 
 #temp_txt{
     color: #fff;
@@ -1299,9 +1378,7 @@ body.light-mode #lightmode {
   color: #000;
 }
 
-/* =========================
-perfil
-========================= */
+
 
 .perfil_box { 
     width: 400px; 
@@ -1368,7 +1445,7 @@ perfil
   color: #ccc;
   font-size: 14px;
 
-  text-align: center; /* ahora sí funciona bien */
+  text-align: center;
 
   outline: none;
 }
@@ -1408,7 +1485,6 @@ body.light-mode form.perfil_box {
     text-align: center;      
 }
 
-/* safari */
 input[type="time"] {
     -webkit-appearance: none;
     appearance: none;
@@ -1420,25 +1496,21 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;
 }
 
-/* Chrome / Edge / Opera */
 input[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
 
-/* Safari */
 input[type="time"]::-webkit-inner-spin-button,
 input[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
 }
 
-/* Chrome / Edge / Opera */
 input[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
 
 
-/* Centrar texto en TODOS los inputs */
 form input,
 form select,
 form textarea {
@@ -1516,7 +1588,7 @@ body.light-mode .toggle_eye {
   box-sizing: border-box;
 }
 
-/* botón dentro del input */
+
 .input-icon button {
   position: absolute;
   right: 8px;
@@ -1608,26 +1680,17 @@ body.light-mode .toggle_eye {
     margin-top: 10px;
 }
 
-/* =========================
-enlaces tabla
-========================= */
 td a {
     margin-right: 5px;
     font-size: 13px;
 }
 
-/* =========================
-mensaje de error
-========================= */
 .error {
     color:rgb(214, 105, 105);
     font-weight: bold;
     margin-top: 10px;
 }
 
-/* =========================
-footer
-========================= */
 
 .site-footer {
     margin-top: 15px;
@@ -1636,7 +1699,6 @@ footer
     text-align: right;
 }
 
-/* modal */
 #modal_cita {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -1774,7 +1836,7 @@ body.light-mode #btn_delete {
 }
 
 /* =========================
-Tablet / iPad
+tablet / iPad
 ========================= */
 @media (max-width: 768px) {
 
@@ -1782,7 +1844,6 @@ Tablet / iPad
         padding-top: 32vh;
     }*/
 
-    /* Calendario */
     .calendar {
         grid-template-columns: repeat(3, 1fr);
         gap: 6px;
@@ -1811,7 +1872,6 @@ Tablet / iPad
         padding: 4px 8px;
     }
 
-    /* name's appointment */
     .hour-slot .appointment.line-only {
         width: 70%;
         height: 3px;
@@ -1830,7 +1890,7 @@ Tablet / iPad
         padding: 2px 4px;
     }
 
-    /* Vista diaria */
+    /* vista diaria */
     .hour-slot {
         position: relative;
         flex-direction: column;
@@ -1854,7 +1914,7 @@ Tablet / iPad
 
 
 /* =========================
-Teléfono / iPhone
+teléfono / iPhone
 ========================= */
 @media (max-width: 480px) {
 
@@ -1878,7 +1938,7 @@ Teléfono / iPhone
     .modal_content { padding: 16px; }
     .modal_buttons button { padding: 8px; font-size: 13px; }
 
-    /* Vista diaria */
+    /* vista diaria */
     .day-view-header {
         font-size: 18px;
     }
@@ -1889,7 +1949,7 @@ Teléfono / iPhone
     }
 }
 
-/* mensual en teléfono */
+
 @media (max-width: 768px) {
     .calendar {
         gap: 6px;
@@ -1921,9 +1981,7 @@ Teléfono / iPhone
     }
 }
 
-/* =========================
-pointer
-========================= */
+
 .day-cell:not(.empty),
 .hour-slot:not(.occupied),
 .day-cell .appointment.clickable {
@@ -1933,7 +1991,7 @@ pointer
 
 
 /* =========================
-FILTRO
+filtro
 ========================= */
 #floating-filter {
     position: fixed;
@@ -2155,20 +2213,17 @@ body.light-mode #toggle-filters:hover {
     cursor: pointer;
 }
 
-/* Botón aceptar */
 .cookies__boton--si {
     background: #000;
     color: #fff;
     border: 1px solid white;
 }
 
-/* Hover */
 .cookies__boton:hover {
     transform: translateY(-2px);
     opacity: 0.9;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
     .cookies {
         flex-direction: column;
@@ -2196,10 +2251,6 @@ body.light-mode #toggle-filters:hover {
 }
 
 
-
-/* =========================
-client
-========================= */
 
 body#client-booking {
     padding-top: 18vh;
@@ -2369,9 +2420,6 @@ body#contabilidad{
     margin-bottom:30px;
 }
 
-/* =========================
-STATS
-========================= */
 
 .stats_grid{
     display:grid;
@@ -2404,9 +2452,6 @@ STATS
     content:"";
     position:absolute;
     inset:0;
-
-    background:url('../../img/separator_negativo.png') no-repeat center center;
-    background-size:40px;
 
     opacity:.04;
     pointer-events:none;
@@ -2459,9 +2504,7 @@ STATS
     color:#f39c12;
 }
 
-/* =========================
-TABLAS CONTABILIDAD
-========================= */
+
 
 .contabilidad_box h2{
     text-align:center;
@@ -2479,7 +2522,7 @@ TABLAS CONTABILIDAD
     margin-top:30px;
 }
 
-/* TH */
+
 .contabilidad_box th {
     background: #111;
     color: #fff;
@@ -2490,7 +2533,6 @@ TABLAS CONTABILIDAD
     border-bottom: 1px solid #333;
 }
 
-/* efecto redondeado SOLO en esquinas */
 .contabilidad_box th:first-child {
     border-top-left-radius: 12px;
 }
@@ -2499,7 +2541,6 @@ TABLAS CONTABILIDAD
     border-top-right-radius: 12px;
 }
 
-/* TD */
 .contabilidad_box td {
     padding: 10px 12px;
     border: 0;
@@ -2510,19 +2551,13 @@ tr:nth-child(even) {
     background-color: #2a2a2a;
 }
 
-/* hover filas */
 .contabilidad_box tr:hover td {
     background: #222;
 }
 
-/* última fila sin borde */
 .contabilidad_box tr:last-child td {
     border-bottom: none;
 }
-
-/* =========================
-BADGES
-========================= */
 
 .badge{
     display:inline-flex;
@@ -2557,9 +2592,6 @@ BADGES
     border-color:rgba(155,89,182,.25);
 }
 
-/* =========================
-RESPONSIVE
-========================= */
 
 @media(max-width:768px){
 
@@ -2585,4 +2617,10 @@ RESPONSIVE
 
 .actions a.delete{
     color:#e74c3c;
+}
+
+.success-message{
+    text-align: center;
+    font-size: 12px;
+    opacity: .7;
 }

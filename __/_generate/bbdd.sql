@@ -13,6 +13,13 @@ CREATE TABLE usuario (
   fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ALTER TABLE usuario
+-- ADD COLUMN email VARCHAR(255),
+-- ADD COLUMN phone VARCHAR(20),
+-- ADD COLUMN otp_code VARCHAR(6),
+-- ADD COLUMN otp_expires DATETIME,
+-- ADD COLUMN status ENUM('pending','verified','active','rejected') DEFAULT 'pending';
+
 -- =========================
 -- ADMIN
 -- =========================
@@ -79,6 +86,14 @@ CREATE TABLE servicio (
   precio DECIMAL(6,2) NOT NULL,
   duracion INT NOT NULL -- min
 );
+
+--
+-- INSERT INTO servicio (nombre, precio, duracion)
+-- VALUES ('free-30min', '0', '30');
+
+-- INSERT INTO servicio (nombre, precio, duracion)
+-- VALUES ('free-60min', '0', '60');
+
 
 -- =========================
 -- CITAS
@@ -219,6 +234,9 @@ CREATE TABLE pago (
     ON DELETE CASCADE
 );
 
+-- ALTER TABLE pago
+-- ADD COLUMN propina DECIMAL(8,2) NOT NULL DEFAULT 0.00;
+
 -- =========================
 -- HISTÓRICO DE CLIENTES
 -- =========================
@@ -256,4 +274,40 @@ CREATE TABLE audit_log (
     datos_despues LONGTEXT DEFAULT NULL,
     ip VARCHAR(45) DEFAULT NULL,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- VIP_HORARIO
+-- =========================
+CREATE TABLE vip_horario (
+    id_reserva INT AUTO_INCREMENT PRIMARY KEY,
+    id_barbero INT NOT NULL,
+
+    fecha DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+
+    motivo VARCHAR(255) DEFAULT NULL,
+
+    creada_por ENUM('barbero','admin') DEFAULT 'barbero',
+
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_barbero) REFERENCES barbero(id_barbero)
+        ON DELETE CASCADE
+);
+
+-- =========================
+-- NOTIFICACIONES
+-- =========================
+CREATE TABLE notificacion (
+    id_notificacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    titulo VARCHAR(255),
+    mensaje TEXT,
+    visto BOOLEAN DEFAULT FALSE,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+    ON DELETE CASCADE
 );

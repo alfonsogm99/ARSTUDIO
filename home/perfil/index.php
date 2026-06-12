@@ -215,6 +215,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+
+
+
+
+
+
+// =======================
+// 🔹 HORARIO VIP
+// =======================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'vip_create') {
+
+    $id_barbero = $conn->query("
+        SELECT id_barbero 
+        FROM barbero 
+        WHERE id_usuario = $user_id
+    ")->fetch_assoc()['id_barbero'] ?? null;
+
+    if (!$id_barbero) {
+        die("No se pudo identificar el barbero");
+    }
+
+    $fecha = $_POST['fecha'] ?? null;
+    $hora_inicio = $_POST['hora_inicio'] ?? null;
+    $hora_fin = $_POST['hora_fin'] ?? null;
+    $motivo = trim($_POST['motivo'] ?? '');
+
+    if (!$fecha || !$hora_inicio || !$hora_fin) {
+        die("Datos incompletos");
+    }
+
+    if ($hora_fin <= $hora_inicio) {
+        die("La hora fin debe ser mayor que la inicio");
+    }
+
+    $stmt = $conn->prepare("
+        INSERT INTO vip_horario (
+            id_barbero,
+            fecha,
+            hora_inicio,
+            hora_fin,
+            motivo,
+            creada_por
+        ) VALUES (?, ?, ?, ?, ?, ?)
+    ");
+
+    $creada_por = $rol;
+
+    $stmt->bind_param(
+        "isssss",
+        $id_barbero,
+        $fecha,
+        $hora_inicio,
+        $hora_fin,
+        $motivo,
+        $creada_por
+    );
+
+    $stmt->execute();
+
+    header("Location: ../../home");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -527,6 +590,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="button" id="btn_ausencias" onclick="toggleAusencias()">
         Ausencias
     </button>
+
+    <button type="button" id="btn_vip">
+        VIP
+    </button>
+
+    <div id="panel_vip" style="margin-top:15px;">
+
+        <form method="POST">
+
+            <input type="hidden" name="action" value="vip_create">
+
+            <input type="date" name="fecha" required>
+            <input type="time" name="hora_inicio" required>
+            <input type="time" name="hora_fin" required>
+            <input type="text" name="motivo" placeholder="Motivo del bloqueo">
+
+            <button type="submit">Guardar VIP</button>
+
+        </form>
+
+    </div>
 
     <div id="panel_ausencias" style="display:none; margin-top:15px;">
 

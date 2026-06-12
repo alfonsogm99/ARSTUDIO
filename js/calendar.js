@@ -4,6 +4,14 @@ function horaToMin(h) {
     return parseInt(hh) * 60 + parseInt(mm);
 }
 
+const vipHorarios = window.calendarData.vipHorarios || [];
+
+function getVipDia(fecha) {
+    return vipHorarios.filter(v =>
+        v.fecha === fecha
+    );
+}
+
 const userType = window.calendarData.userType;
 
 if (userType === 'cliente') {
@@ -457,12 +465,30 @@ document.querySelectorAll('.hour-slot').forEach(slot => {
         return slotMin >= start && slotMin < end;
     });
 
+    const vipDia = getVipDia(fecha);
+
+    const bloqueadoVIP = vipDia.some(v => {
+        const vInicio = parseHora(v.hora_inicio);
+        const vFin = parseHora(v.hora_fin);
+
+        return slotMin >= vInicio && slotMin < vFin;
+    });
+
+    if (bloqueadoVIP && userType === 'cliente') {
+        slot.classList.add('disabled-hour');
+        return;
+    }
+
+    if (bloqueadoVIP) {
+        slot.classList.add('vip-slot');
+    }
+
     const isPastHourToday =
     userType === 'cliente' &&
     isToday &&
     slotMin < currentMinutes;
 
-    if (isPastHourToday) {
+    if (isPastHourToday) {                        
         slot.classList.add('disabled-hour');
     }
 
@@ -563,10 +589,15 @@ slot.onclick = () => {
 
 
     const fechaHoraSlot = new Date(`${fecha}T${hora}`);
+    const hoy = new Date();
+
+    const esDiaAnterior =
+        fechaHoraSlot.toDateString() !== hoy.toDateString() &&
+        fechaHoraSlot < hoy;
 
     if (
         userType !== 'cliente' &&
-        fechaHoraSlot < new Date()
+        esDiaAnterior
     ) {
         return;
     }

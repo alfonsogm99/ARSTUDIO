@@ -28,7 +28,8 @@ $pago = $conn->query("
 if(!$pago){
     $pago = [
         'total' => '',
-        'metodo' => 'efectivo'
+        'metodo' => 'efectivo',
+        'propina' => 0
     ];
 }
 
@@ -66,27 +67,24 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
 
 
-    $id_servicio = !empty($_POST['id_servicio']) ? intval($_POST['id_servicio']) : 0;
+    $id_servicio = intval($_POST['id_servicio']);
 
-    $precio = 0;
-    $duracion = 0;
+    $stmt = $conn->prepare("
+        SELECT precio, duracion
+        FROM servicio
+        WHERE id_servicio = ?
+    ");
+    $stmt->bind_param("i", $id_servicio);
+    $stmt->execute();
 
-    if($id_servicio > 0){
+    $serv = $stmt->get_result()->fetch_assoc();
 
-        $stmt = $conn->prepare("
-            SELECT precio, duracion
-            FROM servicio
-            WHERE id_servicio = ?
-        ");
-        $stmt->bind_param("i", $id_servicio);
-        $stmt->execute();
-        $serv = $stmt->get_result()->fetch_assoc();
-
-        if($serv){
-            $precio = (float)$serv['precio'];
-            $duracion = (int)$serv['duracion'];
-        }
+    if(!$serv){
+        die("Servicio no encontrado");
     }
+
+    $precio = (float)$serv['precio'];
+    $duracion = (int)$serv['duracion'];
     
 
     $set = [];
@@ -132,6 +130,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $stmt->execute();
     }
 
+    $propina = isset($_POST['propina'])
+    ? floatval($_POST['propina'])
+    : 0;
+
+    $total = $precio + $propina;
+
     if(isset($_POST['metodo_pago'])){
 
         $metodo = $_POST['metodo_pago'];
@@ -142,16 +146,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
         if($check){
             $stmt = $conn->prepare("
-                UPDATE pago SET total=?, metodo=? WHERE id_cita=?
+                UPDATE pago
+                SET total=?, propina=?, metodo=?
+                WHERE id_cita=?
             ");
-            $stmt->bind_param("dsi", $precio, $metodo, $id);
+            $stmt->bind_param("ddsi", $total, $propina, $metodo, $id);
             $stmt->execute();
         } else {
             $stmt = $conn->prepare("
-                INSERT INTO pago (id_cita, total, metodo)
-                VALUES (?,?,?)
+                INSERT INTO pago (id_cita, total, propina, metodo)
+                VALUES (?,?,?,?)
             ");
-            $stmt->bind_param("ids", $id, $precio, $metodo);
+            $stmt->bind_param("idds", $id, $total, $propina, $metodo);
             $stmt->execute();
         }
     }
@@ -211,9 +217,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
         <select name="<?= $name ?>">
             <?php foreach($options as $opt): ?>
+
+                <?php if($opt === 'pendiente_cancelacion') continue; ?>
+
                 <option value="<?= $opt ?>" <?= $value == $opt ? 'selected' : '' ?>>
                     <?= ucfirst($opt) ?>
                 </option>
+
             <?php endforeach; ?>
         </select>
 
@@ -238,6 +248,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <br><br>
 
 <?php endforeach; ?>
+
+<h3>Propina</h3><br>
+
+<input
+    type="number"
+    name="propina"
+    min="0"
+    step="0.01"
+    value="<?= htmlspecialchars($pago['propina'] ?? 0) ?>"
+>
+
+<br><br>
 
 <?php 
 $servicios = $conn->query("SELECT * FROM servicio ORDER BY nombre ASC");

@@ -302,6 +302,29 @@ $diaSemanaNum = date('N', strtotime($fechaReferencia));
 $dia = $dias[$diaSemanaNum] ?? 'lunes';
 
 
+
+
+
+$vip_array = [];
+
+$tableExists = $conn->query("SHOW TABLES LIKE 'vip_horario'");
+if ($tableExists && $tableExists->num_rows > 0) {
+
+    $stmt = $conn->prepare("
+        SELECT id_reserva, fecha, hora_inicio, hora_fin, motivo
+        FROM vip_horario
+        WHERE id_barbero = ?
+    ");
+
+    $stmt->bind_param("i", $barberoFiltro);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    while ($row = $res->fetch_assoc()) {
+        $vip_array[] = $row;
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -537,7 +560,8 @@ window.calendarData = {
     horariosDisponibles: <?= json_encode($horarios_array ?? [], JSON_UNESCAPED_UNICODE) ?>,
     horarioActivo: <?= json_encode($horario_activo ?? null, JSON_UNESCAPED_UNICODE) ?>,
     diaSemana: "<?= $dia ?>",
-    bloqueos: <?= json_encode($bloqueos_array ?? [], JSON_UNESCAPED_UNICODE) ?>
+    bloqueos: <?= json_encode($bloqueos_array ?? [], JSON_UNESCAPED_UNICODE) ?>,
+    vipHorarios: <?= json_encode($vip_array ?? [], JSON_UNESCAPED_UNICODE) ?>
 };
 </script>
 </script>

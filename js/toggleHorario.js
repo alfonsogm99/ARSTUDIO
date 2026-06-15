@@ -12,6 +12,11 @@ function toggleAusencias(){
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
+function toggleVIP(){
+    const el = document.getElementById('panel_vip');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
 function toggleNuevoHorario(value){
 
     const panel = document.getElementById('nuevo_horario');

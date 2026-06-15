@@ -585,7 +585,7 @@ button:hover {
 
 .input-wrapper {
   position: relative;
-  width: 250px;
+  width: 100%;
 }
 
 .input-wrapper input {

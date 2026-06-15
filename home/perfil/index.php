@@ -591,22 +591,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         Ausencias
     </button>
 
-    <button type="button" id="btn_vip">
+    <button type="button" id="btn_vip" onclick="toggleVIP()">
         VIP
     </button>
 
-    <div id="panel_vip" style="margin-top:15px;">
+    <div id="panel_vip" style="display:none; margin-top:15px;">
 
         <form method="POST">
+
+            <h4>Bloqueo VIP</h4><br>
 
             <input type="hidden" name="action" value="vip_create">
 
             <input type="date" name="fecha" required>
+            <h5>Inicio</h5>
             <input type="time" name="hora_inicio" required>
+            <h5>Fin</h5>
             <input type="time" name="hora_fin" required>
             <input type="text" name="motivo" placeholder="Motivo del bloqueo">
 
-            <button type="submit">Guardar VIP</button>
+            <button type="submit">Guardar</button>
 
         </form>
 
@@ -614,6 +618,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <div id="panel_ausencias" style="display:none; margin-top:15px;">
 
+        <br>
+                    
         <h4>Ausencias existentes</h4>
 
         <?php if (!$id_barbero): ?>
@@ -665,9 +671,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         <?php endif; ?>
 
+        <br>
 
-
-            <form method="POST" action="bloquear_horario.php">
+        <form method="POST" action="bloquear_horario.php">
 
         <h4>Bloquear agenda</h4>
 

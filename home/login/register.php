@@ -133,12 +133,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="phone" placeholder="teléfono" required>
     </div><br>
     <div class="input-wrapper">
-        <input type="password" name="password" placeholder="contraseña" required>
+        <input id="password" type="password" name="password" placeholder="contraseña" required>
         <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('password', this)"></i>
-    </div><br><br>
+    </div><br>
     <div class="input-wrapper">
-        <input type="password" name="confirm_password" placeholder="repetir contraseña" required><br><br>
-        <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('password', this)"></i>
+        <input id="confirm_password" type="password" name="confirm_password" placeholder="repetir contraseña" required>
+        <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('confirm_password', this)"></i>
     </div>
 
     <button type="submit">Crear cuenta</button>

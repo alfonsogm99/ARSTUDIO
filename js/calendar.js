@@ -326,7 +326,7 @@ document.querySelectorAll('.day-cell[data-date]').forEach(cell => {
         return; // no se agrega onclick
     }
 
-    if(apps.length > 0){
+    if (apps.length > 0 && window.calendarData.userType !== 'cliente') {
         const div = document.createElement('div');
         div.className = 'appointment-count';
         div.textContent = apps.length + ' cita' + (apps.length > 1 ? 's' : '');

@@ -140,8 +140,9 @@ $rol = $_SESSION['user_type'];
                                     href="<?= BASE_URL ?>/admin/edit.php?tabla=usuario&idusuario=<?= $u['id_usuario'] ?>">
 
                                         <div class="notif-user">
+                                            <i id="i_notif">Usuario pendiente</i><br>
                                             <strong><?= htmlspecialchars($u['username']) ?></strong><br>
-                                            <small><?= htmlspecialchars($u['email']) ?></small>
+                                            <small><?= htmlspecialchars($u['email']) ?></small>                                            
                                         </div>
 
                                     </a>
@@ -156,11 +157,11 @@ $rol = $_SESSION['user_type'];
                                     href="<?= BASE_URL ?>/admin/editar_cita.php?id=<?= $c['id_cita'] ?>">
 
                                         <div class="notif-user">
-                                            <strong>Solicitud de cancelación</strong><br>
-                                            <?= htmlspecialchars($c['nombre']) ?><br>
+                                            <i id="i_notif">Solicitud de cancelación</i><br>
+                                            <strong><?= htmlspecialchars($c['nombre']) ?></strong><br>
                                             <small>
                                                 <?= $c['fecha'] ?> <?= substr($c['hora'], 0, 5) ?>
-                                            </small>
+                                            </small>                                            
                                         </div>
 
                                     </a>

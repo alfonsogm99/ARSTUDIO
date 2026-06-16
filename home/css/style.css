@@ -1243,7 +1243,7 @@ body.light-mode #menu_bar a{
     max-height: 120px;
     overflow-y: auto;
 
-    overscroll-behavior: contain; /* 👈 clave moderna */
+    overscroll-behavior: contain;
 
     padding: 8px;
     margin: 0;
@@ -1258,7 +1258,6 @@ body.light-mode #menu_bar a{
 
     text-align: center;
 
-    /* 🔥 CLAVE EXTRA */
     box-sizing: border-box;
 }
 
@@ -1287,12 +1286,22 @@ body.light-mode #menu_bar a{
     color: #eee;
 }
 
+.submenu .notif-user i {
+    font-size: 12px;
+    color: #eee;
+    opacity: .5;
+}
+
+#i_notif{
+    position: absolute;
+    right:0;
+}
+
 .submenu .notif-user small {
     font-size: 11px;
     opacity: 0.7;
     color: #bbb;
 }
-
 
 .submenu::-webkit-scrollbar {
     width: 6px;

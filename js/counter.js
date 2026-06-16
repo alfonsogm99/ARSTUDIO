@@ -1,5 +1,5 @@
 // Fecha objetivo
-const fechaObjetivo = new Date("2026-06-22 17:00:00").getTime();
+const fechaObjetivo = new Date("2026-06-16 10:11:00").getTime();
 
 const contador = document.getElementById("contador");
 
@@ -32,7 +32,7 @@ function actualizarContador() {
     // Finalizar
     if (diferencia < 0) {
     clearInterval(intervalo);
-    contador.innerHTML = 'ARSTUDIO<br>¡ya es una realidad!<br> <div class="map-card"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.5199181579137!2d-3.8194895253215675!3d37.5899210227887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd6ddffecdb58f3b%3A0xb7db56329283d542!2sAR%20STUDIO!5e0!3m2!1ses!2ses!4v1780051583948!5m2!1ses!2ses" allowfullscreen="" loading="lazy"> </iframe></div>';
+    contador.innerHTML = 'ARSTUDIO<br>¡ya se encuentra abierto!<br> <div class="map-card"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.5199181579137!2d-3.8194895253215675!3d37.5899210227887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd6ddffecdb58f3b%3A0xb7db56329283d542!2sAR%20STUDIO!5e0!3m2!1ses!2ses!4v1780051583948!5m2!1ses!2ses" allowfullscreen="" loading="lazy"> </iframe></div>';
     }
 }
 

@@ -67,28 +67,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } else {
 
-            // guardar en sesión
-            $_SESSION['pending_user'] = [
-                'username' => $username_safe,
-                'email'    => $email_safe,
-                'phone'    => $phone_safe,
-                'password' => password_hash($password, PASSWORD_DEFAULT)
-            ];
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-            // 🔐 TWILIO CONFIG
-            $sid = "AC0a0df29f986f88e187dbb3ad4a910040";
-            $token = "2cf39fb445e56e7e359ecbe729d66544";
-            $verifySid = "VA764fa9e539468a0e134406cbe73dfb7e";
+            $stmt = $conn->prepare("
+                INSERT INTO usuario
+                (
+                    username,
+                    password,
+                    rol,
+                    activo,
+                    email,
+                    phone,
+                    status
+                )
+                VALUES (?, ?, 'cliente', 0, ?, ?, 'pending')
+            ");
 
-            list($response, $httpCode) = sendOTP($phone_safe, $verifySid, $sid, $token);
+            $stmt->bind_param(
+                "ssss",
+                $username_safe,
+                $password_hash,
+                $email_safe,
+                $phone_safe
+            );
 
-            $data = json_decode($response, true);
+            if ($stmt->execute()) {
 
-            if ($httpCode >= 400 || isset($data['message'])) {
-                $error = "Error enviando OTP: " . ($data['message'] ?? 'Error desconocido');
-            } else {
-                header("Location: verify.php");
+                $success = "Solicitud enviada correctamente. Tu cuenta está pendiente de aprobación.";
+
+                // Opcional: redirigir
+                header("Location: ../login/?pending=1");
                 exit;
+
+            } else {
+                $error = "Error al crear la cuenta.";
             }
         }
     }

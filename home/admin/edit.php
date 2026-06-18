@@ -99,7 +99,7 @@ $res = $conn->query("DESCRIBE usuario");
 while ($row = $res->fetch_assoc()) {
     $field = $row['Field'];
 
-    if (in_array($field, ['otp_code', 'otp_expires', 'status'])) continue;
+    if (in_array($field, ['password','otp_code', 'otp_expires', 'status'])) continue;
 
     $usuarioCols[] = $field;
 }
@@ -141,7 +141,11 @@ if (!$usuario) {
 /* =========================
    CLIENTE (PUEDE NO EXISTIR)
 ========================= */
-$stmt = $conn->prepare("SELECT * FROM cliente WHERE id_usuario = ?");
+$stmt = $conn->prepare("
+    SELECT c.*
+    FROM cliente c
+    WHERE c.id_usuario = ?
+");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $cliente = $stmt->get_result()->fetch_assoc();
@@ -191,6 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     /* ======================
        USUARIO UPDATE
     ====================== */
+
     $uSets = [];
 
     foreach ($usuarioCols as $col) {
@@ -215,83 +220,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 
+    /* ======================
+       CLIENTE (SEARCH SYSTEM)
+    ====================== */
 
+    $clienteInput = $_POST['cliente'] ?? [];
 
-    $cCheck = $conn->query("SELECT id_cliente FROM cliente WHERE id_usuario = $id");
-    $exists = $cCheck->num_rows > 0;
+    $idCliente = !empty($clienteInput['id_cliente'])
+        ? (int)$clienteInput['id_cliente']
+        : null;
 
     $cSets = [];
 
-    /* =========================
-    CLIENTE CAMPOS NORMALES (FORM)
-    ========================= */
-    $clienteInput = $_POST['cliente'] ?? [];
-
     foreach ($clienteCols as $col) {
-
-        if (in_array($col, ['id_cliente', 'id_usuario'])) {
-            continue;
-        }
-
-        if ($col === 'activo') {
-            $cSets[$col] = isset($clienteInput['activo']) ? 1 : 0;
-            continue;
-        }
+        if (in_array($col, ['id_cliente', 'id_usuario'])) continue;
 
         $cSets[$col] = $conn->real_escape_string($clienteInput[$col] ?? '');
     }
 
-    /* =========================
-    SIEMPRE SINCRONIZAR DESDE USUARIO
-    ========================= */
-
-    $cSets['email']  = $_POST['usuario']['email'] ?? '';
+    // sync usuario → cliente
+    $cSets['email'] = $_POST['usuario']['email'] ?? '';
 
     $fullPhone = trim($_POST['usuario']['phone'] ?? '');
 
     if (str_starts_with($fullPhone, '+34')) {
-
         $cSets['prefijo_pais'] = '+34';
         $cSets['telefono'] = substr($fullPhone, 3);
-
     } elseif (str_starts_with($fullPhone, '34')) {
-
         $cSets['prefijo_pais'] = '+34';
         $cSets['telefono'] = substr($fullPhone, 2);
-
     } else {
-
         $cSets['telefono'] = $fullPhone;
     }
 
 
+    /* ======================
+       VALIDACIÓN CLIENTE
+    ====================== */
 
-    if ($exists) {
+    if ($idCliente > 0) {
 
-        $updateParts = [];
+        // comprobar si el cliente existe y su dueño actual
+        $stmt = $conn->prepare("
+            SELECT id_usuario
+            FROM cliente
+            WHERE id_cliente = ?
+        ");
+        $stmt->bind_param("i", $idCliente);
+        $stmt->execute();
+        $existing = $stmt->get_result()->fetch_assoc();
 
-        foreach ($cSets as $k => $v) {
-            $updateParts[] = "`$k`='$v'";
+        // si está asignado a otro usuario → bloquear
+        if (!empty($existing['id_usuario']) && $existing['id_usuario'] != $id) {
+            die("Este cliente ya está asociado a otro usuario");
         }
 
-        $conn->query("
+        // vincular cliente al usuario EDITADO
+        $stmt = $conn->prepare("
             UPDATE cliente
-            SET " . implode(",", $updateParts) . "
-            WHERE id_usuario = $id
+            SET
+                id_usuario = ?,
+                email = ?,
+                prefijo_pais = ?,
+                telefono = ?
+            WHERE id_cliente = ?
         ");
 
-    } else {
+        $cSets['prefijo_pais'] = $cSets['prefijo_pais'] ?? '+34';
+        $cSets['telefono'] = $cSets['telefono'] ?? '';
 
-        $cols = array_keys($cSets);
-        $vals = array_values($cSets);
+        $stmt->bind_param(
+            "isssi",
+            $id,
+            $cSets['email'],
+            $cSets['prefijo_pais'],
+            $cSets['telefono'],
+            $idCliente
+        );
 
-        $cols[] = "id_usuario";
-        $vals[] = $id;
-
-        $conn->query("
-            INSERT INTO cliente (" . implode(",", $cols) . ")
-            VALUES ('" . implode("','", $vals) . "')
-        ");
+        $stmt->execute();
     }
 
     header("Location: admin.php?tabla=usuario");
@@ -365,68 +372,25 @@ $isReadonly = in_array($col, [
 
 <!--<h3>Cliente</h3>-->
 
-<?php foreach ($clienteCols as $col): ?>
+<label>Cliente:</label>
 
-<?php
+<input
+    type="hidden"
+    name="cliente[id_cliente]"
+    id="id_cliente"
+    value="<?= htmlspecialchars($cliente['id_cliente'] ?? '') ?>"
+>
 
-$isHidden = in_array($col, [
-    'otp_code',
-    'otp_expires',
-    'id_cliente',
-    'id_usuario',
-    'google_id',
-    'email',
-    'fecha_registro',
-    'prefijo_pais',
-    'telefono'
-]);
-$isReadonly = in_array($col, ['fecha_creacion']);
-$valor = $cliente[$col] ?? '';
-?>
+<input
+    type="text"
+    id="cliente_input"
+    value="<?= htmlspecialchars($cliente['nombre'] ?? $data['nombre'] ?? '') ?>"
+    placeholder="Escribe nombre o DNI"
+    autocomplete="off"
+    required
+>
 
-<?php if ($isHidden): ?>
-    <input type="hidden"
-           name="cliente[<?= $col ?>]"
-           value="<?= htmlspecialchars($valor) ?>">
-    <?php continue; ?>
-<?php endif; ?>
-
-<label>
-    <?= $col ?>:
-
-    <?php if ($col === 'activo'): ?>
-
-        <input type="hidden" name="cliente[activo]" value="0">
-
-        <input type="checkbox"
-               name="cliente[activo]"
-               value="1"
-               <?= (!empty($cliente['activo']) ? 'checked' : '') ?>>
-
-    <?php elseif ($isReadonly): ?>
-
-        <input type="text"
-               name="cliente[<?= $col ?>]"
-               value="<?= htmlspecialchars($valor) ?>"
-               readonly
-               class="readonly-input">
-
-    <?php else: ?>
-
-    <input
-        type="text"
-        name="cliente[<?= $col ?>]"
-        value="<?= htmlspecialchars($valor) ?>"
-        <?= $isReadonly ? 'readonly class="readonly-input"' : '' ?>
-        <?= $col === 'dni' ? 'required' : '' ?>
-    >
-
-    <?php endif; ?>
-
-</label>
-<br>
-
-<?php endforeach; ?>
+<div id="cliente_suggestions"></div>
 
 <button type="submit">Guardar cambios</button>
 </form>
@@ -467,6 +431,8 @@ $version = $config['app']['version'] ?? '0.0.0';
         <a href="../includes/cookies.html">Política de Cookies</a> |
         <a href="../includes/terminos.html">Términos y Condiciones</a>
 </footer>
+
+<script src="../../js/search_clients.js"></script>
 
 </body>
 </html>

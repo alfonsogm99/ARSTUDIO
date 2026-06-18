@@ -727,7 +727,6 @@ citas
 .appointment.confirmada { background: #3498db; }
 .appointment.completada { background: #2ecc71; }
 .appointment.cancelada { background: #e74c3c; }
-
 .appointment.pendiente_cancelacion { background: #adadad; }
 
 .appointment.oculto {
@@ -2103,8 +2102,24 @@ body.light-mode #floating-filter .filter-btn.active {
 .label-color.completada { background-color: #2ecc71; }
 .label-color.cancelada { background-color: #e74c3c; }
 .label-color[data-barbero] { background-color: #3498db; }
-
 .label-color.pendiente_cancelacion { background-color: #adadad; }
+
+
+
+.my-appointment{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    position:absolute;
+    right:5px;
+    bottom:5px;
+}
+
+.my-appointment.pendiente{ background:#f1c40f;}
+.my-appointment.confirmada{ background:#3498db;}
+.my-appointment.completada{ background:#2ecc71;}
+.my-appointment.cancelada{ background:#e74c3c;}
+.my-appointment.pendiente_cancelacion{ background:#adadad;}
 
 
 #toggle-filters {

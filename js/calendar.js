@@ -317,6 +317,22 @@ document.querySelectorAll('.day-cell[data-date]').forEach(cell => {
     const date = cell.dataset.date;
     const apps = visibleAppointments.filter(a => a.fecha === date);
 
+
+    // cita cliente > día
+    const miCita = apps.find(a =>
+        Number(a.id_cliente) === Number(window.calendarData.clienteId)
+    );
+
+    if (window.calendarData.userType === 'cliente' && miCita) {
+
+        const badge = document.createElement('div');
+
+        badge.className = `my-appointment ${miCita.estado}`;
+
+        cell.appendChild(badge);
+    }
+
+
     // bloqueos totales
     if (estaDiaCompletamenteBloqueado(date)) {
         cell.classList.add('disabled-day');

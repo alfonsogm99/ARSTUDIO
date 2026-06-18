@@ -89,35 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "No puedes reservar en fechas pasadas.";
     }
 
-    // =========================
-    // SI TODO OK → VALIDACIONES BUSINESS RULES
-    // =========================
-    if (!$error) {
 
-        // =========================
-        // COOLDOWN 1 HORA
-        // =========================
-        $stmt = $conn->prepare("
-            SELECT fecha, hora
-            FROM cita
-            WHERE id_cliente = ?
-            AND estado IN ('pendiente','confirmada')
-            ORDER BY fecha DESC, hora DESC
-            LIMIT 1
-        ");
-
-        $stmt->bind_param("i", $id_cliente);
-        $stmt->execute();
-        $last = $stmt->get_result()->fetch_assoc();
-
-        if ($last) {
-            $lastTime = strtotime($last['fecha'] . ' ' . $last['hora']);
-
-            if ((time() - $lastTime) < 3600) {
-                $error = "Debes esperar al menos 1 hora entre citas.";
-            }
-        }
-    }
 
     if (!$error) {
 
@@ -132,7 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             FROM cita
             WHERE id_cliente = ?
             AND fecha BETWEEN ? AND ?
-            AND estado != 'cancelada'
+            AND estado IN (
+                'pendiente',
+                'confirmada',
+                'pendiente_cancelacion'
+            )
         ");
 
         $stmt->bind_param("iss", $id_cliente, $from7, $to7);
@@ -158,7 +134,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             FROM cita
             WHERE id_cliente = ?
             AND fecha BETWEEN ? AND ?
-            AND estado != 'cancelada'
+            AND estado IN (
+                'pendiente',
+                'confirmada',
+                'pendiente_cancelacion'
+            )
         ");
 
         $stmt->bind_param("iss", $id_cliente, $from30, $to30);
@@ -203,6 +183,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+
+
+    // =========================
+    // CITA FUTURA
+    // Bloqueo: Lunes → cita, Martes → cita, Miércoles → cita...
+    // =========================
+    if (!$error) {
+
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) as total
+            FROM cita
+            WHERE id_cliente = ?
+            AND fecha >= CURDATE()
+            AND estado IN (
+                'pendiente',
+                'confirmada',
+                'pendiente_cancelacion'
+            )
+        ");
+
+        $stmt->bind_param("i", $id_cliente);
+        $stmt->execute();
+
+        $totalFuture = $stmt->get_result()->fetch_assoc()['total'];
+
+        if ($totalFuture >= 1) {
+            $error = "Ya tienes una cita pendiente.";
+        }
+    }
+
+    if (!$error) {
+
+        $nuevaCita = strtotime($fecha . ' ' . $hora);
+
+        if (($nuevaCita - time()) < 3600) {
+            $error = "Debes reservar con al menos 1 hora de antelación.";
+        }
+    }
+
+    if (!$error) {
+
+        if (strtotime($fecha) > strtotime('+60 days')) {
+            $error = "No puedes reservar con más de 60 días de antelación.";
+        }
+    }
+
 
     // =========================
     // INSERT FINAL

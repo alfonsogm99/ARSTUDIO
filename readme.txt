@@ -10,3 +10,4 @@
 -  Se corrige el rango de horas en el calendario (Vista Diaria)
     - Antes (09:00, 09:15, 09:30, 09:45 .......)
     - Después (09:00, 09:30, 10:00, 10:30 .......)
+-  Actualización de triggers (al alterar la bbdd algunos quedaban obsoletos, además se han generado aquellos que no estaban contemplados hasta ahora)

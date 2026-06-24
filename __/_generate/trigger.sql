@@ -71,6 +71,16 @@ DROP TRIGGER IF EXISTS horario_general_after_insert;
 DROP TRIGGER IF EXISTS horario_general_after_update;
 DROP TRIGGER IF EXISTS horario_general_after_delete;
 
+-- vip_horario
+DROP TRIGGER IF EXISTS vip_horario_after_insert;
+DROP TRIGGER IF EXISTS vip_horario_after_update;
+DROP TRIGGER IF EXISTS vip_horario_after_delete;
+
+-- notificacion
+DROP TRIGGER IF EXISTS notificacion_after_insert;
+DROP TRIGGER IF EXISTS notificacion_after_update;
+DROP TRIGGER IF EXISTS notificacion_after_delete;
+
 
 
 
@@ -109,7 +119,10 @@ BEGIN
         JSON_OBJECT(
             'id_usuario', NEW.id_usuario,
             'username', NEW.username,
+            'email', NEW.email,
+            'phone', NEW.phone,
             'rol', NEW.rol,
+            'status', NEW.status,
             'activo', NEW.activo
         )
     );
@@ -144,14 +157,18 @@ BEGIN
         COALESCE(@usuario_actual, 'system'),
         JSON_OBJECT(
             'username', OLD.username,
-            'password', OLD.password,
+            'email', OLD.email,
+            'phone', OLD.phone,
             'rol', OLD.rol,
+            'status', OLD.status,
             'activo', OLD.activo
         ),
         JSON_OBJECT(
             'username', NEW.username,
-            'password', NEW.password,
+            'email', NEW.email,
+            'phone', NEW.phone,
             'rol', NEW.rol,
+            'status', NEW.status,
             'activo', NEW.activo
         )
     );
@@ -185,7 +202,10 @@ BEGIN
         COALESCE(@usuario_actual, 'system'),
         JSON_OBJECT(
             'username', OLD.username,
+            'email', OLD.email,
+            'phone', OLD.phone,
             'rol', OLD.rol,
+            'status', OLD.status,
             'activo', OLD.activo
         )
     );
@@ -198,7 +218,6 @@ DELIMITER ;
 -- =========================
 -- TABLA CLIENTE
 -- =========================
-
 
 -- =========================
 -- INSERT
@@ -224,10 +243,13 @@ BEGIN
         COALESCE(@usuario_actual, 'system'),
         JSON_OBJECT(
             'id_cliente', NEW.id_cliente,
+            'google_id', NEW.google_id,
             'nombre', NEW.nombre,
-            'dni', NEW.dni,
             'email', NEW.email,
-            'telefono', NEW.telefono
+            'prefijo_pais', NEW.prefijo_pais,
+            'telefono', NEW.telefono,
+            'observaciones', NEW.observaciones,
+            'id_usuario', NEW.id_usuario
         )
     );
 END$$
@@ -259,16 +281,22 @@ BEGIN
         NEW.id_cliente,
         COALESCE(@usuario_actual, 'system'),
         JSON_OBJECT(
+            'google_id', OLD.google_id,
             'nombre', OLD.nombre,
-            'dni', OLD.dni,
             'email', OLD.email,
-            'telefono', OLD.telefono
+            'prefijo_pais', OLD.prefijo_pais,
+            'telefono', OLD.telefono,
+            'observaciones', OLD.observaciones,
+            'id_usuario', OLD.id_usuario
         ),
         JSON_OBJECT(
+            'google_id', NEW.google_id,
             'nombre', NEW.nombre,
-            'dni', NEW.dni,
             'email', NEW.email,
-            'telefono', NEW.telefono
+            'prefijo_pais', NEW.prefijo_pais,
+            'telefono', NEW.telefono,
+            'observaciones', NEW.observaciones,
+            'id_usuario', NEW.id_usuario
         )
     );
 END$$
@@ -299,10 +327,13 @@ BEGIN
         OLD.id_cliente,
         COALESCE(@usuario_actual, 'system'),
         JSON_OBJECT(
+            'google_id', OLD.google_id,
             'nombre', OLD.nombre,
-            'dni', OLD.dni,
             'email', OLD.email,
-            'telefono', OLD.telefono
+            'prefijo_pais', OLD.prefijo_pais,
+            'telefono', OLD.telefono,
+            'observaciones', OLD.observaciones,
+            'id_usuario', OLD.id_usuario
         )
     );
 END$$
@@ -571,6 +602,7 @@ BEGIN
             'hora', NEW.hora,
             'estado', NEW.estado,
             'estado_pago', NEW.estado_pago,
+            'notas', NEW.notas,
             'duracion_total', NEW.duracion_total
         )
     );
@@ -604,24 +636,24 @@ BEGIN
         NEW.id_cita,
         COALESCE(@usuario_actual, 'system'),
         JSON_OBJECT(
-            'id_cita', OLD.id_cita,
             'id_cliente', OLD.id_cliente,
             'id_barbero', OLD.id_barbero,
             'fecha', OLD.fecha,
             'hora', OLD.hora,
             'estado', OLD.estado,
             'estado_pago', OLD.estado_pago,
+            'notas', OLD.notas,
             'duracion_total', OLD.duracion_total
         ),
 
         JSON_OBJECT(
-            'id_cita', NEW.id_cita,
             'id_cliente', NEW.id_cliente,
             'id_barbero', NEW.id_barbero,
             'fecha', NEW.fecha,
             'hora', NEW.hora,
             'estado', NEW.estado,
             'estado_pago', NEW.estado_pago,
+            'notas', NEW.notas,
             'duracion_total', NEW.duracion_total
         )
     );
@@ -655,13 +687,13 @@ BEGIN
         COALESCE(@usuario_actual, 'system'),
 
         JSON_OBJECT(
-            'id_cita', OLD.id_cita,
             'id_cliente', OLD.id_cliente,
             'id_barbero', OLD.id_barbero,
             'fecha', OLD.fecha,
             'hora', OLD.hora,
             'estado', OLD.estado,
             'estado_pago', OLD.estado_pago,
+            'notas', OLD.notas,
             'duracion_total', OLD.duracion_total
         )
     );
@@ -943,6 +975,7 @@ BEGIN
             'id_pago', NEW.id_pago,
             'id_cita', NEW.id_cita,
             'total', NEW.total,
+            'propina', NEW.propina,
             'metodo', NEW.metodo
         )
     );
@@ -975,10 +1008,12 @@ BEGIN
         COALESCE(@usuario_actual, 'system'),
         JSON_OBJECT(
             'total', OLD.total,
+            'propina', OLD.propina,
             'metodo', OLD.metodo
         ),
         JSON_OBJECT(
             'total', NEW.total,
+            'propina', NEW.propina,
             'metodo', NEW.metodo
         )
     );
@@ -1011,6 +1046,7 @@ BEGIN
         JSON_OBJECT(
             'id_cita', OLD.id_cita,
             'total', OLD.total,
+            'propina', OLD.propina,
             'metodo', OLD.metodo
         )
     );
@@ -1622,6 +1658,225 @@ BEGIN
         )
     );
 
+END$$
+
+DELIMITER ;
+
+
+
+-- =========================
+-- TABLA VIP_HORARIO
+-- =========================
+
+-- =========================
+-- INSERT
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER vip_horario_after_insert
+AFTER INSERT ON vip_horario
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (
+        tabla, accion, registro_id, usuario, datos_despues
+    )
+    VALUES (
+        'vip_horario',
+        'INSERT',
+        NEW.id_reserva,
+        COALESCE(@usuario_actual,'system'),
+        JSON_OBJECT(
+            'id_reserva', NEW.id_reserva,
+            'id_barbero', NEW.id_barbero,
+            'fecha', NEW.fecha,
+            'hora_inicio', NEW.hora_inicio,
+            'hora_fin', NEW.hora_fin,
+            'motivo', NEW.motivo,
+            'creada_por', NEW.creada_por
+        )
+    );
+END$$
+
+DELIMITER ;
+
+
+-- =========================
+-- UPDATE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER vip_horario_after_update
+AFTER UPDATE ON vip_horario
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (
+        tabla, accion, registro_id, usuario,
+        datos_antes, datos_despues
+    )
+    VALUES (
+        'vip_horario',
+        'UPDATE',
+        NEW.id_reserva,
+        COALESCE(@usuario_actual,'system'),
+
+        JSON_OBJECT(
+            'id_barbero', OLD.id_barbero,
+            'fecha', OLD.fecha,
+            'hora_inicio', OLD.hora_inicio,
+            'hora_fin', OLD.hora_fin,
+            'motivo', OLD.motivo,
+            'creada_por', OLD.creada_por
+        ),
+
+        JSON_OBJECT(
+            'id_barbero', NEW.id_barbero,
+            'fecha', NEW.fecha,
+            'hora_inicio', NEW.hora_inicio,
+            'hora_fin', NEW.hora_fin,
+            'motivo', NEW.motivo,
+            'creada_por', NEW.creada_por
+        )
+    );
+END$$
+
+DELIMITER ;
+
+
+
+-- =========================
+-- DELETE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER vip_horario_after_delete
+AFTER DELETE ON vip_horario
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (
+        tabla, accion, registro_id, usuario, datos_antes
+    )
+    VALUES (
+        'vip_horario',
+        'DELETE',
+        OLD.id_reserva,
+        COALESCE(@usuario_actual,'system'),
+
+        JSON_OBJECT(
+            'id_reserva', OLD.id_reserva,
+            'id_barbero', OLD.id_barbero,
+            'fecha', OLD.fecha,
+            'hora_inicio', OLD.hora_inicio,
+            'hora_fin', OLD.hora_fin,
+            'motivo', OLD.motivo,
+            'creada_por', OLD.creada_por
+        )
+    );
+END$$
+
+DELIMITER ;
+
+
+
+
+-- =========================
+-- TABLA NOTIFICACION
+-- =========================
+
+-- =========================
+-- INSERT
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER notificacion_after_insert
+AFTER INSERT ON notificacion
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (
+        tabla, accion, registro_id, usuario, datos_despues
+    )
+    VALUES (
+        'notificacion',
+        'INSERT',
+        NEW.id_notificacion,
+        COALESCE(@usuario_actual,'system'),
+
+        JSON_OBJECT(
+            'id_usuario', NEW.id_usuario,
+            'titulo', NEW.titulo,
+            'mensaje', NEW.mensaje,
+            'visto', NEW.visto
+        )
+    );
+END$$
+
+DELIMITER ;
+
+
+
+-- =========================
+-- UPDATE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER notificacion_after_update
+AFTER UPDATE ON notificacion
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (
+        tabla, accion, registro_id, usuario,
+        datos_antes, datos_despues
+    )
+    VALUES (
+        'notificacion',
+        'UPDATE',
+        NEW.id_notificacion,
+        COALESCE(@usuario_actual,'system'),
+
+        JSON_OBJECT(
+            'id_usuario', OLD.id_usuario,
+            'titulo', OLD.titulo,
+            'mensaje', OLD.mensaje,
+            'visto', OLD.visto
+        ),
+
+        JSON_OBJECT(
+            'id_usuario', NEW.id_usuario,
+            'titulo', NEW.titulo,
+            'mensaje', NEW.mensaje,
+            'visto', NEW.visto
+        )
+    );
+END$$
+
+DELIMITER ;
+
+
+
+-- =========================
+-- DELETE
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER notificacion_after_delete
+AFTER DELETE ON notificacion
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (
+        tabla, accion, registro_id, usuario, datos_antes
+    )
+    VALUES (
+        'notificacion',
+        'DELETE',
+        OLD.id_notificacion,
+        COALESCE(@usuario_actual,'system'),
+
+        JSON_OBJECT(
+            'id_usuario', OLD.id_usuario,
+            'titulo', OLD.titulo,
+            'mensaje', OLD.mensaje,
+            'visto', OLD.visto
+        )
+    );
 END$$
 
 DELIMITER ;

@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
 
             $stmt = $conn->prepare("INSERT INTO cliente (nombre, email) VALUES (?,?)");
-            $stmt->bind_param("sss", $nombre, $email);
+            $stmt->bind_param("ss", $nombre, $email);
 
             if($stmt->execute()){
 

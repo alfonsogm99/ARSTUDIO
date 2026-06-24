@@ -46,6 +46,8 @@ $theme = $config['theme'] ?? 'dark';
 $fecha = $_GET['fecha'] ?? date('Y-m-d');
 $hora  = $_GET['hora'] ?? '08:00';
 
+$nuevaFechaHora = $fecha . ' ' . $hora;
+
 // =========================
 // BARBEROS
 // =========================
@@ -66,7 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_barbero = intval($_POST['id_barbero'] ?? 0);
     $hora       = $_POST['hora'] ?? '';
     $fecha      = $_POST['fecha'] ?? '';
-    $duracion   = intval($_POST['duracion'] ?? 0);
+
+    $id_servicio = intval($_POST['id_servicio'] ?? 0);
+
+    $stmt = $conn->prepare("SELECT duracion FROM servicio WHERE id_servicio = ?");
+    $stmt->bind_param("i", $id_servicio);
+    $stmt->execute();
+    $duracion = $stmt->get_result()->fetch_assoc()['duracion'] ?? 0;
 
     // =========================
     // VALIDACIÓN BÁSICA
@@ -88,65 +96,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "No puedes reservar en fechas pasadas.";
     }
 
-
-
+    // =========================
+    // CITA DIA
+    // Bloqueo: Lunes → 1 cita, Martes → 1 cita, Miércoles → 1 cita...
+    // =========================
     if (!$error) {
-
-        // =========================
-        // 7 DÍAS → MAX 2
-        // =========================
-        $from7 = date('Y-m-d', strtotime($fecha . ' -7 days'));
-        $to7 = $fecha;
 
         $stmt = $conn->prepare("
             SELECT COUNT(*) as total
             FROM cita
             WHERE id_cliente = ?
-            AND fecha BETWEEN ? AND ?
-            AND estado IN (
-                'pendiente',
-                'confirmada',
-                'pendiente_cancelacion'
-            )
+            AND fecha = ?
+            AND estado IN ('pendiente','confirmada','pendiente_cancelacion')
         ");
 
-        $stmt->bind_param("iss", $id_cliente, $from7, $to7);
+        $stmt->bind_param("is", $id_cliente, $fecha);
+        $stmt->execute();
+
+        $totalDia = $stmt->get_result()->fetch_assoc()['total'];
+
+        if ($totalDia >= 1) {
+            $error = "Ya tienes una cita el mismo día.";
+        }
+    }
+
+
+    // =========================
+    // 7 DÍAS → MAX 2
+    // =========================
+    if (!$error) {
+
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) as total
+            FROM cita
+            WHERE id_cliente = ?
+            AND CONCAT(fecha, ' ', hora) BETWEEN 
+                DATE_SUB(?, INTERVAL 7 DAY) AND DATE_ADD(?, INTERVAL 7 DAY)
+            AND estado IN ('pendiente','confirmada','pendiente_cancelacion')
+        ");
+
+        $stmt->bind_param("iss", $id_cliente, $nuevaFechaHora, $nuevaFechaHora);
         $stmt->execute();
 
         $total7 = $stmt->get_result()->fetch_assoc()['total'];
 
         if ($total7 >= 2) {
-            $error = "Máximo 2 citas en los últimos 7 días.";
+            $error = "Has alcanzado el máximo de 2 citas en una ventana de 7 días.";
         }
     }
 
+    // =========================
+    // MES NATURAL → MAX 4 (CORRECTO)
+    // =========================
     if (!$error) {
-
-        // =========================
-        // 30 DÍAS → MAX 4
-        // =========================
-        $from30 = date('Y-m-d', strtotime($fecha . ' -30 days'));
-        $to30 = $fecha;
 
         $stmt = $conn->prepare("
             SELECT COUNT(*) as total
             FROM cita
             WHERE id_cliente = ?
-            AND fecha BETWEEN ? AND ?
-            AND estado IN (
-                'pendiente',
-                'confirmada',
-                'pendiente_cancelacion'
-            )
+            AND fecha >= DATE_FORMAT(?, '%Y-%m-01')
+            AND fecha < DATE_ADD(DATE_FORMAT(?, '%Y-%m-01'), INTERVAL 1 MONTH)
+            AND estado IN ('pendiente','confirmada','pendiente_cancelacion')
         ");
 
-        $stmt->bind_param("iss", $id_cliente, $from30, $to30);
+        $stmt->bind_param("iss", $id_cliente, $fecha, $fecha);
         $stmt->execute();
 
-        $total30 = $stmt->get_result()->fetch_assoc()['total'];
+        $totalMes = $stmt->get_result()->fetch_assoc()['total'];
 
-        if ($total30 >= 4) {
-            $error = "Máximo 4 citas en los últimos 30 días.";
+        if ($totalMes >= 4) {
+            $error = "Has alcanzado el máximo de 4 citas en este mes.";
         }
     }
 
@@ -180,35 +199,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Ese horario no está disponible.";
                 break;
             }
-        }
-    }
-
-
-    // =========================
-    // CITA FUTURA
-    // Bloqueo: Lunes → cita, Martes → cita, Miércoles → cita...
-    // =========================
-    if (!$error) {
-
-        $stmt = $conn->prepare("
-            SELECT COUNT(*) as total
-            FROM cita
-            WHERE id_cliente = ?
-            AND fecha >= CURDATE()
-            AND estado IN (
-                'pendiente',
-                'confirmada',
-                'pendiente_cancelacion'
-            )
-        ");
-
-        $stmt->bind_param("i", $id_cliente);
-        $stmt->execute();
-
-        $totalFuture = $stmt->get_result()->fetch_assoc()['total'];
-
-        if ($totalFuture >= 1) {
-            $error = "Ya tienes una cita pendiente.";
         }
     }
 

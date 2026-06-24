@@ -480,7 +480,7 @@ $inicio = 9;
 $fin = 22;
 
 for($h = $inicio; $h < $fin; $h++){
-    foreach([0,15,30,45] as $m){
+    foreach([0,30] as $m){
         $hora = sprintf('%02d:%02d:00', $h, $m);
         echo '
             <div class="hour-slot" data-hora="'.$hora.'">

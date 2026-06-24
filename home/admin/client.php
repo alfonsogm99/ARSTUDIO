@@ -303,18 +303,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="perfil_wrapper">
 <form method="POST" class="perfil_box">
 
-    <h2>Reservar cita</h2>
+    <h2>Reservar cita</h2><br>
 
     <input type="hidden" name="fecha" value="<?= $fecha ?>">
 
     <label>Cliente</label>
-    <input type="text" value="<?= htmlspecialchars($nombre) ?>" readonly>
-
-    <label>DNI</label>
-    <input type="text" value="<?= htmlspecialchars($dni) ?>" readonly>
+    <input class="readonly-input" type="text" value="<?= htmlspecialchars($nombre) ?>" readonly>
 
     <label>Email</label>
-    <input type="email" value="<?= htmlspecialchars($email) ?>" readonly>
+    <input class="readonly-input" type="email" value="<?= htmlspecialchars($email) ?>" readonly>
 
     <label>Barbero</label>
     <select name="id_barbero" required>
@@ -334,15 +331,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="time" value="<?= substr($hora, 0, 5) ?>" readonly class="readonly-input">
     <input type="hidden" name="hora" value="<?= substr($hora, 0, 5) ?>">
 
-    <label>Duración</label>
-    <select name="duracion" required>
-        <option value="30" <?= ($_POST['duracion'] ?? '') == '30' ? 'selected' : '' ?>>
-            30 min
-        </option>
+    <?php 
+    $servicios = $conn->query("SELECT * FROM servicio ORDER BY nombre ASC");
 
-        <option value="60" <?= ($_POST['duracion'] ?? '') == '60' ? 'selected' : '' ?>>
-            60 min
-        </option>
+    $servicios = $conn->query("
+        SELECT *
+        FROM servicio
+        WHERE precio > 0
+        ORDER BY nombre ASC
+    ");
+
+    $id_servicio_actual = $servicio_actual['id_servicio'] ?? null;
+    ?>
+
+    <br><br>
+    <h3>Servicio</h3>
+
+    <select name="id_servicio" required>
+
+        <option value="">Selecciona un servicio</option>
+
+        <?php while($s = $servicios->fetch_assoc()): ?>
+            <option value="<?= $s['id_servicio'] ?>"
+                <?= ($id_servicio_actual == $s['id_servicio']) ? 'selected' : '' ?>>
+
+                <?= htmlspecialchars($s['nombre']) ?> - <?= number_format($s['precio'],2) ?>€
+
+            </option>
+        <?php endwhile; ?>
     </select>
 
     <button type="submit">Reservar cita</button>

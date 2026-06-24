@@ -159,7 +159,6 @@ $data = $usuario;
 $clienteCampos = [
     'telefono',
     'direccion',
-    'dni',
     'fecha_nacimiento',
     'notas',
     'activo'
@@ -385,7 +384,7 @@ $isReadonly = in_array($col, [
     type="text"
     id="cliente_input"
     value="<?= htmlspecialchars($cliente['nombre'] ?? $data['nombre'] ?? '') ?>"
-    placeholder="Escribe nombre o DNI"
+    placeholder="Escribe nombre"
     autocomplete="off"
     required
 >

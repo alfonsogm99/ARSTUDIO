@@ -58,7 +58,7 @@ clienteInput.addEventListener('input', function(){
 
                 data.forEach(c => {
                     const div = document.createElement('div');
-                    div.textContent = c.nombre + " (DNI: " + (c.dni ?? '') + ")"; // se ve el DNI en la lista
+                    div.textContent = c.nombre;
                     div.dataset.id = c.id_cliente;
                     div.addEventListener('click', () => {
                         clienteInput.value = c.nombre; // SOLO el nombre en el input

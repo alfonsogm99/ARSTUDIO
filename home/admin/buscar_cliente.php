@@ -10,21 +10,19 @@ if(strlen($q) < 2){
     exit;
 }
 
-// Buscar clientes cuyo nombre contenga la cadena al inicio de cualquier palabra o por DNI
+// Buscar clientes cuyo nombre contenga la cadena al inicio de cualquier palabra
 $stmt = $conn->prepare("
-    SELECT c.id_cliente, c.nombre, c.dni, COUNT(ci.id_cita) AS total_citas
+    SELECT c.id_cliente, c.nombre, COUNT(ci.id_cita) AS total_citas
     FROM cliente c
     LEFT JOIN cita ci ON ci.id_cliente = c.id_cliente
-    WHERE c.nombre LIKE ? OR c.nombre LIKE ? OR c.dni LIKE ?
+    WHERE c.nombre LIKE ?
     GROUP BY c.id_cliente
     ORDER BY total_citas DESC
     LIMIT 3
 ");
 
-// Primer ? -> "%q%" (cualquier parte) | Segundo ? -> "q%" (inicio palabra) | Tercer ? -> "%q%" (DNI)
-$like_middle = "%$q%";
-$like_start = "$q%";
-$stmt->bind_param("sss", $like_start, $like_middle, $like_middle);
+$like = "%$q%";
+$stmt->bind_param("s", $like);
 $stmt->execute();
 $res = $stmt->get_result();
 
@@ -32,8 +30,7 @@ $clientes = [];
 while($row = $res->fetch_assoc()){
     $clientes[] = [
         'id_cliente' => $row['id_cliente'],
-        'nombre' => $row['nombre'],
-        'dni' => $row['dni']
+        'nombre' => $row['nombre']
     ];
 }
 

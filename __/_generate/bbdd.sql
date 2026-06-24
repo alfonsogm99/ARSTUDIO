@@ -51,6 +51,8 @@ CREATE TABLE cliente (
   ON DELETE CASCADE
 );
 
+/* ALTER TABLE cliente DROP COLUMN dni; */
+
 CREATE TABLE activacion_usuario (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_cliente INT NOT NULL,

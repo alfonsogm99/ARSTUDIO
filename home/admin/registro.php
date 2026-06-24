@@ -42,7 +42,6 @@ function renderDatos(tabla, datos) {
         case 'cliente':
             return `
 Nombre: ${datos.nombre ?? '-'}
-DNI: ${datos.dni ?? '-'}
 Email: ${datos.email ?? '-'}
 Teléfono: ${datos.telefono ?? '-'}
             `;

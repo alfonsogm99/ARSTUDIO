@@ -9,7 +9,7 @@ require_once './auth.php';
 $user_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("
-    SELECT c.id_cliente, c.nombre, c.dni, c.email
+    SELECT c.id_cliente, c.nombre, c.email
     FROM cliente c
     WHERE c.id_usuario = ?
     LIMIT 1
@@ -25,7 +25,6 @@ if (!$userData) {
 
 $id_cliente = $userData['id_cliente'];
 $nombre     = $userData['nombre'];
-$dni        = $userData['dni'];
 $email      = $userData['email'];
 
 // =========================

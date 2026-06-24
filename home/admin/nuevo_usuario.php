@@ -16,17 +16,16 @@ $success = '';
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $nombre = trim($_POST['nombre'] ?? '');
-    $dni = trim($_POST['dni'] ?? '');
     $email = trim($_POST['email'] ?? '');
 
-    if($nombre && $dni && $email){
-        $check = $conn->prepare("SELECT id_cliente FROM cliente WHERE dni=?");
-        $check->bind_param("s", $dni);
+    if($nombre && $email){
+        $check = $conn->prepare("SELECT id_cliente FROM cliente WHERE email=?");
+        $check->bind_param("s", $email);
         $check->execute();
         $check->store_result();
 
         if($check->num_rows > 0){
-            $error = "Ya existe un cliente con ese DNI.";
+            $error = "Ya existe un cliente con ese email.";
         } else {
 
             $usuario = $_SESSION['user_name'] ?? 'system';
@@ -34,8 +33,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
             $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
 
-            $stmt = $conn->prepare("INSERT INTO cliente (nombre, dni, email) VALUES (?,?,?)");
-            $stmt->bind_param("sss", $nombre, $dni, $email);
+            $stmt = $conn->prepare("INSERT INTO cliente (nombre, email) VALUES (?,?)");
+            $stmt->bind_param("sss", $nombre, $email);
 
             if($stmt->execute()){
                 $id_nuevo = $stmt->insert_id;
@@ -86,15 +85,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <label>Nombre:</label>
     <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" required>
 
-    <label for="dni">DNI:</label>
-    <div class="input-icon">
-    <input type="text" name="dni" id="dni" required>
+    <!-- <label for="dni">DNI:</label>
+        <div class="input-icon">
+            <input type="text" name="dni" id="dni" required>
 
-    <button type="button" onclick="generarDNI()">
-        <i class="fa-solid fa-dice-d20"></i>
-    </button>
-    </div>
-
+            <button type="button" onclick="generarDNI()">
+                <i class="fa-solid fa-dice-d20"></i>
+            </button>
+        </div>
+    -->
+        
     <label>Email:</label>
     <input type="email" name="email" required>
 

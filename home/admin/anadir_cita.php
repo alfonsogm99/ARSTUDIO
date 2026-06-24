@@ -266,7 +266,7 @@ $maxMinutos = $maxSlots * 15;
     <input type="text"
        id="cliente_input"
        value="<?php echo htmlspecialchars($nombre_prefill); ?>"
-       placeholder="Escribe nombre o DNI"
+       placeholder="Escribe nombre"
        autocomplete="off"
        required>
 

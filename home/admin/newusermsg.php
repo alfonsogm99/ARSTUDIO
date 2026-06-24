@@ -8,7 +8,6 @@ if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['barbero
 }
 
 $nombre = $_POST['nombre'] ?? '';
-$dni = $_POST['dni'] ?? '';
 $email = $_POST['email'] ?? '';
 
 $error = '';
@@ -17,17 +16,16 @@ $id_nuevo = null;
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $nombre = trim($nombre);
-    $dni = trim($dni);
     $email = trim($email);
 
-    if($nombre && $dni && $email){
-        $check = $conn->prepare("SELECT id_cliente FROM cliente WHERE dni=?");
-        $check->bind_param("s", $dni);
+    if($nombre && $email){
+        $check = $conn->prepare("SELECT id_cliente FROM cliente WHERE email=?");
+        $check->bind_param("s", $email);
         $check->execute();
         $check->store_result();
 
         if($check->num_rows > 0){
-            $error = "Ya existe un cliente con ese DNI.";
+            $error = "Ya existe un cliente con ese email.";
         } else {
 
             $usuario = $_SESSION['user_name'] ?? 'system';
@@ -35,8 +33,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $conn->query("SET @usuario_actual = '" . $conn->real_escape_string($usuario) . "'");
             $conn->query("SET @ip_actual = '" . $conn->real_escape_string($ip) . "'");
 
-            $stmt = $conn->prepare("INSERT INTO cliente (nombre, dni, email) VALUES (?,?,?)");
-            $stmt->bind_param("sss", $nombre, $dni, $email);
+            $stmt = $conn->prepare("INSERT INTO cliente (nombre, email) VALUES (?,?)");
+            $stmt->bind_param("sss", $nombre, $email);
 
             if($stmt->execute()){
 

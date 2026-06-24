@@ -2,6 +2,19 @@
 session_start();
 include 'config.php';
 
+function formatDuracion($minutos) {
+    $h = floor($minutos / 60);
+    $m = $minutos % 60;
+
+    if ($h == 0) {
+        return $m . ' min';
+    } elseif ($m == 0) {
+        return $h . 'h';
+    } else {
+        return $h . 'h ' . $m . 'min';
+    }
+}
+
 if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['admin','barbero'])){
     header("Location: ../login");
     exit;
@@ -13,6 +26,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $nombre = trim($_POST['nombre']);
     $precio = floatval($_POST['precio']);
     $duracion = intval($_POST['duracion']);
+
+    if ($duracion < 30 || $duracion > 360 || $duracion % 30 !== 0) {
+        die("Duración no válida");
+    }
 
     if(isset($_POST['id_servicio']) && $_POST['id_servicio'] != ''){
 
@@ -111,7 +128,7 @@ $tieneServicios = $servicios->num_rows > 0;
         <td>#<?= $s['id_servicio'] ?></td>
         <td><?= htmlspecialchars($s['nombre']) ?></td>
         <td><?= number_format($s['precio'],2) ?>€</td>
-        <td><?= $s['duracion'] ?> min</td>
+        <td><?= formatDuracion($s['duracion']) ?></td>
         <td class="actions">
 
             <a href="javascript:void(0)"
@@ -172,12 +189,25 @@ $tieneServicios = $servicios->num_rows > 0;
     <label>Duración (min)</label>
 
     <select name="duracion" required>
-        <option value="30" <?= (isset($edit['duracion']) && $edit['duracion'] == 30) ? 'selected' : '' ?>>
-            30 minutos
-        </option>
-        <option value="60" <?= (isset($edit['duracion']) && $edit['duracion'] == 60) ? 'selected' : '' ?>>
-            60 minutos
-        </option>
+        <?php for ($i = 30; $i <= 360; $i += 30): ?>
+            <option value="<?= $i ?>"
+                <?= (isset($edit['duracion']) && $edit['duracion'] == $i) ? 'selected' : '' ?>>
+
+                <?php
+                    $h = floor($i / 60);
+                    $m = $i % 60;
+
+                    if ($h == 0) {
+                        echo $m . ' min';
+                    } elseif ($m == 0) {
+                        echo $h . 'h';
+                    } else {
+                        echo $h . 'h ' . $m . 'min';
+                    }
+                ?>
+
+            </option>
+        <?php endfor; ?>
     </select>
 
     <button type="submit">

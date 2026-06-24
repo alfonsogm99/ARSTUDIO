@@ -5,3 +5,4 @@
 -  Corrección del logo + scroll:
     - Teléfono / iPhone --> (vertical ✅/ horizontal ❌), se oculta usando el teléfono horizontalmente
     - Tablet / iPad --> (vertical ✅/ horizontal ✅), se adapta horizontalmente
+- Se ha ampliado el rango de duración del servicio a 6h, formateado de media en media hora (30min, 1h, 1h 30min ...)

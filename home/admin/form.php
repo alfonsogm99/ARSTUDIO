@@ -67,9 +67,9 @@ if ($_SERVER['REQUEST_METHOD']=='POST') {
     foreach($columns as $col=>$type){
         if($col==$pk || $col=='id_usuario' || $col=='fecha_creacion') continue;
         $val = $_POST[$col] ?? '';
-        if($col=='dni'){
-            if(!preg_match('/^\d{9}[A-Z]$/i',$val)) die("DNI inválido (9 números + 1 letra)");
-        }
+        //if($col=='dni'){
+        //    if(!preg_match('/^\d{9}[A-Z]$/i',$val)) die("DNI inválido (9 números + 1 letra)");
+        //}
         if(strpos($type,'tinyint(1)')!==false) $val = isset($_POST[$col]) ? 1 : 0;
 
         if($id) $sets[]="$col='".$conn->real_escape_string($val)."'";
@@ -189,7 +189,7 @@ if($col=='password'): ?>
 </label>
 <?php else: ?>
 <label><?php echo $col; ?>:
-<input type="text" name="<?php echo $col; ?>" value="<?php echo htmlspecialchars($value); ?>" <?php echo $col=='dni'?'placeholder="123456789A"':''; ?>>
+<input type="text" name="<?php echo $col; ?>" value="<?php echo htmlspecialchars($value); ?>">
 </label>
 <?php endif; endforeach; ?>
 

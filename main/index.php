@@ -1,3 +1,19 @@
+<?php
+
+$configFile = __DIR__ . '/../home/admin/config.json';
+$config = [];
+
+if (file_exists($configFile)) {
+    $json = file_get_contents($configFile);
+    $decoded = json_decode($json, true);
+
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $config = $decoded;
+    }
+}
+
+?>
+
 <html lang="es">
     
     <head>
@@ -98,22 +114,53 @@
                 </div>
                 </div>
             </section>
-            <section>
-                <h2 class="fluid"><br>Me encuentro en</h2>
 
-                <div class="map-card">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.5199181579137!2d-3.8194895253215675!3d37.5899210227887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd6ddffecdb58f3b%3A0xb7db56329283d542!2sAR%20STUDIO!5e0!3m2!1ses!2ses!4v1780051583948!5m2!1ses!2ses"
-                        allowfullscreen=""
-                        loading="lazy">
-                    </iframe>
-                </div>
-            </section>
+            <?php if ($config['main']['mapa']['visible'] ?? false): ?>
 
-            <section>
-                <a href="" style="text-decoration:none;"><h2 class="fluid">Pide Cita <br><span class="break"><br></span>
-                <span style="font-size:20px;">(Próximamente)</span></h2></a>
-            </section>
+                <section>
+                    <h2 class="fluid"><br><?= htmlspecialchars($config['main']['mapa']['titulo'] ?? 'Google Maps') ?></h2>
+
+                    <div class="map-card">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.5199181579137!2d-3.8194895253215675!3d37.5899210227887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd6ddffecdb58f3b%3A0xb7db56329283d542!2sAR%20STUDIO!5e0!3m2!1ses!2ses!4v1780051583948!5m2!1ses!2ses"
+                            allowfullscreen=""
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+
+            <?php if ($config['main']['cita']['visible'] ?? false): ?>
+
+                <section>
+                    <a href="" style="text-decoration:none;"><h2 class="fluid"><?= htmlspecialchars($config['main']['cita']['titulo'] ?? 'Pedir Cita') ?> <br><span class="break"><br></span>
+                    <span style="font-size:20px;">(Próximamente)</span></h2></a>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($config['main']['precios']['visible'] ?? false): ?>
+
+                <section>
+                    <h2 class="fluid">
+                        <?= htmlspecialchars($config['main']['precios']['titulo'] ?? 'Precios') ?>
+                    </h2>
+
+                    <?php foreach (($config['main']['precios']['items'] ?? []) as $item): ?>
+
+                        <?php if (!empty($item['visible'])): ?>
+                            <h4 class="fluid">
+                                <?= htmlspecialchars($item['titulo']) ?>:
+                                <?= htmlspecialchars($item['precio']) ?>€
+                            </h4>
+                        <?php endif; ?>
+
+                    <?php endforeach; ?>
+                </section>
+
+            <?php endif; ?>
+            
+
 
 
             </main>

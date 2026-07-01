@@ -1,13 +1,9 @@
-*v.1.2.0*
+*v.1.2.1*
 
--  Se eliminan por completo los DNI de la tabla clientes, simplificando el número de campos para la información del cliente.
--  Se añade la opción "Seleccionar Servicio" a la hora de generar una cita por parte del cliente (siempre que el servicio sea > 0€).
--  Corrección del logo + scroll:
-    - Teléfono / iPhone --> (vertical ✅/ horizontal ❌), se oculta usando el teléfono horizontalmente
-    - Tablet / iPad --> (vertical ✅/ horizontal ✅), se adapta horizontalmente
--  Se ha ampliado el rango de duración del servicio a 6h, formateado de media en media hora (30min, 1h, 1h 30min ...)
--  Se corrige el funcionamiento de bloqueo de citas cliente (diarias, semanales y mensuales)
--  Se corrige el rango de horas en el calendario (Vista Diaria)
-    - Antes (09:00, 09:15, 09:30, 09:45 .......)
-    - Después (09:00, 09:30, 10:00, 10:30 .......)
--  Actualización de triggers (al alterar la bbdd algunos quedaban obsoletos, además se han generado aquellos que no estaban contemplados hasta ahora)
+-  Se genera un nuevo panel de configuración, el cual contiene:
+    - Mainsets: nuevo apartado en el cual es posible modificar parte del contenido de la página principal (/main)
+    - Servicios (desaparece el icono de las 'tijeras' en el menú flotante)
+    - Clientes (el barbero puede ver y editar la información del cliente)
+    - Horarios (desaparecen los desplegables de horario, ausencias y vip de 'Perfil'. Pudiendo realizarlo desde 'Horario', reduciendo bugs y más organizado)
+        - Se añade el historial y edición de bloqueos de horario (ausencias y horario vip)
+-  Se corrige el bug de las horas vip bloqueadas en la 'Vista Diaria' (el bloqueo se hará de hora de inicio a fin, ambas incluidas. Anteriormente se realizaba -30min.)

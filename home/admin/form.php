@@ -244,35 +244,35 @@ $version = $config['app']['version'] ?? '0.0.0';
 </footer>
 
 <script>
-const barbero = <?php echo json_encode($barbero_cols); ?>;
-const cliente = <?php echo json_encode($cliente_cols); ?>;
-const extraValues = <?php echo json_encode($extra_data); ?>;
+    const barbero = <?php echo json_encode($barbero_cols); ?>;
+    const cliente = <?php echo json_encode($cliente_cols); ?>;
+    const extraValues = <?php echo json_encode($extra_data); ?>;
 
-function renderExtra(){
-    let tipo = document.getElementById("tipo_usuario")?.value;
-    let container = document.getElementById("extra_fields");
-    container.innerHTML = "";
-    let campos = [];
-    if(tipo==='barbero') campos=barbero;
-    if(tipo==='cliente') campos=cliente;
-    campos.forEach(c=>{
-        let val = extraValues[c] ?? '';
-        container.innerHTML += `<label>${c}: <input type="text" name="${c}" value="${val.replace(/"/g,'&quot;')}"></label>`;
-    });
-}
-
-function togglePassword(id, icon){
-    const input = document.getElementById(id);
-    if(input.type==="password"){
-        input.type="text";
-        icon.classList.remove("fa-eye");
-        icon.classList.add("fa-eye-slash");
-    } else {
-        input.type="password";
-        icon.classList.remove("fa-eye-slash");
-        icon.classList.add("fa-eye");
+    function renderExtra(){
+        let tipo = document.getElementById("tipo_usuario")?.value;
+        let container = document.getElementById("extra_fields");
+        container.innerHTML = "";
+        let campos = [];
+        if(tipo==='barbero') campos=barbero;
+        if(tipo==='cliente') campos=cliente;
+        campos.forEach(c=>{
+            let val = extraValues[c] ?? '';
+            container.innerHTML += `<label>${c}: <input type="text" name="${c}" value="${val.replace(/"/g,'&quot;')}"></label>`;
+        });
     }
-}
+
+    function togglePassword(id, icon){
+        const input = document.getElementById(id);
+        if(input.type==="password"){
+            input.type="text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type="password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
 </script>
 
 </body>

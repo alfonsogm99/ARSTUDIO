@@ -352,11 +352,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <p><i class="fa-solid fa-user-shield"></i> <b>Rol:</b> <?php echo $rol; ?></p>
 
-    <button type="submit" id="btn_guardar_perfil" style="display:none;">
-        Guardar cambios
-    </button>
-
-
     <?php
     $id_barbero = $conn->query("SELECT id_barbero FROM barbero WHERE id_usuario = $user_id")->fetch_assoc()['id_barbero'] ?? null;
 
@@ -431,292 +426,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <?php if($rol === 'barbero'): ?>
 
-    <hr><br>
+        <h4>
+            <i class="fa-solid fa-clock"></i>
+            Horario activo:
 
-    <h3>
-        Horario:
+        <?php     
+            
+            $nombre_horario_asignado = null;
 
-    <?php     
-        
-        $nombre_horario_asignado = null;
-
-        if (!empty($horarios_array)) {
-            foreach ($horarios_array as $h) {
-                if ($h['activo']) {
-                    $nombre_horario_asignado = $h['nombre_general'];
-                    break;
+            if (!empty($horarios_array)) {
+                foreach ($horarios_array as $h) {
+                    if ($h['activo']) {
+                        $nombre_horario_asignado = $h['nombre_general'];
+                        break;
+                    }
                 }
             }
-        }
 
 
-        if ($nombre_horario_asignado): ?>
-            <br><span style="font-weight: normal; font-size: 0.9em; color: #aaa;">
-                <?= htmlspecialchars($nombre_horario_asignado) ?>
-            </span>
-        <?php endif; ?>
-    </h3>
+            if ($nombre_horario_asignado): ?>
+                <span style="font-weight: normal; font-size: 0.9em; color: #aaa;">
+                    <?= htmlspecialchars($nombre_horario_asignado) ?>
+                </span>
+            <?php endif; ?>
+        </h4>
 
-    <?php if (!$nombre_horario_asignado): ?>
-        <p>No hay un horario definido</p>
-    <?php endif; ?>
-
-    <button type="button" onclick="toggleHorario()"> 
-        Editar 
-    </button>
-
-    <div id="panel_horario" style="display:none; margin-top:15px;">
-
-        <h4>Horario actual:</h4>
-
-        <p id="horario_duracion" style="margin-top:5px; color:#555; font-size:0.9em;">
-
-        <?php
-
-        $horario_activo = null;
-
-        foreach($horarios_array as $h){
-            if($h['activo']){
-                $horario_activo = $h;
-                break;
-            }
-        }
-
-        if($horario_activo){
-
-            foreach($horario_activo['dias'] as $dia){
-
-                echo "<div style='margin-bottom:4px;'>";
-
-                echo "<b>" . ucfirst($dia['dia_semana']) . "</b>: ";
-
-                $hora_inicio = substr($dia['hora_inicio'], 0, 5);
-                $hora_fin = substr($dia['hora_fin'], 0, 5);
-
-                echo ($hora_inicio === '00:00' ? '' : $hora_inicio);
-                echo " - ";
-                echo ($hora_fin === '00:00' ? '' : $hora_fin);
-
-                if(!empty($dia['pausa_inicio']) && !empty($dia['pausa_fin'])){
-
-                    echo "<br/><span style='font-size:14px;'>⤷ Pausa: ";
-
-                    $pausa_inicio = substr($dia['pausa_inicio'], 0, 5);
-                    $pausa_fin = substr($dia['pausa_fin'], 0, 5);
-
-                    echo ($pausa_inicio === '00:00' ? '' : $pausa_inicio);
-                    echo " - ";
-                    echo ($pausa_fin === '00:00' ? '' : $pausa_fin);
-
-                    echo "</span>";
-                }
-
-                echo "</div>";
-            }
-        }
-        ?>
-
-        </p>
-
-        <br>
-
-        <h4>Cambiar horario:</h4>
-
-        <form method="POST" id="form_horario">
-
-            <select name="id_horario" id="select_horario" onchange="toggleNuevoHorario(this.value)">
-                <option value="new">-- Crear nuevo horario --</option>
-                <?php foreach($horarios_array as $h): ?>
-                <option value="<?= $h['id_general'] ?>" 
-                    <?php if($h['id_general'] == $horario_asignado_id) echo 'selected'; ?>>
-                    <?= htmlspecialchars($h['nombre_general']) ?>
-                </option>
-                <?php endforeach; ?>
-            </select>
-
-                <div id="nuevo_horario" style="display:none;">
-                <p>
-                    <label>Nombre del horario:</label><br>
-                    <input type="text" id="nombre_horario" name="nombre_horario" placeholder="Nombre del horario">
-                </p>
-
-                <?php
-                $dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
-                foreach($dias as $dia):
-                ?>
-                <div class="dia-block">
-                    <div class="dia-title"><?php echo ucfirst($dia); ?></div>
-                    <div class="horario-grid">
-                        <div class="bloque">
-                            <label for="inicio_<?php echo $dia; ?>">Inicio</label>
-                            <input type="time" id="inicio_<?php echo $dia; ?>">
-                        </div>
-                        <div class="bloque">
-                            <label for="fin_<?php echo $dia; ?>">Fin</label>
-                            <input type="time" id="fin_<?php echo $dia; ?>">
-                        </div>
-                        <div class="bloque">
-                            <label for="pausa_inicio_<?php echo $dia; ?>">Pausa Inicio</label>
-                            <input type="time" id="pausa_inicio_<?php echo $dia; ?>" placeholder="Opcional">
-                        </div>
-                        <div class="bloque">
-                            <label for="pausa_fin_<?php echo $dia; ?>">Pausa Fin</label>
-                            <input type="time" id="pausa_fin_<?php echo $dia; ?>" placeholder="Opcional">
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-
-                <button type="button" id="guardar_horario" onclick="guardarHorario()" style="display:none;">
-                    Guardar
-                </button>
-            </div>
-
-            <button type="submit" name="cambiar_horario" value="1" id="btn_guardar_cambios">
-                Guardar
-            </button>
-
-            <button type="submit" name="eliminar_horario" value="1" id="btn_eliminar_horario" 
-            onclick="return confirm('¿Eliminar este horario?');" 
-            style="background:#171717;color:white;">
-                Eliminar
-            </button>
-        </form>
-
-<div id="bloque_ausencias" style="<?= empty($horarios_array) ? 'display:none' : '' ?>">
-
-    <br><hr>
-
-    <button type="button" id="btn_ausencias" onclick="toggleAusencias()">
-        Ausencias
-    </button>
-
-    <button type="button" id="btn_vip" onclick="toggleVIP()">
-        VIP
-    </button>
-
-    <div id="panel_vip" style="display:none; margin-top:15px;">
-
-        <form method="POST">
-
-            <h4>Bloqueo VIP</h4><br>
-
-            <input type="hidden" name="action" value="vip_create">
-
-            <input type="date" name="fecha" required>
-            <h5>Inicio</h5>
-            <input type="time" name="hora_inicio" required>
-            <h5>Fin</h5>
-            <input type="time" name="hora_fin" required>
-            <input type="text" name="motivo" placeholder="Motivo del bloqueo">
-
-            <button type="submit">Guardar</button>
-
-        </form>
-
-    </div>
-
-    <div id="panel_ausencias" style="display:none; margin-top:15px;">
-
-        <br>
-                    
-        <h4>Ausencias existentes</h4>
-
-        <?php if (!$id_barbero): ?>
-
-            <p>Error: no se pudo identificar el barbero</p>
-
-        <?php elseif ($ausencias && $ausencias->num_rows > 0): ?>
-
-            <div class="ausencias-lista">
-
-                <?php while($a = $ausencias->fetch_assoc()): ?>
-
-                    <div class="ausencia-item">
-
-                        <div class="ausencia-fecha">
-                            <b><?= htmlspecialchars($a['fecha']) ?></b>
-                        </div>
-
-                        <div class="ausencia-horas">
-                            <?= htmlspecialchars($a['hora_inicio']) ?> - <?= htmlspecialchars($a['hora_fin']) ?>
-                        </div>
-
-                        <div class="ausencia-tipo">
-                            <?= htmlspecialchars($a['tipo']) ?>
-                        </div>
-
-                        <?php if (!empty($a['motivo'])): ?>
-                            <div class="ausencia-motivo">
-                                <?= htmlspecialchars($a['motivo']) ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <form method="POST" action="eliminar_bloqueo.php" class="ausencia-form">
-                            <input type="hidden" name="id_bloqueo" value="<?= $a['id_bloqueo'] ?>">
-                            <button type="submit" onclick="return confirm('¿Eliminar esta ausencia?');">
-                                Eliminar
-                            </button>
-                        </form>
-
-                    </div>
-
-                <?php endwhile; ?>
-
-            </div>
-
-        <?php else: ?>
-
-            <p>Aún no tiene ausencias</p>
-
+        <?php if (!$nombre_horario_asignado): ?>
+            <p>No hay un horario definido</p>
         <?php endif; ?>
 
-        <br>
 
-        <form method="POST" action="bloquear_horario.php">
+        <button type="submit" id="btn_guardar_perfil" style="display:none;">
+            Guardar cambios
+        </button>
 
-        <h4>Bloquear agenda</h4>
-
-        <input type="hidden" name="id_barbero" value="<?= $id_barbero ?>">
-
-        <select name="id_horario_visible" disabled>
-            <?php foreach($horarios_array as $h): ?>
-                <option value="<?= $h['id_general'] ?>">
-                    <?= htmlspecialchars($h['nombre_general']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-
-        <input type="hidden" name="id_horario" value="<?= $horario_asignado_id ?>">
-
-        <input type="date" name="fecha" required>
-
-        <input type="time" name="hora_inicio" required>
-        <input type="time" name="hora_fin" required>
-
-        <select name="tipo">
-            <option value="descanso">Descanso</option>
-            <option value="ausencia">Ausencia</option>
-            <option value="vacaciones">Vacaciones</option>
-            <option value="formacion">Formación</option>
-            <option value="bloqueo_manual">Manual</option>
-        </select>
-
-        <input type="text" name="observaciones" placeholder="Observaciones">
-
-        <button type="submit">Guardar</button>
-
-    </form>
-
-    </div>
-
-</div>
-
-    </div>
+        </div>
 
     <?php endif; ?>
 
-    </div>
     <?php
     $configFile = '../admin/config.json';
 
@@ -746,9 +493,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </footer>
 
     <script src="../../js/editpasS.js"></script>
-    <script src="../../js/toggleHorario.js"></script>
     <script src="../../js/btn_guardar_perfil.js"></script>
-    <!-- <script src="../../js/lightmode.js"></script> -->
 
 </body>
 </html>

@@ -116,7 +116,6 @@ $rol = $_SESSION['user_type'];
                 
                 ?>
 
-
                 <div class="menu-inline">
                     <div class="dropdown">
                         <i class="fa-solid fa-bell"></i>
@@ -176,19 +175,20 @@ $rol = $_SESSION['user_type'];
                             <span class="notif-dot"></span>
                         <?php endif; ?>
                     </div>
-                </div>
+                </div>                
 
                 <a href="<?php echo BASE_URL . '/admin/count.php';?>">
                     <i class="fa-solid fa-dollar"></i>
                 </a>
 
-                <a href="<?php echo BASE_URL . '/admin/servicios.php';?>">
-                    <i class="fa-solid fa-scissors"></i>
+                <a href="<?php echo BASE_URL; ?>/admin/confpan.php">
+                    <i class="fa-solid fa-gear"></i>
                 </a>
 
                 <a href="<?php echo BASE_URL; ?>">
                     <i class="fa-solid fa-home"></i>
                 </a>
+
             <!--</div>-->
         <?php endif; ?>
 

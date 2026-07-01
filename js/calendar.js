@@ -487,7 +487,7 @@ document.querySelectorAll('.hour-slot').forEach(slot => {
         const vInicio = parseHora(v.hora_inicio);
         const vFin = parseHora(v.hora_fin);
 
-        return slotMin >= vInicio && slotMin < vFin;
+        return slotMin >= vInicio && slotMin < vFin + 30;
     });
 
     if (bloqueadoVIP && userType === 'cliente') {

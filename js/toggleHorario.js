@@ -5,19 +5,57 @@ function toggleHorario(){
     const isHidden = window.getComputedStyle(el).display === 'none';
 
     el.style.display = isHidden ? 'block' : 'none';
+
+    el.scrollIntoView({
+        behavior: 'smooth'
+    });
+}
+
+function closeOtherPanels(exceptId){
+    const panels = ['panel_ausencias', 'panel_vip'];
+
+    panels.forEach(id => {
+        if(id !== exceptId){
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        }
+    });
 }
 
 function toggleAusencias(){
     const el = document.getElementById('panel_ausencias');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+
+    const isHidden = el.style.display === 'none' || !el.style.display;
+
+    if(isHidden){
+        closeOtherPanels('panel_ausencias');
+        el.style.display = 'block';
+    } else {
+        el.style.display = 'none';
+    }
+
+    el.scrollIntoView({ behavior: 'smooth' });
 }
 
 function toggleVIP(){
     const el = document.getElementById('panel_vip');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+
+    const isHidden = el.style.display === 'none' || !el.style.display;
+
+    if(isHidden){
+        closeOtherPanels('panel_vip');
+        el.style.display = 'block';
+    } else {
+        el.style.display = 'none';
+    }
+
+    el.scrollIntoView({ behavior: 'smooth' });
 }
 
 function toggleNuevoHorario(value){
+
+    const modo = document.getElementById('modo_horario');
+    const editando = document.getElementById('id_general_editando');
 
     const panel = document.getElementById('nuevo_horario');
 
@@ -35,7 +73,9 @@ function toggleNuevoHorario(value){
 
     if(value === "new"){
 
-        // Mostrar panel crear horario
+        if(modo) modo.value = "new";
+        if(editando) editando.value = "";
+
         panel.style.display = "block";
 
         // Ocultar ausencias
@@ -63,7 +103,9 @@ function toggleNuevoHorario(value){
             btnEliminarHorario.style.display = "none";
         }
 
-    } else {
+    }else {
+
+        if(modo) modo.value = "edit";
 
         // Ocultar panel nuevo horario
         panel.style.display = "none";
@@ -93,6 +135,11 @@ function toggleNuevoHorario(value){
             btnEliminarHorario.style.display = "inline-block";
         }
     }
+
+
+    panel.scrollIntoView({
+        behavior: 'smooth'
+    });
 }
 
 // estado inicial al cargar página

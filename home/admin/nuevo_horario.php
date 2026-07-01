@@ -1,6 +1,6 @@
 <?php
-require_once '../admin/bootstrap.php';
-require_once '../admin/auth.php';
+require_once './bootstrap.php';
+require_once './auth.php';
 
 $errores = [];
 $mensaje = '';
@@ -42,18 +42,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
 
             $dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
 
+                $conn->query("
+                    UPDATE horario_general
+                    SET activo = 0
+                    WHERE id_barbero = $id_barbero
+                ");
+
             foreach ($dias as $dia) {
                 $h = $horas[$dia] ?? [];
                 $inicio = $h['inicio'] ?? '09:00';
                 $fin    = $h['fin'] ?? '17:00';
                 $pi     = $h['pausa_inicio'] ?? null;
                 $pf     = $h['pausa_fin'] ?? null;
-
-                $conn->query("
-                    UPDATE horario_general
-                    SET activo = 0
-                    WHERE id_barbero = $id_barbero
-                ");
 
                 $sql = "INSERT INTO horario_barbero 
                         (id_barbero, id_general, nombre, dia_semana, hora_inicio, hora_fin, pausa_inicio, pausa_fin)
@@ -73,6 +73,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
                 }
             }
 
+            $conn->query("
+                UPDATE horario_general
+                SET activo = 1
+                WHERE id_general = $id_general
+            ");
+
             if (empty($errores)) {
                 $mensaje = "Horario guardado correctamente.";
             }
@@ -83,5 +89,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
 $_SESSION['mensaje_horario'] = $mensaje;
 $_SESSION['errores_horario'] = $errores;
 
-header("Location: ../perfil");
+header("Location: ./confpan.php");
 exit;

@@ -110,6 +110,14 @@ h2.fluid {
   text-align: center;
 }
 
+h4.fluid {
+  font-family: 'ARBarber-LT';
+  font-size: clamp(1.25rem, 2.5vw, 2.5rem);
+  line-height: 0.6;
+  margin: 0;
+  text-align: center;
+}
+
 .slogan {
   font-family: 'ARBarber-LT';
   font-size: clamp(4rem, 12vw, 12rem);
@@ -472,6 +480,13 @@ main section:last-of-type {
 
   h2.fluid {  
     font-size: 12vw;
+    line-height: 1;          
+    margin: 0 auto;
+    max-width: 100%;         
+  }
+
+  h4.fluid {  
+    font-size: 8vw;
     line-height: 1;          
     margin: 0 auto;
     max-width: 100%;         

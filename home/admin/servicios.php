@@ -16,7 +16,7 @@ function formatDuracion($minutos) {
 }
 
 if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['admin','barbero'])){
-    header("Location: ../login");
+    header("Location: ../logout");
     exit;
 }
 
@@ -103,7 +103,7 @@ $tieneServicios = $servicios->num_rows > 0;
     <?php include '../includes/navbar.php'; ?>
 </div>
 
-<h1 style="text-align:center;">Servicios</h1>
+<h2 style="text-align:center;">Servicios</h2>
 
 <div class="contabilidad_box">
 
@@ -226,33 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <?php endif; ?>
 
-<script>
-function toggleForm(data = null){
-
-    const form = document.getElementById('formServicio');
-
-    form.style.display = 'block';
-
-    if(data){
-        document.querySelector('[name="id_servicio"]').value = data.id_servicio;
-        document.querySelector('[name="nombre"]').value = data.nombre;
-        document.querySelector('[name="precio"]').value = data.precio;
-        document.querySelector('[name="duracion"]').value = data.duracion;
-
-        document.querySelector('button[type="submit"]').textContent = 'Actualizar';
-
-    } else {
-        document.querySelector('[name="id_servicio"]').value = '';
-        document.querySelector('[name="nombre"]').value = '';
-        document.querySelector('[name="precio"]').value = '';
-        document.querySelector('[name="duracion"]').value = '30';
-
-        document.querySelector('button[type="submit"]').textContent = 'Crear';
-    }
-}
-</script>
-
-
+<script src="../../js/toggleForm.js"></script>
 
 <?php
 $configFile = './config.json';

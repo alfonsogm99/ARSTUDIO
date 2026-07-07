@@ -18,6 +18,18 @@ if ($rol !== 'barbero') {
     exit;
 }
 
+
+$dias = [
+    'lunes',
+    'martes',
+    'miercoles',
+    'jueves',
+    'viernes',
+    'sabado',
+    'domingo'
+];
+
+
 $username = '';
 $nombre_usuario = '';
 $email = '';
@@ -65,7 +77,6 @@ $show_password_inputs = false;
 $show_data_inputs = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
 
     if (
         $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -144,6 +155,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: nuevo_horario.php");
                 exit;
             }
+        }
+    }
+
+    if (isset($_POST['editar_horario'])) {
+
+        $id_general = (int)$_POST['id_general_editando'];
+        $nombre = $_POST['nombre_horario'];
+
+        foreach ($dias as $dia) {
+
+            $inicio = $_POST['horarios'][$dia]['inicio'] ?: '00:00:00';
+            $fin    = $_POST['horarios'][$dia]['fin'] ?: '00:00:00';
+            $pi     = $_POST['horarios'][$dia]['pausa_inicio'] ?: null;
+            $pf     = $_POST['horarios'][$dia]['pausa_fin'] ?: null;
+
+            $stmt = $conn->prepare("
+                UPDATE horario_barbero
+                SET
+                    nombre = ?,
+                    hora_inicio = ?,
+                    hora_fin = ?,
+                    pausa_inicio = ?,
+                    pausa_fin = ?
+                WHERE
+                    id_general = ?
+                    AND id_barbero = ?
+                    AND dia_semana = ?
+            ");
+
+            $stmt->bind_param(
+                "sssssiss",
+                $nombre,
+                $inicio,
+                $fin,
+                $pi,
+                $pf,
+                $id_general,
+                $id_barbero,
+                $dia
+            );
+
+            $stmt->execute();
         }
     }
 
@@ -598,7 +651,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
                         </p>
 
                         <?php
-                        $dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
                         foreach($dias as $dia):
                         ?>
                         <div class="dia-block">
@@ -643,7 +695,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
                     </div>
 
                     <div class="btn_horario_form">
-                        <button type="submit" name="cambiar_horario" value="1" id="btn_guardar_cambios">
+                        <button type="submit"
+                                name="editar_horario"
+                                value="1"
+                                id="btn_guardar_cambios">
                             Guardar
                         </button>
 

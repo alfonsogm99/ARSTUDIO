@@ -101,8 +101,8 @@ function estaDiaCompletamenteBloqueado(fecha) {
     const bloqueosDia = getBloqueosDia(fecha);
     const apps = visibleAppointments.filter(a => a.fecha === fecha);
 
-    // recorrer slots cada 15 min
-    for (let min = inicioMin; min < finMin; min += 15) {
+    // recorrer slots cada 10 min
+    for (let min = inicioMin; min < finMin; min += 10) {
         // slot dentro de pausa
         if (pausaInicio != null && pausaFin != null && min >= pausaInicio && min < pausaFin) continue;
 
@@ -487,7 +487,7 @@ document.querySelectorAll('.hour-slot').forEach(slot => {
         const vInicio = parseHora(v.hora_inicio);
         const vFin = parseHora(v.hora_fin);
 
-        return slotMin >= vInicio && slotMin < vFin + 30;
+        return slotMin >= vInicio && slotMin < vFin + 10; //revisar el +10 / probablemente sea +30
     });
 
     if (bloqueadoVIP && userType === 'cliente') {

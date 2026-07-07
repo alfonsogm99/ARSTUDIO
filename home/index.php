@@ -479,14 +479,17 @@ if ($tableExists && $tableExists->num_rows > 0) {
 $inicio = 9;
 $fin = 22;
 
-for($h = $inicio; $h < $fin; $h++){
-    foreach([0,30] as $m){
-        $hora = sprintf('%02d:%02d:00', $h, $m);
-        echo '
-            <div class="hour-slot" data-hora="'.$hora.'">
-                <span class="hour-label">'.substr($hora,0,5).'</span>
-            </div>';
-    }
+for ($min = $inicio * 60; $min < $fin * 60; $min += 10) {
+    $hora = sprintf(
+        '%02d:%02d:00',
+        floor($min / 60),
+        $min % 60
+    );
+
+    echo '
+        <div class="hour-slot" data-hora="'.$hora.'">
+            <span class="hour-label">'.substr($hora,0,5).'</span>
+        </div>';
 }
 ?>
 </div>

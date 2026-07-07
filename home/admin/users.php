@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->execute();
 
-    header("Location: clientes.php");
+    header("Location: users.php");
     exit;
 }
 
@@ -47,15 +47,42 @@ if (isset($_GET['delete'])) {
 
     $id = intval($_GET['delete']);
 
+    // buscar usuario asociado
     $stmt = $conn->prepare("
-        DELETE FROM cliente
-        WHERE id_cliente=?
+        SELECT id_usuario
+        FROM cliente
+        WHERE id_cliente = ?
     ");
 
     $stmt->bind_param("i", $id);
     $stmt->execute();
 
-    header("Location: clientes.php");
+    $result = $stmt->get_result()->fetch_assoc();
+
+    // si existe usuario asociado → marcar eliminado
+    if (!empty($result['id_usuario'])) {
+
+        $stmt2 = $conn->prepare("
+            UPDATE usuario
+            SET estado_cliente = 'eliminado'
+            WHERE id_usuario = ?
+        ");
+
+        $stmt2->bind_param("i", $result['id_usuario']);
+        $stmt2->execute();
+        $stmt2->close();
+    }
+
+    // borrar cliente
+    $stmt = $conn->prepare("
+        DELETE FROM cliente
+        WHERE id_cliente = ?
+    ");
+
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
+    header("Location: users.php");
     exit;
 }
 
@@ -123,15 +150,15 @@ $tieneClientes = $clientes->num_rows > 0;
 
 <?php if ($tieneClientes): ?>
 
-<table class="tableau">
+<table id="tablaUsuarios" class="tableau">
 
 <thead>
 <tr>
-    <th>ID</th>
-    <th>Nombre</th>
-    <th>Email</th>
-    <th>Teléfono</th>
-    <th>Usuario asociado</th>
+    <th onclick="ordenarTabla(this, 0)">ID</th>
+    <th onclick="ordenarTabla(this, 1)">Nombre</th>
+    <th onclick="ordenarTabla(this, 2)">Email</th>
+    <th onclick="ordenarTabla(this, 3)">Teléfono</th>
+    <th onclick="ordenarTabla(this, 4)">Usuario asociado</th>
     <th>Acciones</th>
 </tr>
 </thead>
@@ -277,6 +304,7 @@ $tieneClientes = $clientes->num_rows > 0;
 </div>
 
 <script src="../../js/toggleForm.js"></script>
+<script src="../../js/orderTableau.js"></script>
 
 </body>
 </html>

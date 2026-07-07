@@ -73,7 +73,14 @@ clienteInput.addEventListener('input', function(){
 });
 
 document.querySelector('form').addEventListener('submit', function(e){
-    if(!idClienteInput.value){
+
+    const accion = e.submitter?.value;
+
+    if (accion !== 'vincular') {
+        return;
+    }
+
+    if (!idClienteInput.value) {
         e.preventDefault();
         alert('Selecciona un cliente válido de la lista.');
         clienteInput.focus();

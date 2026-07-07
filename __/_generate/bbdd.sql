@@ -20,6 +20,20 @@ CREATE TABLE usuario (
 -- ADD COLUMN otp_expires DATETIME,
 -- ADD COLUMN status ENUM('pending','verified','active','rejected') DEFAULT 'pending';
 
+-- ALTER TABLE usuario
+-- ADD CONSTRAINT chk_username
+-- CHECK (
+--    username REGEXP '^[A-Za-z0-9_.-]{3,30}$'
+--);
+
+--ALTER TABLE usuario
+--ADD COLUMN estado_cliente ENUM(
+--    'pendiente_vinculacion',
+--    'vinculado',
+--    'eliminado',
+--    'descartado'
+--) DEFAULT 'pendiente_vinculacion';
+
 -- =========================
 -- ADMIN
 -- =========================

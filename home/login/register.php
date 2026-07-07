@@ -4,34 +4,6 @@ require '../admin/config.php';
 
 $error = '';
 
-function sendOTP($phone_safe, $verifySid, $sid, $token) {
-
-    $url = "https://verify.twilio.com/v2/Services/$verifySid/Verifications";
-
-    $data = [
-        "To" => $phone_safe,
-        "Channel" => "sms"
-    ];
-
-    $ch = curl_init($url);
-
-    curl_setopt($ch, CURLOPT_USERPWD, "$sid:$token");
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    if (curl_errno($ch)) {
-        $response = json_encode(["message" => curl_error($ch)]);
-    }
-
-    curl_close($ch);
-
-    return [$response, $httpCode];
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $username = trim($_POST['username']);
@@ -44,9 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $confirm  = $_POST['confirm_password'];
 
+
+
     if (!$username || !$email || !$phone || !$password) {
         $error = "Rellena todos los campos.";
 
+    } elseif (!preg_match('/^[a-zA-Z0-9_.-]{3,30}$/', $username)) {
+        $error = "El nombre de usuario no puede contener carácteres especiales.";
     } elseif ($password !== $confirm) {
         $error = "Las contraseñas no coinciden.";
 
@@ -78,9 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     activo,
                     email,
                     phone,
-                    status
+                    status,
+                    estado_cliente
                 )
-                VALUES (?, ?, 'cliente', 0, ?, ?, 'pending')
+                VALUES (?, ?, 'cliente', 0, ?, ?, 'pending', 'pendiente_vinculacion')
             ");
 
             $stmt->bind_param(
@@ -126,7 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <form method="post" style="width:75%;">
 
-    <input type="text" name="username" placeholder="usuario" required><br><br>
+    <input type="text" name="username" placeholder="usuario" pattern="[a-zA-Z0-9_.-]{3,30}"
+        title="Solo letras, números, _, - y ." required> 
+    <br><br>
     <input type="email" name="email" placeholder="email" required><br><br>
     <div class="phone-wrapper">
         <select name="country_code" required>

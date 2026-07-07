@@ -49,11 +49,26 @@ function editarHorario(id) {
     });
 
     horario.dias.forEach(dia => {
+        console.log(dia);
         const d = dia.dia_semana;
 
         const set = (idEl, val) => {
             const el = document.getElementById(idEl);
-            if (el) el.value = val?.slice(0,5) || '';
+            if (!el) return;
+
+            // Tratar 00:00 y 00:00:00 como vacío
+            if (
+                val === null ||
+                val === undefined ||
+                val === '' ||
+                val === '00:00' ||
+                val === '00:00:00'
+            ) {
+                el.value = '';
+                return;
+            }
+
+            el.value = val.substring(0, 5);
         };
 
         set(`inicio_${d}`, dia.hora_inicio);

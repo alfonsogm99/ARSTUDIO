@@ -3012,3 +3012,28 @@ input:checked + .slider:before {
     line-height:1;
     flex:0 0 38px;
 }
+
+
+
+.tableau th {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    padding-bottom: 18px;
+}
+
+.tableau th.asc::after,
+.tableau th.desc::after {
+    margin-left: 6px;
+    font-size: 9px;
+    position: relative;
+    top: -1px;
+}
+
+.tableau th.asc::after {
+    content: "▲";
+}
+
+.tableau th.desc::after {
+    content: "▼";
+}

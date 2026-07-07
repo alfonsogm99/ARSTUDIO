@@ -191,117 +191,151 @@ $clienteOcultos = [
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    /* ======================
-       USUARIO UPDATE
-    ====================== */
+    $accion = $_POST['accion'] ?? '';
 
-    $uSets = [];
+    if ($accion === 'descartar') {
 
-    foreach ($usuarioCols as $col) {
-
-        if ($col === 'password') continue;
-
-        if ($col === 'activo') {
-            $val = isset($_POST['usuario']['activo']) ? 1 : 0;
-        } else {
-            $val = $conn->real_escape_string($_POST['usuario'][$col] ?? '');
-        }
-
-        $uSets[] = "`$col`='$val'";
-    }
-
-    if (!empty($uSets)) {
-        $conn->query("
+        $stmt = $conn->prepare("
             UPDATE usuario
-            SET " . implode(",", $uSets) . "
-            WHERE id_usuario = $id
+            SET estado_cliente = 'descartado'
+            WHERE id_usuario = ?
         ");
-    }
 
-
-    /* ======================
-       CLIENTE (SEARCH SYSTEM)
-    ====================== */
-
-    $clienteInput = $_POST['cliente'] ?? [];
-
-    $idCliente = !empty($clienteInput['id_cliente'])
-        ? (int)$clienteInput['id_cliente']
-        : null;
-
-    $cSets = [];
-
-    foreach ($clienteCols as $col) {
-        if (in_array($col, ['id_cliente', 'id_usuario'])) continue;
-
-        $cSets[$col] = $conn->real_escape_string($clienteInput[$col] ?? '');
-    }
-
-    // sync usuario → cliente
-    $cSets['email'] = $_POST['usuario']['email'] ?? '';
-
-    $fullPhone = trim($_POST['usuario']['phone'] ?? '');
-
-    if (str_starts_with($fullPhone, '+34')) {
-        $cSets['prefijo_pais'] = '+34';
-        $cSets['telefono'] = substr($fullPhone, 3);
-    } elseif (str_starts_with($fullPhone, '34')) {
-        $cSets['prefijo_pais'] = '+34';
-        $cSets['telefono'] = substr($fullPhone, 2);
-    } else {
-        $cSets['telefono'] = $fullPhone;
-    }
-
-
-    /* ======================
-       VALIDACIÓN CLIENTE
-    ====================== */
-
-    if ($idCliente > 0) {
-
-        // comprobar si el cliente existe y su dueño actual
-        $stmt = $conn->prepare("
-            SELECT id_usuario
-            FROM cliente
-            WHERE id_cliente = ?
-        ");
-        $stmt->bind_param("i", $idCliente);
+        $stmt->bind_param("i", $id);
         $stmt->execute();
-        $existing = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
 
-        // si está asignado a otro usuario → bloquear
-        if (!empty($existing['id_usuario']) && $existing['id_usuario'] != $id) {
-            die("Este cliente ya está asociado a otro usuario");
+        header("Location: admin.php?tabla=usuario");
+        exit;
+    }
+
+    /* VINCULAR */
+    if ($accion === 'vincular') {
+
+        /* ======================
+        USUARIO UPDATE
+        ====================== */
+
+        $uSets = [];
+
+        foreach ($usuarioCols as $col) {
+
+            if ($col === 'password') continue;
+
+            if ($col === 'activo') {
+                $val = isset($_POST['usuario']['activo']) ? 1 : 0;
+            } else {
+                $val = $conn->real_escape_string($_POST['usuario'][$col] ?? '');
+            }
+
+            $uSets[] = "`$col`='$val'";
         }
 
-        // vincular cliente al usuario EDITADO
-        $stmt = $conn->prepare("
-            UPDATE cliente
-            SET
-                id_usuario = ?,
-                email = ?,
-                prefijo_pais = ?,
-                telefono = ?
-            WHERE id_cliente = ?
-        ");
+        if (!empty($uSets)) {
+            $conn->query("
+                UPDATE usuario
+                SET " . implode(",", $uSets) . "
+                WHERE id_usuario = $id
+            ");
+        }
 
-        $cSets['prefijo_pais'] = $cSets['prefijo_pais'] ?? '+34';
-        $cSets['telefono'] = $cSets['telefono'] ?? '';
 
-        $stmt->bind_param(
-            "isssi",
-            $id,
-            $cSets['email'],
-            $cSets['prefijo_pais'],
-            $cSets['telefono'],
-            $idCliente
-        );
+        /* ======================
+        CLIENTE (SEARCH SYSTEM)
+        ====================== */
 
-        $stmt->execute();
+        $clienteInput = $_POST['cliente'] ?? [];
+
+        $idCliente = !empty($clienteInput['id_cliente'])
+            ? (int)$clienteInput['id_cliente']
+            : null;
+
+        $cSets = [];
+
+        foreach ($clienteCols as $col) {
+            if (in_array($col, ['id_cliente', 'id_usuario'])) continue;
+
+            $cSets[$col] = $conn->real_escape_string($clienteInput[$col] ?? '');
+        }
+
+        // sync usuario → cliente
+        $cSets['email'] = $_POST['usuario']['email'] ?? '';
+
+        $fullPhone = trim($_POST['usuario']['phone'] ?? '');
+
+        if (str_starts_with($fullPhone, '+34')) {
+            $cSets['prefijo_pais'] = '+34';
+            $cSets['telefono'] = substr($fullPhone, 3);
+        } elseif (str_starts_with($fullPhone, '34')) {
+            $cSets['prefijo_pais'] = '+34';
+            $cSets['telefono'] = substr($fullPhone, 2);
+        } else {
+            $cSets['telefono'] = $fullPhone;
+        }
+
+
+        /* ======================
+        VALIDACIÓN CLIENTE
+        ====================== */
+
+        if ($idCliente > 0) {
+
+            // comprobar si el cliente existe y su dueño actual
+            $stmt = $conn->prepare("
+                SELECT id_usuario
+                FROM cliente
+                WHERE id_cliente = ?
+            ");
+            $stmt->bind_param("i", $idCliente);
+            $stmt->execute();
+            $existing = $stmt->get_result()->fetch_assoc();
+
+            // si está asignado a otro usuario → bloquear
+            if (!empty($existing['id_usuario']) && $existing['id_usuario'] != $id) {
+                die("Este cliente ya está asociado a otro usuario");
+            }
+
+            // vincular cliente al usuario EDITADO
+            $stmt = $conn->prepare("
+                UPDATE cliente
+                SET
+                    id_usuario = ?,
+                    email = ?,
+                    prefijo_pais = ?,
+                    telefono = ?
+                WHERE id_cliente = ?
+            ");
+
+            $cSets['prefijo_pais'] = $cSets['prefijo_pais'] ?? '+34';
+            $cSets['telefono'] = $cSets['telefono'] ?? '';
+
+            $stmt->bind_param(
+                "isssi",
+                $id,
+                $cSets['email'],
+                $cSets['prefijo_pais'],
+                $cSets['telefono'],
+                $idCliente
+            );
+
+            $stmt->execute();
+
+            $stmt->execute();
+
+            $stmt2 = $conn->prepare("
+                UPDATE usuario
+                SET estado_cliente = 'vinculado'
+                WHERE id_usuario = ?
+            ");
+
+            $stmt2->bind_param("i", $id);
+            $stmt2->execute();
+            $stmt2->close();
+        }
+
+        header("Location: admin.php?tabla=usuario");
+        exit;
     }
-
-    header("Location: admin.php?tabla=usuario");
-    exit;
 }
 ?>
 
@@ -391,8 +425,25 @@ $isReadonly = in_array($col, [
 
 <div id="cliente_suggestions"></div>
 
-<button type="submit">Guardar cambios</button>
+<button
+    type="submit"
+    name="accion"
+    value="vincular">
+    Guardar cambios
+</button>
+
+<br>
+<button
+    type="submit"
+    name="accion"
+    value="descartar"
+    formnovalidate
+    onclick="return confirm('¿Descartar esta solicitud?')">
+    Descartar
+</button>
+
 </form>
+
 </div>
 
 <?php if ($rol === 'admin'): ?>

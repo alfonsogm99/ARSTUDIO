@@ -76,8 +76,6 @@ function toggleNuevoHorario(value){
         if(modo) modo.value = "new";
         if(editando) editando.value = "";
 
-        panel.style.display = "block";
-
         // Ocultar ausencias
         if(bloqueAusencias){
             bloqueAusencias.style.display = "none";
@@ -136,6 +134,10 @@ function toggleNuevoHorario(value){
         }
     }
 
+    if(value !== "new"){
+        panel.style.display = "block";
+    }
+
 
     panel.scrollIntoView({
         behavior: 'smooth'
@@ -152,8 +154,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function guardarHorario() {
+
     const nombre = document.getElementById('nombre_horario').value;
-    const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+
+    const dias = [
+        'lunes','martes','miercoles',
+        'jueves','viernes','sabado','domingo'
+    ];
+
     const horas = {};
 
     dias.forEach(dia => {
@@ -165,7 +173,10 @@ function guardarHorario() {
         };
     });
 
-    // Crear formulario dinámico
+    const modo = document.getElementById('modo_horario').value;
+    const idEditar = document.getElementById('id_general_editando').value;
+
+    // Crear formulario
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'nuevo_horario.php';
@@ -175,6 +186,18 @@ function guardarHorario() {
     inputGuardar.name = 'guardar_horario';
     inputGuardar.value = '1';
     form.appendChild(inputGuardar);
+
+    const inputModo = document.createElement('input');
+    inputModo.type = 'hidden';
+    inputModo.name = 'modo_horario';
+    inputModo.value = modo;
+    form.appendChild(inputModo);
+
+    const inputId = document.createElement('input');
+    inputId.type = 'hidden';
+    inputId.name = 'id_general_editando';
+    inputId.value = idEditar;
+    form.appendChild(inputId);
 
     const inputNombre = document.createElement('input');
     inputNombre.type = 'hidden';

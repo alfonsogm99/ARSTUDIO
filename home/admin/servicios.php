@@ -27,7 +27,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $precio = floatval($_POST['precio']);
     $duracion = intval($_POST['duracion']);
 
-    if ($duracion < 30 || $duracion > 360 || $duracion % 30 !== 0) {
+    if (
+        $duracion < 30 ||
+        $duracion > 360 ||
+        ($duracion % 30 !== 0 && $duracion != 40)
+    ) {
         die("Duración no válida");
     }
 
@@ -109,16 +113,16 @@ $tieneServicios = $servicios->num_rows > 0;
 
 <?php if($tieneServicios): ?>
 
-<table class="tableau">
+<table id="tablaServicios" class="tableau">
 
     <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Precio</th>
-        <th>Duración</th>
-        <th>Acciones</th>
-    </tr>
+        <tr>
+            <th onclick="ordenarTabla(this, 0)">ID</th>
+            <th onclick="ordenarTabla(this, 1)">Nombre</th>
+            <th onclick="ordenarTabla(this, 2)">Precio</th>
+            <th onclick="ordenarTabla(this, 3)">Duración</th>
+            <th>Acciones</th>
+        </tr>
     </thead>
 
     <tbody>
@@ -189,7 +193,18 @@ $tieneServicios = $servicios->num_rows > 0;
     <label>Duración (min)</label>
 
     <select name="duracion" required>
-        <?php for ($i = 30; $i <= 360; $i += 30): ?>
+
+        <option value="30"
+            <?= (isset($edit['duracion']) && $edit['duracion'] == 30) ? 'selected' : '' ?>>
+            30 min
+        </option>
+
+        <option value="40"
+            <?= (isset($edit['duracion']) && $edit['duracion'] == 40) ? 'selected' : '' ?>>
+            40 min
+        </option>
+
+        <?php for ($i = 60; $i <= 360; $i += 30): ?>
             <option value="<?= $i ?>"
                 <?= (isset($edit['duracion']) && $edit['duracion'] == $i) ? 'selected' : '' ?>>
 
@@ -208,6 +223,7 @@ $tieneServicios = $servicios->num_rows > 0;
 
             </option>
         <?php endfor; ?>
+
     </select>
 
     <button type="submit">
@@ -255,6 +271,8 @@ $version = $config['app']['version'] ?? '0.0.0';
         <a href="../includes/cookies.html">Política de Cookies</a> |
         <a href="../includes/terminos.html">Términos y Condiciones</a>
 </footer>
+
+<script src="../../js/orderTableau.js"></script>
 
 </body>
 </html>

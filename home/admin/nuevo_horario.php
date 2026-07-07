@@ -23,6 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
 
             $horas_json = $_POST['horas'] ?? '';
             $horas = [];
+            $modo = $_POST['modo_horario'] ?? 'new';
+            $id_general_editando = (int)($_POST['id_general_editando'] ?? 0);
+
             if ($horas_json && is_string($horas_json)) {
                 $horas = json_decode($horas_json, true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
@@ -31,45 +34,144 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
                 }
             }
 
-            $sql_general = "INSERT INTO horario_general (nombre, id_barbero)
-                            VALUES ('".$conn->real_escape_string($nombre_horario)."', $id_barbero)";
+            if ($modo === 'edit' && $id_general_editando > 0) {
 
-            if (!$conn->query($sql_general)) {
-                $errores[] = "Error guardando horario general: " . $conn->error;
+                $id_general = $id_general_editando;
+
+                $stmt = $conn->prepare("
+                    UPDATE horario_general
+                    SET nombre = ?
+                    WHERE id_general = ?
+                    AND id_barbero = ?
+                ");
+
+                $stmt->bind_param(
+                    "sii",
+                    $nombre_horario,
+                    $id_general,
+                    $id_barbero
+                );
+
+                if (!$stmt->execute()) {
+                    $errores[] = "Error actualizando horario general: " . $stmt->error;
+                }
+
             } else {
-                $id_general = $conn->insert_id; // Por si quieres vincular luego
+
+                $sql_general = "
+                    INSERT INTO horario_general
+                    (nombre, id_barbero)
+                    VALUES (?, ?)
+                ";
+
+                $stmt = $conn->prepare($sql_general);
+                $stmt->bind_param(
+                    "si",
+                    $nombre_horario,
+                    $id_barbero
+                );
+
+                if (!$stmt->execute()) {
+                    $errores[] = "Error guardando horario general: " . $stmt->error;
+                } else {
+                    $id_general = $stmt->insert_id;
+                }
+
+                if ($modo === 'new') {
+                    $conn->query("
+                        UPDATE horario_general
+                        SET activo = 0
+                        WHERE id_barbero = $id_barbero
+                    ");
+                }
             }
+
+
 
             $dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
 
+            if ($modo === 'new') {
                 $conn->query("
                     UPDATE horario_general
                     SET activo = 0
                     WHERE id_barbero = $id_barbero
                 ");
+            }
 
             foreach ($dias as $dia) {
                 $h = $horas[$dia] ?? [];
-                $inicio = $h['inicio'] ?? '09:00';
-                $fin    = $h['fin'] ?? '17:00';
-                $pi     = $h['pausa_inicio'] ?? null;
-                $pf     = $h['pausa_fin'] ?? null;
+                
+                $inicio = !empty($h['inicio']) ? $h['inicio'] : null;
+                $fin    = !empty($h['fin']) ? $h['fin'] : null;
+                $pi     = !empty($h['pausa_inicio']) ? $h['pausa_inicio'] : null;
+                $pf     = !empty($h['pausa_fin']) ? $h['pausa_fin'] : null;
 
-                $sql = "INSERT INTO horario_barbero 
-                        (id_barbero, id_general, nombre, dia_semana, hora_inicio, hora_fin, pausa_inicio, pausa_fin)
-                        VALUES (
-                            $id_barbero, 
-                            $id_general,
-                            '".$conn->real_escape_string($nombre_horario)."', 
-                            '$dia', 
-                            '$inicio', 
-                            '$fin', 
-                            ".($pi?"'$pi'":"NULL").", 
-                            ".($pf?"'$pf'":"NULL")."
-                        )";
+                if ($modo === 'edit') {
 
-                if (!$conn->query($sql)) {
-                    $errores[] = "Error guardando horario ($dia): " . $conn->error;
+                    $stmt = $conn->prepare("
+                        UPDATE horario_barbero
+                        SET
+                            nombre = ?,
+                            hora_inicio = ?,
+                            hora_fin = ?,
+                            pausa_inicio = ?,
+                            pausa_fin = ?
+                        WHERE
+                            id_general = ?
+                            AND id_barbero = ?
+                            AND dia_semana = ?
+                    ");
+
+                    $stmt->bind_param(
+                        "sssssiss",
+                        $nombre_horario,
+                        $inicio,
+                        $fin,
+                        $pi,
+                        $pf,
+                        $id_general,
+                        $id_barbero,
+                        $dia
+                    );
+
+                    if (!$stmt->execute()) {
+                        $errores[] = "Error actualizando $dia: " . $stmt->error;
+                    }
+
+                } else {
+
+                    $sql = "
+                        INSERT INTO horario_barbero
+                        (
+                            id_barbero,
+                            id_general,
+                            nombre,
+                            dia_semana,
+                            hora_inicio,
+                            hora_fin,
+                            pausa_inicio,
+                            pausa_fin
+                        )
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ";
+
+                    $stmt = $conn->prepare($sql);
+
+                    $stmt->bind_param(
+                        "iissssss",
+                        $id_barbero,
+                        $id_general,
+                        $nombre_horario,
+                        $dia,
+                        $inicio,
+                        $fin,
+                        $pi,
+                        $pf
+                    );
+
+                    if (!$stmt->execute()) {
+                        $errores[] = "Error guardando $dia: " . $stmt->error;
+                    }
                 }
             }
 

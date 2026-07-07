@@ -57,17 +57,16 @@ $rol = $_SESSION['user_type'];
                     $usuariosPendientes = [];
 
                     $stmt = $conn->prepare("
-                        SELECT 
-                            u.id_usuario,
-                            u.username,
-                            u.email,
-                            u.phone,
-                            u.fecha_creacion
-                        FROM usuario u
-                        LEFT JOIN cliente c ON c.id_usuario = u.id_usuario
-                        WHERE u.rol = 'cliente'
-                        AND c.id_cliente IS NULL
-                        ORDER BY u.fecha_creacion DESC
+                    SELECT
+                        id_usuario,
+                        username,
+                        email,
+                        phone,
+                        fecha_creacion
+                    FROM usuario
+                    WHERE rol = 'cliente'
+                    AND estado_cliente = 'pendiente_vinculacion'
+                    ORDER BY fecha_creacion DESC;
                     ");
 
                     $stmt->execute();

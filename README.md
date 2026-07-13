@@ -4,21 +4,61 @@
 
 ## ARSTUDIO
 
-The main objective of this project is the development of a web application aimed at managing and organizing appointments for a real barbershop.
+ARSTUDIO is a complete web platform developed for a real barbershop.
+
+- `/main` — public website used as the business showcase, focused on branding, services and customer attraction.
+- `/home` — private management platform where customers can book appointments and staff can manage the daily operations of the barbershop.
+
+## ARSTUDIO
+
+ARSTUDIO es una plataforma web desarrollada para una barbería real.
+
+* `/main` — carta de presentación pública enfocado en la identidad del negocio, servicios y captación de clientes.
+* `/home` — 
+
+### 🌐 ARSTUDIO /main
+
+```
+https://www.arstudiocutz.es
+```
+
+<p align="center">
+  <img src="assets/main.png" width="250">
+</p>
+
+- Business presentation
+- Work gallery
+- Location map
+- Service and price display
+
+### 🌐 ARSTUDIO /main
+
+```
+https://www.arstudiocutz.es
+```
+
+<p align="center">
+  <img src="assets/main.png" width="250">
+</p>
+
+* Presentación del negocio
+* Galería de trabajos realizados
+* Ubicación
+* Visualización de servicios y precios
+
+### ARSTUDIO /home
 
 The application has been designed to simplify appointment calendar management, improve the internal organization of the business, and provide customers with a more convenient system for requesting and managing their appointments.
 
 Part of the platform's development was carried out as preparation prior to the opening of the establishment, conducting tests during the initial phase and later integrating it into the business's regular operations.
 
-## ARSTUDIO
-
-El objetivo principal de este proyecto es el desarrollo de una aplicación web destinada a la gestión y organización de citas para una barbería real.
+### ARSTUDIO /home
 
 La aplicación ha sido diseñada para facilitar la administración del calendario de reservas, mejorar la organización interna del negocio y ofrecer a los clientes un sistema más cómodo para solicitar y gestionar sus citas.
 
 Parte del desarrollo de la plataforma se realizó como preparación previa a la apertura del establecimiento, llevando a cabo pruebas durante la fase inicial e integrándose posteriormente en el funcionamiento habitual del negocio.
 
-## Implemented features
+#### Features
 
 - **Controlled access** — verification system to prevent unwanted user registrations and allow their rejection.
 - **User customization** — interface to manage user data and credentials (name, password...).
@@ -34,7 +74,7 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 - **Customer editing** — customer management, allowing users to view, create and edit customer information.
 - **Schedule management** — visualization and management of working hours, including time blocks for absences, holidays, etc.
 
-## Funcionalidades implementadas
+#### Funcionalidades
 
 - **Acceso controlado** — sistema de verificación, para evitar registros de usuarios no deseados y/o posibilidad de rechazarlos.
 - **Personalización del usuario** — interfaz para gestionar los datos y credenciales del usuario (nombre, contraseña...).
@@ -50,7 +90,7 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 - **Edición de clientes** — gestión de clientes, permitiendo ver, crear y editarlos.
 - **Horario** — visualización y gestión de horarios, bloqueos de horas (ausencias, vacaciones...).
 
-### 📌 Appointment booking limitations (customer)
+#### 📌 Appointment booking limitations (customer)
 
 - **Availability control** — prevents the creation of appointments that overlap with time slots already occupied by the barber.
 - **Service duration control** — calculates the total appointment duration based on the selected service.
@@ -58,7 +98,7 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 - **Duplicate submission prevention** — prevents multiple simultaneous submissions through session control.
 - **Access control** — restricts appointment creation according to the user type (customer, barber or administrator).
 
-### 📌 Limitaciones reserva de cita (cliente) 
+#### 📌 Limitaciones reserva de cita (cliente) 
 
 - **Control de disponibilidad** — evita la creación de citas que coincidan con horarios ya ocupados por el barbero.
 - **Control de duración del servicio** — calcula la duración total de la cita según el servicio seleccionado.
@@ -66,44 +106,8 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 - **Prevención de duplicidad durante el proceso** — evita múltiples envíos simultáneos mediante control de sesión.
 - **Control de acceso** — limita la creación de citas según el tipo de usuario (cliente, barbero o administrador).
 
-## ARSTUDIO · Página principal
-
-```
-https://www.arstudiocutz.es
-```
-
-<p align="center">
-  <img src="assets/main.png" width="250" alt="arstudio — own your style">
-</p>
-
-#### /main
-
-ARSTUDIO's public showcase page, displaying the business identity and visual style.
-
-#### /main
-
-Carta de presentación pública de ARSTUDIO, mostrando la identidad del negocio.
-
-## Implemented features
-
-- **Design** — animations, loading logo, image gallery.
-- **Work gallery** — a selection of arranged images in an adaptable visual layout.
-- **Location map** — displays the establishment's location through Google Maps.
-- **Price management** — possibility to display the services and prices.
-
-## Funcionalidades implementadas
-
-- **Diseño** — animaciones, logo de carga, galería de imágenes ...
-- **Galería de trabajos** —  selección de imágenes organizadas en una composición visual adaptable.
-- **Mapa de ubicación** — localización del establecimiento en Google Maps.
-- **Gestión de precios** — posibilidad de mostrar los servicios y precios.
-
-
-
-
-
 
 # Last Release (v.1.2.2)
 
-[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2)<br>
-[ARSTUDIO PROJECT · GitHub](https://github.com/alfonsogm99/ARSTUDIO)
+[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2)<br/><br/>
+[ARSTUDIO PROJECT](https://github.com/alfonsogm99/ARSTUDIO)

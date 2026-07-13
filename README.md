@@ -7,7 +7,7 @@
 ARSTUDIO is a complete web platform developed for a real barbershop.
 
 - `/main` — public website used as the business showcase, focused on branding, services and customer attraction.
-- `/home` — eeb application with a system for managing appointments, clients, and business operations.
+- `/home` — web application with a system for managing appointments, clients, and business operations.
 
 ## ARSTUDIO
 
@@ -16,7 +16,8 @@ ARSTUDIO es una plataforma web desarrollada para una barbería real.
 * `/main` — carta de presentación pública enfocado en la identidad del negocio, servicios y captación de clientes.
 * `/home` — aplicación web con un sistema de gestión de citas, clientes y administración del negocio.
 
-### 🌐 ARSTUDIO /main
+### 🌐 ARSTUDIO
+##### /main
 
 ```
 https://www.arstudiocutz.es
@@ -31,7 +32,8 @@ https://www.arstudiocutz.es
 - Location map
 - Service and price display
 
-### 🌐 ARSTUDIO /main
+### 🌐 ARSTUDIO
+##### /main
 
 ```
 https://www.arstudiocutz.es
@@ -46,13 +48,15 @@ https://www.arstudiocutz.es
 * Ubicación
 * Visualización de servicios y precios
 
-### ✂️ ARSTUDIO /home
+### ✂️ ARSTUDIO
+##### /home
 
 The application has been designed to simplify appointment calendar management, improve the internal organization of the business, and provide customers with a more convenient system for requesting and managing their appointments.
 
 Part of the platform's development was carried out as preparation prior to the opening of the establishment, conducting tests during the initial phase and later integrating it into the business's regular operations.
 
-### ✂️ ARSTUDIO /home
+### ✂️ ARSTUDIO
+##### /home
 
 La aplicación ha sido diseñada para facilitar la administración del calendario de reservas, mejorar la organización interna del negocio y ofrecer a los clientes un sistema más cómodo para solicitar y gestionar sus citas.
 

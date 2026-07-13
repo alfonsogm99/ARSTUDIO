@@ -64,47 +64,47 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 
 #### Features
 
-##### User management
+##### - User management
 - **Controlled access** — verification system to prevent unwanted user registrations and allow their rejection.
 - **User customization** — interface to manage user data and credentials (name, password...).
 
-##### Appointment system
+##### - Appointment system
 - **Appointment management system** — complete system for creating, editing and managing customer appointments.
 - Availability control
 - Conflict prevention
 
-##### Business management
+##### - Business management
 - **Customer management** — storage and organization of customer information for appointment tracking.
 - **Services management** — management of available services, allowing users to view, create and edit them.
 - **Schedule management** — visualization and management of working hours, including time blocks for absences, holidays, etc.
 - **Accounting panel** — summary dashboard providing an overview of gross revenue, pending/cancelled appointments, and payment history (customer, payment method, revenue per appointment and date).
 
-##### Technical features
+##### - Technical features
 - **Database integration** — persistent storage of appointments and application data.
 - **Responsive design** — interface adaptation for desktop, tablet and mobile devices.
 - **Notifications** — displays new users pending validation/rejection and shows appointments pending cancellation.
 
 #### Funcionalidades
 
-##### Gestión de usuarios
+##### - Gestión de usuarios
 
 * **Acceso controlado** — sistema de verificación para evitar registros de usuarios no deseados y permitir su aceptación o rechazo.
 * **Personalización del usuario** — interfaz para gestionar los datos y credenciales del usuario (nombre, contraseña...).
 
-##### Sistema de citas
+##### - Sistema de citas
 
 * **Sistema de gestión de citas** — sistema completo para crear, editar y gestionar las citas de los clientes.
 * **Control de disponibilidad** — evita la creación de citas en horarios ya ocupados.
 * **Prevención de conflictos** — evita coincidencias entre citas y asegura una correcta planificación del calendario.
 
-##### Gestión del negocio
+##### - Gestión del negocio
 
 * **Gestión de clientes** — almacenamiento y organización de la información de los clientes para el seguimiento de sus citas.
 * **Gestión de servicios** — administración de los servicios disponibles, permitiendo visualizarlos, crearlos y editarlos.
 * **Gestión de horarios** — visualización y administración del horario de trabajo, incluyendo bloques de tiempo para ausencias, vacaciones, etc.
 * **Panel de contabilidad** — panel resumen que permite consultar la facturación en bruto, citas pendientes/canceladas y el historial de pagos (cliente, método de pago, ingresos por cita y fecha).
 
-##### Características técnicas
+##### - Características técnicas
 
 * **Integración con base de datos** — almacenamiento persistente de las citas y de los datos de la aplicación.
 * **Diseño responsive** — adaptación de la interfaz para dispositivos de escritorio, tablets y móviles.

@@ -68,13 +68,13 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 
 ## ARSTUDIO · Página principal
 
-<p align="center">
-  <img src="assets/main.png" width="250" alt="arstudio — own your style">
-</p>
-
 ```
 https://www.arstudiocutz.es
 ```
+
+<p align="center">
+  <img src="assets/main.png" width="250" alt="arstudio — own your style">
+</p>
 
 #### /main
 
@@ -86,23 +86,24 @@ Carta de presentación pública de ARSTUDIO, mostrando la identidad del negocio.
 
 ## Implemented features
 
-- **Custom visual design** — animations, loading logo, image gallery and brand-specific graphic elements.
-- **Work gallery** — displays a selection of images arranged in an adaptable visual layout.
+- **Design** — animations, loading logo, image gallery.
+- **Work gallery** — a selection of arranged images in an adaptable visual layout.
 - **Location map** — displays the establishment's location through Google Maps.
-- **Price management** — possibility to display configured services and prices.
+- **Price management** — possibility to display the services and prices.
 
 ## Funcionalidades implementadas
 
-- **Diseño visual personalizado** — animaciones, logo de carga, galería de imágenes y elementos gráficos propios de la marca.
-- **Galería de trabajos** — muestra una selección de imágenes organizadas en una composición visual adaptable.
+- **Diseño** — animaciones, logo de carga, galería de imágenes ...
+- **Galería de trabajos** —  selección de imágenes organizadas en una composición visual adaptable.
 - **Mapa de ubicación** — localización del establecimiento en Google Maps.
-- **Gestión de precios** — postibilidad de mostrar los servicios y precios configurados.
+- **Gestión de precios** — posibilidad de mostrar los servicios y precios.
 
 
 
 
 
 
-# Last Release ([v1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2))
+# Last Release (v.1.2.2)
 
-- **ARSTUDIO** — [GitHub](https://github.com/alfonsogm99/ARSTUDIO)
+[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2)
+[ARSTUDIO PROJECT · GitHub](https://github.com/alfonsogm99/ARSTUDIO)

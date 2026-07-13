@@ -132,7 +132,7 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 * **Diseño responsive** — adaptación de la interfaz para dispositivos de escritorio, tablets y móviles.
 * **Notificaciones** — muestra nuevos usuarios pendientes de validación/rechazo y citas pendientes de cancelación.
 
-# Last Release
+## Last Release
 
-[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/releases/tag/v.1.2.2)<br/><br/>
+[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/releases/v.1.2.2)<br/><br/>
 [ARSTUDIO PROJECT](https://github.com/alfonsogm99/ARSTUDIO)

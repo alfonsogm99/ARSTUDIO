@@ -7,14 +7,14 @@
 ARSTUDIO is a complete web platform developed for a real barbershop.
 
 - `/main` — public website used as the business showcase, focused on branding, services and customer attraction.
-- `/home` — private management platform where customers can book appointments and staff can manage the daily operations of the barbershop.
+- `/home` — eeb application with a system for managing appointments, clients, and business operations.
 
 ## ARSTUDIO
 
 ARSTUDIO es una plataforma web desarrollada para una barbería real.
 
 * `/main` — carta de presentación pública enfocado en la identidad del negocio, servicios y captación de clientes.
-* `/home` — 
+* `/home` — aplicación web con un sistema de gestión de citas, clientes y administración del negocio.
 
 ### 🌐 ARSTUDIO /main
 
@@ -46,13 +46,13 @@ https://www.arstudiocutz.es
 * Ubicación
 * Visualización de servicios y precios
 
-### ARSTUDIO /home
+### ✂️ ARSTUDIO /home
 
 The application has been designed to simplify appointment calendar management, improve the internal organization of the business, and provide customers with a more convenient system for requesting and managing their appointments.
 
 Part of the platform's development was carried out as preparation prior to the opening of the establishment, conducting tests during the initial phase and later integrating it into the business's regular operations.
 
-### ARSTUDIO /home
+### ✂️ ARSTUDIO /home
 
 La aplicación ha sido diseñada para facilitar la administración del calendario de reservas, mejorar la organización interna del negocio y ofrecer a los clientes un sistema más cómodo para solicitar y gestionar sus citas.
 
@@ -60,35 +60,51 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 
 #### Features
 
+##### User management
 - **Controlled access** — verification system to prevent unwanted user registrations and allow their rejection.
 - **User customization** — interface to manage user data and credentials (name, password...).
+
+##### Appointment system
 - **Appointment management system** — complete system for creating, editing and managing customer appointments.
+- Availability control
+- Conflict prevention
+
+##### Business management
 - **Customer management** — storage and organization of customer information for appointment tracking.
+- **Services management** — management of available services, allowing users to view, create and edit them.
+- **Schedule management** — visualization and management of working hours, including time blocks for absences, holidays, etc.
+- **Accounting panel** — summary dashboard providing an overview of gross revenue, pending/cancelled appointments, and payment history (customer, payment method, revenue per appointment and date).
+
+##### Technical features
 - **Database integration** — persistent storage of appointments and application data.
 - **Responsive design** — interface adaptation for desktop, tablet and mobile devices.
 - **Notifications** — displays new users pending validation/rejection and shows appointments pending cancellation.
-- **Accounting panel** — summary dashboard providing an overview of gross revenue, pending/cancelled appointments, and payment history (customer, payment method, revenue per appointment and date).
-- **Barber configuration panel**
-- **Main website content management** — interface to enable or hide content on the main website https://www.arstudiocutz.es.
-- **Services management** — management of available services, allowing users to view, create and edit them.
-- **Customer editing** — customer management, allowing users to view, create and edit customer information.
-- **Schedule management** — visualization and management of working hours, including time blocks for absences, holidays, etc.
 
 #### Funcionalidades
 
-- **Acceso controlado** — sistema de verificación, para evitar registros de usuarios no deseados y/o posibilidad de rechazarlos.
-- **Personalización del usuario** — interfaz para gestionar los datos y credenciales del usuario (nombre, contraseña...).
-- **Sistema de gestión de citas** — sistema completo para crear, editar y gestionar las citas de los clientes.
-- **Gestión de clientes** — almacenamiento y organización de la información de los clientes para el seguimiento de sus citas.
-- **Integración con base de datos** — almacenamiento persistente de las citas y de los datos de la aplicación.
-- **Diseño responsive** — adaptación de la interfaz para dispositivos de escritorio, tablets y móviles.
-- **Notificaciones** — muestra aquellos usuarios nuevos que están pendientes de validar/rechazar, y muestra las citas 'pendientes de cancelar'.
-- **Panel de contabilidad** — resumen que permite ver de un simple vistazo la facturación en bruto, citas pendientes/canceladas y un historial de pagos (cliente, tipo de pago, facturación por cita y fecha).
-- **Panel de configuración (barbero)**
-- **Contenido web principal** — interfaz para habilitar/ocultar contenido en la web principal https://www.arstudiocutz.es.
-- **Servicios** — gestión de servicios a realizar, permitiendo ver, crear y editarlos.
-- **Edición de clientes** — gestión de clientes, permitiendo ver, crear y editarlos.
-- **Horario** — visualización y gestión de horarios, bloqueos de horas (ausencias, vacaciones...).
+##### Gestión de usuarios
+
+* **Acceso controlado** — sistema de verificación para evitar registros de usuarios no deseados y permitir su aceptación o rechazo.
+* **Personalización del usuario** — interfaz para gestionar los datos y credenciales del usuario (nombre, contraseña...).
+
+##### Sistema de citas
+
+* **Sistema de gestión de citas** — sistema completo para crear, editar y gestionar las citas de los clientes.
+* **Control de disponibilidad** — evita la creación de citas en horarios ya ocupados.
+* **Prevención de conflictos** — evita coincidencias entre citas y asegura una correcta planificación del calendario.
+
+##### Gestión del negocio
+
+* **Gestión de clientes** — almacenamiento y organización de la información de los clientes para el seguimiento de sus citas.
+* **Gestión de servicios** — administración de los servicios disponibles, permitiendo visualizarlos, crearlos y editarlos.
+* **Gestión de horarios** — visualización y administración del horario de trabajo, incluyendo bloques de tiempo para ausencias, vacaciones, etc.
+* **Panel de contabilidad** — panel resumen que permite consultar la facturación en bruto, citas pendientes/canceladas y el historial de pagos (cliente, método de pago, ingresos por cita y fecha).
+
+##### Características técnicas
+
+* **Integración con base de datos** — almacenamiento persistente de las citas y de los datos de la aplicación.
+* **Diseño responsive** — adaptación de la interfaz para dispositivos de escritorio, tablets y móviles.
+* **Notificaciones** — muestra nuevos usuarios pendientes de validación/rechazo y citas pendientes de cancelación.
 
 #### 📌 Appointment booking limitations (customer)
 
@@ -106,8 +122,7 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 - **Prevención de duplicidad durante el proceso** — evita múltiples envíos simultáneos mediante control de sesión.
 - **Control de acceso** — limita la creación de citas según el tipo de usuario (cliente, barbero o administrador).
 
+# Last Release
 
-# Last Release (v.1.2.2)
-
-[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2)<br/><br/>
+[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/releases/tag/v.1.2.2)<br/><br/>
 [ARSTUDIO PROJECT](https://github.com/alfonsogm99/ARSTUDIO)

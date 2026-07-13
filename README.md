@@ -66,17 +66,21 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 - **Prevención de duplicidad durante el proceso** — evita múltiples envíos simultáneos mediante control de sesión.
 - **Control de acceso** — limita la creación de citas según el tipo de usuario (cliente, barbero o administrador).
 
-## ARSTUDIO | Página principal
+## ARSTUDIO · Página principal
+
+<p align="center">
+  <img src="assets/main.png" width="250" alt="arstudio — own your style">
+</p>
 
 ```
 https://www.arstudiocutz.es
 ```
 
-### /main
+#### /main
 
 ARSTUDIO's public showcase page, displaying the business identity and visual style.
 
-### /main
+#### /main
 
 Carta de presentación pública de ARSTUDIO, mostrando la identidad del negocio.
 
@@ -94,6 +98,11 @@ Carta de presentación pública de ARSTUDIO, mostrando la identidad del negocio.
 - **Mapa de ubicación** — localización del establecimiento en Google Maps.
 - **Gestión de precios** — postibilidad de mostrar los servicios y precios configurados.
 
-<p align="center">
-  <img src="assets/main.png" width="250" alt="arstudio — own your style">
-</p>
+
+
+
+
+
+# Last Release ([v1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2))
+
+- **ARSTUDIO** — [GitHub](https://github.com/alfonsogm99/ARSTUDIO)

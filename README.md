@@ -20,7 +20,7 @@ ARSTUDIO es una plataforma web desarrollada para una barbería real.
 * `/main` — carta de presentación pública enfocado en la identidad del negocio, servicios y captación de clientes.
 * `/home` — aplicación web con un sistema de gestión de citas, clientes y administración del negocio.
 
-### 🌐 ARSTUDIO
+### 🌐 ARSTUDIO 🇬🇧
 
 #### /main
 
@@ -33,7 +33,7 @@ ARSTUDIO es una plataforma web desarrollada para una barbería real.
   <img src="assets/main.png" width="250">
 </p>
 
-### 🌐 ARSTUDIO
+### 🌐 ARSTUDIO 🇪🇸
 
 #### /main
 
@@ -46,7 +46,7 @@ ARSTUDIO es una plataforma web desarrollada para una barbería real.
   <img src="assets/main.png" width="250">
 </p>
 
-### ✂️ ARSTUDIO
+### ✂️ ARSTUDIO 🇬🇧
 #### /home
 
 The application has been designed to simplify appointment calendar management, improve the internal organization of the business, and provide customers with a more convenient system for requesting and managing their appointments.
@@ -57,7 +57,7 @@ Part of the platform's development was carried out as preparation prior to the o
   <img src="assets/home.png" width="250">
 </p>
 
-### ✂️ ARSTUDIO
+### ✂️ ARSTUDIO 🇪🇸
 #### /home
 
 La aplicación ha sido diseñada para facilitar la administración del calendario de reservas, mejorar la organización interna del negocio y ofrecer a los clientes un sistema más cómodo para solicitar y gestionar sus citas.
@@ -68,7 +68,7 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
   <img src="assets/home.png" width="250">
 </p>
 
-#### Features
+#### Features 🇬🇧
 
 ##### 📌 User management
 - **Controlled access** — verification system to prevent unwanted user registrations and allow their rejection.
@@ -96,7 +96,7 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 - **Responsive design** — interface adaptation for desktop, tablet and mobile devices.
 - **Notifications** — displays new users pending validation/rejection and shows appointments pending cancellation.
 
-#### Funcionalidades
+#### Funcionalidades 🇪🇸
 
 ##### 📌 Gestión de usuarios
 

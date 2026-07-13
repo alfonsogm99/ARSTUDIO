@@ -6,14 +6,14 @@
 https://www.arstudiocutz.es
 ```
 
-## ARSTUDIO
+## ARSTUDIO 🇬🇧
 
 ARSTUDIO is a complete web platform developed for a real barbershop.
 
 - `/main` — public website used as the business showcase, focused on branding, services and customer attraction.
 - `/home` — web application with a system for managing appointments, clients, and business operations.
 
-## ARSTUDIO
+## ARSTUDIO 🇪🇸
 
 ARSTUDIO es una plataforma web desarrollada para una barbería real.
 

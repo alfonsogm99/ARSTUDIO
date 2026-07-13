@@ -4,12 +4,20 @@
 
 ## ARSTUDIO
 
+```
+https://www.arstudiocutz.es
+```
+
 ARSTUDIO is a complete web platform developed for a real barbershop.
 
 - `/main` — public website used as the business showcase, focused on branding, services and customer attraction.
 - `/home` — web application with a system for managing appointments, clients, and business operations.
 
 ## ARSTUDIO
+
+```
+https://www.arstudiocutz.es
+```
 
 ARSTUDIO es una plataforma web desarrollada para una barbería real.
 
@@ -25,10 +33,6 @@ ARSTUDIO es una plataforma web desarrollada para una barbería real.
 - Location map
 - Service and price display
 
-```
-https://www.arstudiocutz.es
-```
-
 <p align="center">
   <img src="assets/main.png" width="250">
 </p>
@@ -41,10 +45,6 @@ https://www.arstudiocutz.es
 * Galería de trabajos realizados
 * Ubicación
 * Visualización de servicios y precios
-
-```
-https://www.arstudiocutz.es
-```
 
 <p align="center">
   <img src="assets/main.png" width="250">

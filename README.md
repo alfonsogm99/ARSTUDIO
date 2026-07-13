@@ -2,11 +2,11 @@
   <img src="assets/portada.png" width="500">
 </p>
 
-## ARSTUDIO
-
 ```
 https://www.arstudiocutz.es
 ```
+
+## ARSTUDIO
 
 ARSTUDIO is a complete web platform developed for a real barbershop.
 
@@ -14,10 +14,6 @@ ARSTUDIO is a complete web platform developed for a real barbershop.
 - `/home` — web application with a system for managing appointments, clients, and business operations.
 
 ## ARSTUDIO
-
-```
-https://www.arstudiocutz.es
-```
 
 ARSTUDIO es una plataforma web desarrollada para una barbería real.
 

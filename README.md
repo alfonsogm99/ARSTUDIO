@@ -105,5 +105,5 @@ Carta de presentación pública de ARSTUDIO, mostrando la identidad del negocio.
 
 # Last Release (v.1.2.2)
 
-[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2)
+[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tag/v.1.2.2)<br>
 [ARSTUDIO PROJECT · GitHub](https://github.com/alfonsogm99/ARSTUDIO)

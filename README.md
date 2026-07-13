@@ -17,7 +17,7 @@ ARSTUDIO es una plataforma web desarrollada para una barbería real.
 * `/home` — aplicación web con un sistema de gestión de citas, clientes y administración del negocio.
 
 ### 🌐 ARSTUDIO
-##### /main
+#### /main
 
 ```
 https://www.arstudiocutz.es
@@ -33,7 +33,7 @@ https://www.arstudiocutz.es
 - Service and price display
 
 ### 🌐 ARSTUDIO
-##### /main
+#### /main
 
 ```
 https://www.arstudiocutz.es
@@ -49,14 +49,14 @@ https://www.arstudiocutz.es
 * Visualización de servicios y precios
 
 ### ✂️ ARSTUDIO
-##### /home
+#### /home
 
 The application has been designed to simplify appointment calendar management, improve the internal organization of the business, and provide customers with a more convenient system for requesting and managing their appointments.
 
 Part of the platform's development was carried out as preparation prior to the opening of the establishment, conducting tests during the initial phase and later integrating it into the business's regular operations.
 
 ### ✂️ ARSTUDIO
-##### /home
+#### /home
 
 La aplicación ha sido diseñada para facilitar la administración del calendario de reservas, mejorar la organización interna del negocio y ofrecer a los clientes un sistema más cómodo para solicitar y gestionar sus citas.
 

@@ -134,5 +134,5 @@ Parte del desarrollo de la plataforma se realizó como preparación previa a la 
 
 ## Last Release
 
-[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/v.1.2.2)<br/><br/>
+[v.1.2.2](https://github.com/alfonsogm99/ARSTUDIO/tree/v.1.2.2)<br/><br/>
 [ARSTUDIO PROJECT](https://github.com/alfonsogm99/ARSTUDIO)

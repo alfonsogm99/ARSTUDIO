@@ -14,22 +14,63 @@ $year_actual = date('Y');
 
 $sqlGanancias = "
 SELECT
-    IFNULL(SUM(p.total),0) AS total_mes
-FROM pago p
-INNER JOIN cita c
-    ON p.id_cita = c.id_cita
-WHERE MONTH(p.fecha_pago)=?
-AND YEAR(p.fecha_pago)=?
-AND c.estado_pago = 'pagado'
-AND c.estado NOT IN ('cancelada','pendiente_cancelacion')
+(
+    SELECT IFNULL(SUM(p.total),0)
+    FROM pago p
+    INNER JOIN cita c
+        ON p.id_cita = c.id_cita
+    WHERE MONTH(p.fecha_pago)=?
+    AND YEAR(p.fecha_pago)=?
+    AND c.estado_pago = 'pagado'
+    AND c.estado NOT IN ('cancelada','pendiente_cancelacion')
+)
++
+(
+    SELECT IFNULL(SUM(dvp.cantidad * dvp.precio_unitario),0)
+    FROM detalle_venta_producto dvp
+    INNER JOIN venta_producto vp
+        ON dvp.id_venta = vp.id_venta
+    WHERE MONTH(vp.fecha)=?
+    AND YEAR(vp.fecha)=?
+)
+AS total_mes
 ";
 
 $stmt = $conn->prepare($sqlGanancias);
-$stmt->bind_param("ii", $mes_actual, $year_actual);
+$stmt->bind_param(
+    "iiii",
+    $mes_actual,
+    $year_actual,
+    $mes_actual,
+    $year_actual
+);
+
 $stmt->execute();
+
 $resGanancias = $stmt->get_result()->fetch_assoc();
 
 $total_mes = $resGanancias['total_mes'];
+
+
+
+$sqlProductos = "
+SELECT
+    IFNULL(SUM(dvp.cantidad * dvp.precio_unitario),0) AS total_productos
+FROM detalle_venta_producto dvp
+INNER JOIN venta_producto vp
+    ON dvp.id_venta = vp.id_venta
+WHERE MONTH(vp.fecha)=?
+AND YEAR(vp.fecha)=?
+";
+
+$stmt = $conn->prepare($sqlProductos);
+$stmt->bind_param("ii", $mes_actual, $year_actual);
+$stmt->execute();
+
+$resProductos = $stmt->get_result()->fetch_assoc();
+
+$total_productos = $resProductos['total_productos'];
+
 
 
 $sqlPendiente = "
@@ -217,6 +258,164 @@ $tienePagos = $ultimosPagos->num_rows > 0;
         </div>
 
     </div>
+
+    <div class="stat_card">
+
+        <div class="stat_icon green">
+            <i class="fa-solid fa-euro-sign"></i>
+        </div>
+
+        <div class="stat_label">
+            Productos vendidos
+        </div>
+
+        <div class="stat_value green">
+            <?= number_format($total_productos,2) ?>€
+        </div>
+
+
+    </div>
+
+<?php 
+
+$sqlTiposProductos = "
+SELECT
+    p.tipo,
+
+    IFNULL(SUM(dvp.cantidad),0) AS vendidos,
+
+    (
+        SELECT IFNULL(SUM(p2.stock),0)
+        FROM producto p2
+        WHERE p2.tipo = p.tipo
+        AND p2.activo = TRUE
+    ) AS stock
+
+FROM producto p
+
+LEFT JOIN detalle_venta_producto dvp
+    ON p.id_producto = dvp.id_producto
+
+LEFT JOIN venta_producto vp
+    ON dvp.id_venta = vp.id_venta
+    AND MONTH(vp.fecha)=?
+    AND YEAR(vp.fecha)=?
+
+WHERE p.activo = TRUE
+
+GROUP BY p.tipo
+";
+
+
+
+$stmt = $conn->prepare($sqlTiposProductos);
+
+$stmt->bind_param(
+    "ii",
+    $mes_actual,
+    $year_actual
+);
+
+$stmt->execute();
+
+$resultTiposProductos = $stmt->get_result();
+
+
+$productos_tipo = [];
+
+while($row = $resultTiposProductos->fetch_assoc()){
+
+    $productos_tipo[$row['tipo']] = [
+        'vendidos' => $row['vendidos'],
+        'stock' => $row['stock']
+    ];
+
+}
+
+
+$total_ceras = $productos_tipo['cera'] ?? [
+    'vendidos'=>0,
+    'stock'=>0
+];
+
+
+$total_polvos = $productos_tipo['polvos'] ?? [
+    'vendidos'=>0,
+    'stock'=>0
+];
+
+
+
+$sqlStock = "
+SELECT 
+    IFNULL(SUM(stock),0) AS total_stock
+FROM producto
+WHERE activo = TRUE
+";
+
+$resStock = $conn->query($sqlStock)->fetch_assoc();
+
+$total_stock = $resStock['total_stock'];
+
+
+?>
+
+    <div class="stat_card">
+
+        <div class="stat_icon green">
+            <i class="fa-solid fa-boxes-stacked"></i>
+        </div>
+
+        <div class="stat_label">
+            Productos en stock
+        </div>
+
+        <div class="stat_value">
+            <?= $total_stock ?>
+        </div>
+
+    </div>
+
+    <div class="stat_card">
+
+        <div class="stat_icon">
+            <i class="fa-solid fa-pump-soap"></i>
+        </div>
+
+        <div class="stat_label">
+            Ceras vendidas
+        </div>
+
+        <div class="stat_value">
+            <?= $total_ceras['vendidos'] ?>
+            <span class="stat_brutos">
+                / <?= $total_ceras['stock'] ?>
+            </span>
+        </div>
+
+    </div>
+
+
+
+    <div class="stat_card">
+
+        <div class="stat_icon">
+            <i class="fa-solid fa-box"></i>
+        </div>
+
+        <div class="stat_label">
+            Polvos cabello vendidos
+        </div>
+
+        <div class="stat_value">
+            <?= $total_polvos['vendidos'] ?>
+            <span class="stat_brutos">
+                / <?= $total_polvos['stock'] ?>
+            </span>
+        </div>
+
+    </div>
+
 
 </div>
 

@@ -53,9 +53,15 @@ $theme = $data['theme'] ?? 'dark';
 
 <div class="confpan-settings">
 
-    <a href="<?php echo BASE_URL; ?>/admin/mainsets.php">
+    <!-- <a href="<?php echo BASE_URL; ?>/admin/mainsets.php">
         <div class="confpan-option">
             <p class="AR">AR</p>
+        </div>
+    </a> -->
+
+    <a href="<?php echo BASE_URL; ?>/admin/users.php">
+        <div class="confpan-option">
+            <i class="fa-solid fa-user"></i>
         </div>
     </a>
 
@@ -65,9 +71,9 @@ $theme = $data['theme'] ?? 'dark';
         </div>
     </a>
 
-    <a href="<?php echo BASE_URL; ?>/admin/users.php">
+    <a href="<?php echo BASE_URL; ?>/admin/productos.php">
         <div class="confpan-option">
-            <i class="fa-solid fa-user"></i>
+            <i class="fa-solid fa-box"></i>
         </div>
     </a>
 

@@ -53,6 +53,10 @@ body#servicios {
     padding-top: 19vh;
 }
 
+body#productos {
+    padding-top: 19vh;
+}
+
 body#confpan {
     padding-top: 30vh;
 }
@@ -2727,6 +2731,22 @@ tr:nth-child(even) {
 
     .contabilidad_box{
         overflow-x:auto;
+    }
+
+}
+
+@media(min-width:1368px){
+
+    .blank {
+        display: none;
+    }
+
+}
+
+@media(max-width:1113px){
+
+    .blank {
+        display: none;
     }
 
 }

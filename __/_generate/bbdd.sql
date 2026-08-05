@@ -26,13 +26,13 @@ CREATE TABLE usuario (
 --    username REGEXP '^[A-Za-z0-9_.-]{3,30}$'
 --);
 
---ALTER TABLE usuario
---ADD COLUMN estado_cliente ENUM(
+-- ALTER TABLE usuario
+-- ADD COLUMN estado_cliente ENUM(
 --    'pendiente_vinculacion',
 --    'vinculado',
 --    'eliminado',
 --    'descartado'
---) DEFAULT 'pendiente_vinculacion';
+-- ) DEFAULT 'pendiente_vinculacion';
 
 -- =========================
 -- ADMIN
@@ -326,4 +326,74 @@ CREATE TABLE notificacion (
 
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
     ON DELETE CASCADE
+);
+
+-- =========================
+-- PRODUCTOS
+-- =========================
+CREATE TABLE producto (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+
+    tipo ENUM(
+        'cera',
+        'polvos',
+        'champu',
+        'aceite',
+        'agua de mar'
+    ) NOT NULL,
+
+    descripcion TEXT,
+
+    precio_compra DECIMAL(8,2) DEFAULT NULL,
+    precio_venta DECIMAL(8,2) NOT NULL,
+
+    stock INT NOT NULL DEFAULT 0,
+    stock_minimo INT DEFAULT 0,
+
+    activo BOOLEAN DEFAULT TRUE,
+
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+-- =========================
+-- VENTA DE PRODUCTOS
+-- =========================
+CREATE TABLE venta_producto (
+    id_venta INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_cliente INT DEFAULT NULL,
+
+    total DECIMAL(8,2) NOT NULL,
+
+    metodo ENUM('efectivo','tarjeta','bizum'),
+
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_cliente)
+        REFERENCES cliente(id_cliente)
+        ON DELETE SET NULL
+);
+
+-- =========================
+-- DETALLE VENTA PRODUCTOS
+-- =========================
+CREATE TABLE detalle_venta_producto (
+    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_venta INT NOT NULL,
+    id_producto INT NOT NULL,
+
+    cantidad INT NOT NULL DEFAULT 1,
+    precio_unitario DECIMAL(8,2) NOT NULL,
+
+    FOREIGN KEY (id_venta)
+        REFERENCES venta_producto(id_venta)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_producto)
+        REFERENCES producto(id_producto)
 );

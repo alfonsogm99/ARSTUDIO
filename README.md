@@ -2,11 +2,7 @@
   <img src="assets/portada.png" width="500">
 </p>
 
-<p align="center">
-```
-v.1.2.3
-```
-</p>
+<p align="center">`v.1.2.3`</p>
 ## Recuento de productos
 
 Se amplía el apartado `Resumen` del Panel de Contabilidad. Ahora también es posible consultar de un vistazo el rendimiento de los productos destacados y stock disponible.

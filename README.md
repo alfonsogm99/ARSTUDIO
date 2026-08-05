@@ -43,4 +43,6 @@ Se incorpora un nuevo panel de administración para gestionar los productos de l
 - Se ha deshabilitado la antigua opción `AR` que permitía añadir información a la página principal `/main`.
 - Se habilita el nuevo panel de control `productos.php`.
 
+<div style="text-align:center;">
 <img src="assets/3.png" width="350"> <img src="assets/4.png" width="350">
+</div>

@@ -25,6 +25,10 @@ Se añaden los siguientes indicadores:
 
 Se incorpora un nuevo panel de administración para gestionar los productos de la barbería. Que permite mantener actualizado el inventario desde el panel de administración, facilitando el control de existencias y posterior integración con el sistema de ventas.
 
+<p align="center">
+  <img src="assets/2.png" width="500">
+</p>
+
 ### Funcionalidades
 
 - `Añadir`/`Editar`/`Eliminar` productos.
@@ -34,13 +38,9 @@ Se incorpora un nuevo panel de administración para gestionar los productos de l
 - Descripción para cada producto.
 - Listado ordenable por ID, nombre, tipo, precio y stock (incorporado en la `v.1.2.2`).
 
-<p align="center">
-  <img src="assets/2.png" width="500">
-</p>
-
 ## Panel de configuración
 
 - Se ha deshabilitado la antigua opción `AR` que permitía añadir información a la página principal `/main`.
 - Se habilita el nuevo panel de control `productos.php`.
 
-| <img src="assets/3.png" width="450"> | <img src="assets/4.png" width="450"> |
+| <img src="assets/3.png" width="250"> | <img src="assets/4.png" width="250"> |

@@ -38,7 +38,7 @@ Se añade un nuevo panel de administración para gestionar el catálogo de produ
 ### Funcionalidades
 
 - `Añadir`/`Editar`/`Eliminar` productos.
-- Clasificación por tipo (`cera`, `polvos de cabello`, `aceite`, etc.).
+- Clasificación por tipo (`cera`, `polvos de cabello`, `aceite`, `etc.`).
 - Gestión del precio de compra y del precio de venta.
 - Control de stock y stock mínimo.
 - Descripción para cada producto.

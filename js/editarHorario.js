@@ -34,6 +34,11 @@ function editarVIP(id, fecha, inicio, fin, motivo){
 
 function editarHorario(id) {
 
+    if(id === "new"){
+        toggleNuevoHorario("new");
+        return;
+    }
+
     document.getElementById('modo_horario').value = 'edit';
     document.getElementById("id_general_editando").value = id;
 

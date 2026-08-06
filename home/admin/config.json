@@ -5,32 +5,7 @@
     "ui": {
         "theme": "dark"
     },
-    "main": {
-        "mapa": {
-            "visible": true,
-            "titulo": "Me encuentro en"
-        },
-        "cita": {
-            "visible": false,
-            "titulo": "Pedir Cita"
-        },
-        "precios": {
-            "visible": false,
-            "titulo": "Precios",
-            "items": [
-                {
-                    "id": "corte",
-                    "visible": true,
-                    "titulo": "Corte",
-                    "precio": 11
-                },
-                {
-                    "id": "barba",
-                    "visible": true,
-                    "titulo": "Barba",
-                    "precio": 5
-                }
-            ]
-        }
+    "booking": {
+        "step": 30
     }
 }

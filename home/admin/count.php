@@ -8,8 +8,14 @@ if(!isset($_SESSION['user_type']) || !in_array($_SESSION['user_type'], ['admin',
     exit;
 }
 
-$mes_actual = date('m');
-$year_actual = date('Y');
+$mes_actual = isset($_GET['mes'])
+    ? max(1, min(12, intval($_GET['mes'])))
+    : intval(date('m'));
+
+$year_actual = isset($_GET['year'])
+    ? intval($_GET['year'])
+    : intval(date('Y'));
+
 
 
 $sqlGanancias = "
@@ -191,6 +197,51 @@ $tienePagos = $ultimosPagos->num_rows > 0;
     <i class="fa-solid fa-chart-line"></i>
     Resumen
 </h1>
+
+<form method="GET" class="monthftr">
+
+    <select name="mes">
+
+        <?php
+        $meses = [
+            1=>"Enero",2=>"Febrero",3=>"Marzo",4=>"Abril",
+            5=>"Mayo",6=>"Junio",7=>"Julio",8=>"Agosto",
+            9=>"Septiembre",10=>"Octubre",11=>"Noviembre",12=>"Diciembre"
+        ];
+
+        foreach($meses as $num=>$nombre):
+        ?>
+
+        <option value="<?= $num ?>"
+            <?= $mes_actual == $num ? 'selected' : '' ?>>
+            <?= $nombre ?>
+        </option>
+
+        <?php endforeach; ?>
+
+    </select>
+
+    <select name="year">
+
+        <?php
+        for($i=date('Y'); $i>=2026; $i--):
+        ?>
+
+        <option value="<?= $i ?>"
+            <?= $year_actual == $i ? 'selected' : '' ?>>
+            <?= $i ?>
+        </option>
+
+        <?php endfor; ?>
+
+    </select>
+
+    <button type="submit" class="monthftr_btn">
+        <i class="fa-solid fa-filter"></i>
+    </button>
+
+</form>
+
 
 <div class="stats_grid">
 

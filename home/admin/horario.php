@@ -125,7 +125,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     // --- CAMBIO DE HORARIO ASIGNADO ---
-    if (isset($_POST['cambiar_horario']) && $rol === 'barbero') {
+    if (
+        ($_POST['action'] ?? '') === 'cambiar_horario'
+        && $rol === 'barbero'
+    ) {
 
         $id_barbero = $conn->query("SELECT id_barbero FROM barbero WHERE id_usuario = $user_id")->fetch_assoc()['id_barbero'] ?? null;
 
@@ -163,6 +166,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_general = (int)$_POST['id_general_editando'];
         $nombre = $_POST['nombre_horario'];
 
+        $stmt = $conn->prepare("
+            UPDATE horario_general
+            SET nombre = ?
+            WHERE id_general = ?
+            AND id_barbero = ?
+        ");
+
+        $stmt->bind_param(
+            "sii",
+            $nombre,
+            $id_general,
+            $id_barbero
+        );
+
+        $stmt->execute();
+
         foreach ($dias as $dia) {
 
             $inicio = $_POST['horarios'][$dia]['inicio'] ?: '00:00:00';
@@ -173,7 +192,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare("
                 UPDATE horario_barbero
                 SET
-                    nombre = ?,
                     hora_inicio = ?,
                     hora_fin = ?,
                     pausa_inicio = ?,
@@ -185,8 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
 
             $stmt->bind_param(
-                "sssssiss",
-                $nombre,
+                "sssssis",
                 $inicio,
                 $fin,
                 $pi,
@@ -698,7 +715,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
                         <button type="submit"
                                 name="editar_horario"
                                 value="1"
-                                id="btn_guardar_cambios">
+                                id="btn_guardar_cambios"
+                                onclick="return prepararHorario();">
                             Guardar
                         </button>
 

@@ -560,6 +560,18 @@ document.querySelectorAll('.hour-slot').forEach(slot => {
 
 slot.onclick = () => {
 
+    const BOOKING_STEP = window.calendarData.bookingStep || 30;
+
+    const inicioJornada = parseHora(horario.hora_inicio);
+    const esInicioValido =
+        ((slotMin - inicioJornada) % BOOKING_STEP) === 0;
+
+    if (userType === "cliente" && !esInicioValido) {
+        slot.classList.add("disabled-hour");
+        return;
+    }
+
+
     if (slot.classList.contains('disabled-hour')) {
         return;
     }

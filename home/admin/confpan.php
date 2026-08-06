@@ -83,23 +83,68 @@ $theme = $data['theme'] ?? 'dark';
         </div>
     </a>
 
-    <a href="">
-        <div class="confpan-option">
-            <i class="fa-solid fa-none"></i>
-        </div>
-    </a>
+    <?php 
+        $config = json_decode(
+            file_get_contents('./config.json'),
+            true
+        ) ?? [];
 
-    <a href="">
-        <div class="confpan-option">
-            <i class="fa-solid fa-none"></i>
+        $bookingStep = $config['booking']['step'] ?? 30;
+    ?> 
+
+    <div class="confpan-option-config">
+
+        <p class="confpan-title">time cooldown</p>
+
+        <div class="confpan-controls">
+            <input
+                id="set_time_freeze"
+                type="number"
+                min="10"
+                step="10"
+                value="<?= htmlspecialchars($bookingStep) ?>">
+
+            <button
+                id="save_booking_step"
+                class="btn btn-primary">
+                <i class="fa-solid fa-save"></i>
+            </button>
         </div>
-    </a>
+
+    </div>
+
+    <div class="confpan-option">
+        <i class="fa-solid fa-none"></i>
+    </div>
 
     <br>
 </div>
 
 
+<script>
+    document.getElementById("save_booking_step").addEventListener("click", () => {
 
+        const step = document.getElementById("set_time_freeze").value;
+
+        fetch("guardar_booking_step.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                booking_step: step
+            })
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                alert("Guardado correctamente");
+            } else {
+                alert("Error al guardar");
+            }
+        });
+    });
+</script>
 
 
 

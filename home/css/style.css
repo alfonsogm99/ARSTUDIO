@@ -1429,9 +1429,6 @@ body.light-mode #menu_bar a{
     }
 }
 
-
-
-
 #temp_txt{
     color: #fff;
     opacity: 0.5;
@@ -1481,8 +1478,6 @@ body.light-mode #user_info a{
 body.light-mode #lightmode {
   color: #000;
 }
-
-
 
 .perfil_box { 
     width: 400px; 
@@ -1616,7 +1611,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
 
-
 form input,
 form select,
 form textarea {
@@ -1694,7 +1688,6 @@ body.light-mode .toggle_eye {
   box-sizing: border-box;
 }
 
-
 .input-icon button {
   position: absolute;
   right: 8px;
@@ -1715,7 +1708,6 @@ body.light-mode .toggle_eye {
   border: none;
   cursor: pointer;
 }
-
 
 .readonly-input {
     cursor: not-allowed;
@@ -2019,6 +2011,48 @@ tablet / iPad
 
     .dropdown:hover .submenu {
         margin-top: 15px;
+    }
+}
+
+@media (max-height: 583px) and (orientation: landscape){
+    body#contabilidad {
+        padding-top: 25vh !important;
+    }
+
+    body#perfil,
+    body#users,
+    body#servicios,
+    body#productos,
+    body#horario {
+        padding-top: 27vh !important;
+    }
+}
+
+@media (max-height: 433px) and (orientation: landscape){
+    body#contabilidad {
+        padding-top: 30vh !important;
+    }
+
+    body#confpan,
+    body#perfil,
+    body#users,
+    body#servicios,
+    body#productos,
+    body#horario {
+        padding-top: 35vh !important;
+    }
+}
+
+@media (max-height: 375px) and (orientation: landscape){
+    body#contabilidad {
+        padding-top: 35vh !important;
+    }
+
+    body#confpan,
+    body#perfil,
+    body#users,
+    body#horario {
+        padding-top: 45vh !important;
     }
 }
 
@@ -2610,6 +2644,27 @@ body#contabilidad{
     font-weight: 100;
 }
 
+.monthftr{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    align-items:center;
+
+    height: 70px;
+
+    background: #1e1e1e;
+    border:1px solid #333;
+}
+
+.monthftr select,
+.monthftr_btn{
+    margin: 0;
+
+    background: #333;
+    color: #c2c2c2;
+    border:1px solid #616161;
+}
+
 .empty-state{
     text-align: center;
     opacity: .7;
@@ -2814,6 +2869,73 @@ tr:nth-child(even) {
 }
 
 .confpan-option i{
+    color: #fff;
+    opacity: .6;
+}
+
+.confpan-option-config{
+    width: 100%;
+    min-height: 80px;
+    padding: 16px;
+
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    border-right: 1px solid #333;
+    border-radius: 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.confpan-title{
+    margin: 0;
+    font-size: 10px;
+    margin: auto;
+    opacity: .6;
+}
+
+.confpan-controls{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#save_booking_step{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 42px;
+    padding: 0 14px;
+    margin: 0;
+    line-height: 1;
+
+    opacity: .6;
+}
+
+#set_time_freeze{
+    flex: 1;
+
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+
+    color: #bbb;
+    font-size: 15px;
+
+    padding: 10px 12px;
+    outline: none;
+
+    margin: 0;
+}
+
+#set_time_freeze:focus{
+    border-color: #666;
+}
+
+#set_time_freeze i{
     color: #fff;
     opacity: .6;
 }

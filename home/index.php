@@ -325,6 +325,12 @@ if ($tableExists && $tableExists->num_rows > 0) {
     }
 }
 
+$config = json_decode(
+    file_get_contents('./admin/config.json'),
+    true
+) ?? [];
+
+$bookingStep = $config['booking']['step'] ?? 30;
 ?>
 
 <!DOCTYPE html>
@@ -564,7 +570,8 @@ window.calendarData = {
     horarioActivo: <?= json_encode($horario_activo ?? null, JSON_UNESCAPED_UNICODE) ?>,
     diaSemana: "<?= $dia ?>",
     bloqueos: <?= json_encode($bloqueos_array ?? [], JSON_UNESCAPED_UNICODE) ?>,
-    vipHorarios: <?= json_encode($vip_array ?? [], JSON_UNESCAPED_UNICODE) ?>
+    vipHorarios: <?= json_encode($vip_array ?? [], JSON_UNESCAPED_UNICODE) ?>,
+    bookingStep: <?= (int)$bookingStep ?>
 };
 </script>
 </script>

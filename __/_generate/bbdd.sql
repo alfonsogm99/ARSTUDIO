@@ -160,6 +160,11 @@ CREATE TABLE horario_barbero (
 -- ALTER TABLE horario_barbero ADD COLUMN pausa_inicio TIME NULL AFTER hora_fin, ADD COLUMN pausa_fin TIME NULL AFTER pausa_inicio;
 -- ALTER TABLE horario_barbero DROP COLUMN activo;
 
+-- ALTER TABLE horario_barbero
+-- MODIFY hora_inicio TIME NULL,
+-- MODIFY hora_fin TIME NULL,
+-- MODIFY pausa_inicio TIME NULL,
+-- MODIFY pausa_fin TIME NULL;
 
 
 -- =========================

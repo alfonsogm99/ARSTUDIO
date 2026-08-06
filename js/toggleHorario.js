@@ -60,14 +60,12 @@ function toggleNuevoHorario(value){
     const panel = document.getElementById('nuevo_horario');
 
     const bloqueAusencias = document.getElementById('bloque_ausencias');
-
     const panelAusencias = document.getElementById('panel_ausencias');
 
     const btnGuardarHorario = document.getElementById('guardar_horario');
-
     const btnGuardarCambios = document.getElementById('btn_guardar_cambios');
-
     const btnEliminarHorario = document.getElementById('btn_eliminar_horario');
+    const btnEditarHorario = document.getElementById('btn_editar_horario');
 
     if(!panel) return;
 
@@ -76,73 +74,80 @@ function toggleNuevoHorario(value){
         if(modo) modo.value = "new";
         if(editando) editando.value = "";
 
-        // Ocultar ausencias
+        // Mostrar formulario automáticamente
+        panel.style.display = "block";
+
+        // Limpiar formulario
+        document.getElementById("nombre_horario").value = "";
+
+        document.querySelectorAll('#nuevo_horario input[type="time"]').forEach(el => {
+            el.value = "";
+        });
+
+        // Ocultar ausencias/VIP
         if(bloqueAusencias){
             bloqueAusencias.style.display = "none";
         }
 
-        // Cerrar panel ausencias
         if(panelAusencias){
             panelAusencias.style.display = "none";
         }
 
-        // Mostrar botón guardar nuevo horario
+        // Botones
         if(btnGuardarHorario){
             btnGuardarHorario.style.display = "inline-block";
         }
 
-        // Ocultar guardar cambios
         if(btnGuardarCambios){
             btnGuardarCambios.style.display = "none";
         }
 
-        // Ocultar eliminar horario
         if(btnEliminarHorario){
             btnEliminarHorario.style.display = "none";
         }
 
-    }else {
+        if(btnEditarHorario){
+            btnEditarHorario.style.display = "none";
+        }
+
+    } else {
 
         if(modo) modo.value = "edit";
+        if(editando) editando.value = value;
 
-        // Ocultar panel nuevo horario
+        // Ocultar formulario hasta pulsar Editar
         panel.style.display = "none";
 
-        // Mostrar bloque ausencias
         if(bloqueAusencias){
             bloqueAusencias.style.display = "block";
         }
 
-        // Ocultar panel ausencias
         if(panelAusencias){
             panelAusencias.style.display = "none";
         }
 
-        // Ocultar guardar nuevo horario
         if(btnGuardarHorario){
             btnGuardarHorario.style.display = "none";
         }
 
-        // Mostrar guardar cambios
         if(btnGuardarCambios){
             btnGuardarCambios.style.display = "inline-block";
         }
 
-        // Mostrar eliminar horario
         if(btnEliminarHorario){
             btnEliminarHorario.style.display = "inline-block";
         }
-    }
 
-    if(value !== "new"){
-        panel.style.display = "block";
+        if(btnEditarHorario){
+            btnEditarHorario.style.display = "inline-block";
+        }
     }
-
 
     panel.scrollIntoView({
         behavior: 'smooth'
     });
 }
+
 
 // estado inicial al cargar página
 document.addEventListener("DOMContentLoaded", () => {
@@ -226,4 +231,24 @@ function actualizarDuracion(select) {
     } else {
         document.getElementById('horario_duracion').innerText = '';
     }
+}
+
+function prepararHorario(){
+
+    const select = document.getElementById("select_horario");
+    const action = document.getElementById("action");
+
+    if(!select || !action) return true;
+
+    if(select.value !== "new"){
+
+        action.value = "cambiar_horario";
+
+    } else {
+
+        action.value = "";
+
+    }
+
+    return true;
 }

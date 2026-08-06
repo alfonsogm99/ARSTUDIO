@@ -4,19 +4,19 @@
 
 <p align="center"><sub>v1.2.3</sub></p>
 
-## Filtro
+## 📅 Filtro
 
-Se incluye un nuevo filtro para revisar el resumen `mes`/`año`. Hasta ahora solo podía revisar el resumen del mes actual.
+Se incorpora un nuevo filtro para consultar el resumen de cualquier `mes` y `año`. Hasta ahora únicamente era posible visualizar el resumen correspondiente al mes actual.
 
 <p align="center">
   <img src="assets/1.png" width="500">
 </p>
 
-## Recuento de productos
+## 📦 Resumen de productos
 
-Se amplía el apartado `Resumen` del Panel de Contabilidad. Ahora también es posible consultar de un vistazo el rendimiento de los productos destacados y stock disponible.
+Se amplía el apartado `Resumen` del Panel de Contabilidad con nuevos indicadores que permiten consultar rápidamente el rendimiento de los productos y stock en inventario.
 
-Se añaden los siguientes indicadores:
+### Nuevos indicadores
 
 - `Productos vendidos` — importe total obtenido por la venta de productos durante el mes.
 - `Productos en stock` — número total de productos disponibles en el inventario.
@@ -27,9 +27,9 @@ Se añaden los siguientes indicadores:
   <img src="assets/2.png" width="500">
 </p>
 
-## Productos.php
+## 🛍️ Productos.php
 
-Se incorpora un nuevo panel de administración para gestionar los productos de la barbería. Que permite mantener actualizado el inventario desde el panel de administración, facilitando el control de existencias y posterior integración con el sistema de ventas.
+Se añade un nuevo panel de administración para gestionar el catálogo de productos de la barbería. Este módulo permite mantener el inventario actualizado desde el panel de administración, asentando las bases para su integración con el sistema de ventas.
 
 <p align="center">
   <img src="assets/3.png" width="500">
@@ -38,15 +38,15 @@ Se incorpora un nuevo panel de administración para gestionar los productos de l
 ### Funcionalidades
 
 - `Añadir`/`Editar`/`Eliminar` productos.
-- Clasificación por tipo (`cera`, `polvos de bcabello`, `aceite` ...).
+- Clasificación por tipo (`cera`, `polvos de cabello`, `aceite`, etc.).
 - Gestión del precio de compra y del precio de venta.
 - Control de stock y stock mínimo.
 - Descripción para cada producto.
 - Listado ordenable por ID, nombre, tipo, precio y stock (incorporado en la `v.1.2.2`).
 
-## Panel de configuración
+## ⚙️ Panel de configuración
 
-- Se ha deshabilitado la antigua opción `AR` que permitía añadir información a la página principal `/main`.
+- Se deshabilita la antigua opción `AR` que permitía añadir información a la página principal `/main`.
 - Se habilita el nuevo panel de control `productos.php`.
 
 <p align="center">
@@ -54,21 +54,28 @@ Se incorpora un nuevo panel de administración para gestionar los productos de l
   <img src="assets/5.png" width="350">
 </p>
 
-## Fix Horario
+- Además es posible setear el tiempo de cooldown entre citas, solo para el cliente (especificado más adelante). 
 
-Se solucionan bugs a la hora de crear un nuevo `horario` y alternar entre los existentes.
+## 🛠️ Fix de horarios
+
+Se corrigen diversos errores relacionados con la creación y cambio de `horarios`.
 
 <p align="center">
   <img src="assets/6.png" width="500">
 </p>
 
-## Cooldown entre horas
+## ⏱️ Cooldown entre citas
 
-A partir de ahora solo se podrán asignar citas en horas `redondas`:
+A partir de esta versión, las citas únicamente podrán reservarse respetando el intervalo configurado (30 min por defecto). 
 
-```(10:00, 11:30, 11:00 ...)```
+```
+10:00
+11:30
+11:00
+11:30
+```
 
-- El cliente antes podía coger cita a las `10:10` / `10:20`, lo que podía descuadrar el día al barbero.
+De este modo se evita que los clientes puedan reservar horas como 10:10 o 10:20, que podían desorganizar la planificación diaria.
 
 <p align="center">
   <img src="assets/7.png" width="500">
@@ -87,15 +94,15 @@ if (userType === "cliente" && !esInicioValido) {
 }
 ```
 
-- El tiempo cooldown será asignado desde el panel de configuración. Por defecto es de 30 minutos.
+El intervalo entre citas puede configurarse desde el `Panel de Configuración` y su valor predeterminado es de 30 minutos.
 
 <p align="center">
   <img src="assets/8.png" width="500">
 </p>
 
-## Fix Horizontal View
+## 📱 Fix vista horizontal
 
-Se solucionan los márgenes en horizontal. Mala impresión / No aparecen los títulos.
+Se ajustan los márgenes en dispositivos con orientación horizontal para evitar que el contenido y los títulos queden ocultos o desplazados.
 
 ```
 @media (max-height: 583px) and (orientation: landscape){

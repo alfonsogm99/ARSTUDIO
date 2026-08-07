@@ -54,10 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
             foreach ($dias as $dia) {
                 $h = $horas[$dia] ?? [];
                 
-                $inicio = !empty($h['inicio']) ? $h['inicio'] : null;
-                $fin    = !empty($h['fin']) ? $h['fin'] : null;
-                $pi     = !empty($h['pausa_inicio']) ? $h['pausa_inicio'] : null;
-                $pf     = !empty($h['pausa_fin']) ? $h['pausa_fin'] : null;
+                $inicio = !empty($h['inicio']) ? $h['inicio'] : '00:00:00';
+                $fin    = !empty($h['fin']) ? $h['fin'] : '00:00:00';
+                $pi     = !empty($h['pausa_inicio']) ? $h['pausa_inicio'] : '00:00:00';
+                $pf     = !empty($h['pausa_fin']) ? $h['pausa_fin'] : '00:00:00';
 
                 $sql = "
                     INSERT INTO horario_barbero
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
 
 
             if (empty($errores)) {
-                $mensaje = "Horario guardado correctamente.";
+                $mensaje = "Horario creado correctamente.";
             }
         }
     }
@@ -137,5 +137,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_horario'])) {
 $_SESSION['mensaje_horario'] = $mensaje;
 $_SESSION['errores_horario'] = $errores;
 
-header("Location: ./confpan.php");
+header("Location: ./horario.php");
 exit;

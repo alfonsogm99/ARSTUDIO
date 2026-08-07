@@ -149,9 +149,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         WHERE id_barbero = $id_barbero 
                             AND id_general = $id_general";
                 if ($conn->query($sql_on)) {
-                    $mensaje .= " Horario actualizado correctamente.";
+                    $_SESSION['mensaje_horario'] = "Horario actualizado correctamente.";
+                    header("Location: ./horario.php");
+                    exit;
                 } else {
-                    $errores[] = "Error al actualizar el horario: " . $conn->error;
+                    $_SESSION['errores_horario'] = "Error al actualizar el horario: " . $conn->error;
+                    header("Location: ./horario.php");
+                    exit;
                 }
 
             } elseif ($id_general === 'new') {
@@ -215,6 +219,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
         }
+
+    $_SESSION['mensaje_horario'] = "Horario actualizado correctamente.";
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+
     }
 
     // --- ELIMINAR HORARIO ---
@@ -239,14 +248,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($conn->query($sql)) {
 
-                    $mensaje .= " Horario eliminado correctamente.";
-
-                    header("Location: confpan.php");
+                    $_SESSION['mensaje_horario'] = " Horario eliminado correctamente.";
+                    header("Location: ./horario.php");
                     exit;
 
                 } else {
 
-                    $errores[] = "Error al eliminar horario: " . $conn->error;
+                    $_SESSION['errores_horario'] = "Error al eliminar horario: " . $conn->error;
+                    header("Location: ./horario.php");
+                    exit;
+
                 }
             }
         }
@@ -300,7 +311,7 @@ if (
 
     $stmt->execute();
 
-    header("Location: ./confpan.php");
+    header("Location: ./horario.php");
     exit;
 }
 
@@ -326,7 +337,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'ausen
         $stmt->execute();
     }
 
-    header("Location: ./confpan.php");
+    header("Location: ./horario.php");
     exit;
 }
 
@@ -385,7 +396,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && ($_POST[
 
     $stmt->execute();
 
-    header("Location: ./confpan.php");
+    header("Location: ./horario.php");
     exit;
 }
 
@@ -420,7 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_e
 
     $stmt->execute();
 
-    header("Location: ./confpan.php");
+    header("Location: ./horario.php");
     exit;
 }
 
@@ -440,7 +451,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
           AND id_barbero = $id_barbero
     ");
 
-    header("Location: ./confpan.php");
+    header("Location: ./horario.php");
     exit;
 }
 ?>
@@ -465,9 +476,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
 
     <h2 style="text-align:center;">Horario</h2>
 
-    <?php 
-    if($mensaje) echo "<p style='color:green; text-align:center;'>$mensaje</p>"; 
-    if($errores) foreach($errores as $err) echo "<p style='color:red; text-align:center;'>$err</p>";
+    <?php
+
+    $mensaje = $_SESSION['mensaje_horario'] ?? '';
+    $errores = $_SESSION['errores_horario'] ?? [];
+
+    unset($_SESSION['mensaje_horario']);
+    unset($_SESSION['errores_horario']);
+
+    if ($mensaje) {
+        echo "<br/> <p style='color:green;text-align:center;'>".htmlspecialchars($mensaje)."</p>";
+    }
+
+    foreach ($errores as $err) {
+        echo "<br/> <p style='color:red;text-align:center;'>".htmlspecialchars($err)."</p>";
+    }
+
     ?>
 
     <div class="perfil_wrapper">
@@ -574,11 +598,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
 
             <?php if (!$nombre_horario_asignado): ?>
                 <p>No hay un horario definido</p>
-            <?php endif; ?>
 
             <button type="button" onclick="toggleHorario()"> 
-                Editar 
+                Añadir 
             </button>
+
+            <?php endif; ?>
+
+            <?php if ($nombre_horario_asignado): ?>
+
+                <button type="button" onclick="toggleHorario()"> 
+                    Editar 
+                </button>
+
+            <?php endif; ?>
+
+
 
             <div id="panel_horario" style="display:none; margin-top:70px;">
 
@@ -605,8 +640,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
 
                         echo "<b>" . ucfirst($dia['dia_semana']) . "</b>: ";
 
-                        $hora_inicio = substr($dia['hora_inicio'], 0, 5);
-                        $hora_fin = substr($dia['hora_fin'], 0, 5);
+                        $hora_inicio = substr($dia['hora_inicio'] ?? '', 0, 5);
+                        $hora_fin = substr($dia['hora_fin'] ?? '', 0, 5);
 
                         echo ($hora_inicio === '00:00' ? '' : $hora_inicio);
                         echo " - ";
@@ -616,8 +651,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
 
                             echo "<br/><span style='font-size:14px;'>⤷ Pausa: ";
 
-                            $pausa_inicio = substr($dia['pausa_inicio'], 0, 5);
-                            $pausa_fin = substr($dia['pausa_fin'], 0, 5);
+                            $pausa_inicio = substr($dia['pausa_inicio'] ?? '', 0, 5);
+                            $pausa_fin = substr($dia['pausa_fin'] ?? '', 0, 5);
 
                             echo ($pausa_inicio === '00:00' ? '' : $pausa_inicio);
                             echo " - ";
@@ -643,19 +678,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
 
                     <input type="hidden" name="action" id="action" value="">
                     
-                    <select name="id_horario" id="select_horario" onchange="toggleNuevoHorario(this.value)">
-                        <option value="new">-- Crear nuevo horario --</option>
-                        <?php foreach($horarios_array as $h): ?>
-                        <option value="<?= $h['id_general'] ?>" 
+                    <div class="selector-horario">
+                        <select name="id_horario" id="select_horario">
+                            <option value="new">-- Crear nuevo horario --</option>
+                            <?php foreach($horarios_array as $h): ?>
+                            <option value="<?= $h['id_general'] ?>" 
                             <?php if($h['id_general'] == $horario_asignado_id) echo 'selected'; ?>>
                             <?= htmlspecialchars($h['nombre_general']) ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
 
-                    <button type="button" id="btn_editar_horario" onclick="editarHorario(document.getElementById('select_horario').value)">
-                        Editar
-                    </button>
+                        <button type="submit"
+                            name="action"
+                            value="cambiar_horario">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                    </div>
 
                         <div id="nuevo_horario" style="display:none;">
 
@@ -712,11 +751,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'vip_d
                     </div>
 
                     <div class="btn_horario_form">
+
+                        <button type="button" id="btn_editar_horario" onclick="editarHorario(document.getElementById('select_horario').value)">
+                            Editar
+                        </button>
+                        
                         <button type="submit"
                                 name="editar_horario"
                                 value="1"
                                 id="btn_guardar_cambios"
-                                onclick="return prepararHorario();">
+                                style="display:none">
                             Guardar
                         </button>
 

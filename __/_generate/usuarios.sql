@@ -32,3 +32,21 @@ VALUES (
     'juande@arstudio.es',
     '666777888'
 );
+
+
+
+-- cliente arbarber.online
+INSERT INTO usuario (username, password, rol)
+VALUES (
+    'juanD',
+    '', -- admin
+    'cliente'
+);
+
+INSERT INTO cliente (id_usuario, nombre, email, telefono)
+VALUES (
+    LAST_INSERT_ID(),
+    'Juan de Dios',
+    'juande@arstudio.es',
+    '666777888'
+);

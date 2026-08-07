@@ -41,10 +41,34 @@ function editarHorario(id) {
 
     document.getElementById('modo_horario').value = 'edit';
     document.getElementById("id_general_editando").value = id;
-
     document.getElementById('nuevo_horario').style.display = 'block';
 
+
+    // Mostrar botones de edición
+    const btnGuardarCambios = document.getElementById("btn_guardar_cambios");
+    const btnEliminarHorario = document.getElementById("btn_eliminar_horario");
+    const btnGuardarHorario = document.getElementById("guardar_horario");
+    const btnEditarHorario = document.getElementById("btn_editar_horario");
+
+    if(btnGuardarCambios){
+        btnGuardarCambios.style.display = "inline-block";
+    }
+
+    if(btnEliminarHorario){
+        btnEliminarHorario.style.display = "inline-block";
+    }
+
+    if(btnGuardarHorario){
+        btnGuardarHorario.style.display = "none";
+    }
+
+    if(btnEditarHorario){
+        btnEditarHorario.style.display = "none";
+    }
+
+
     const horario = horariosData[id];
+
     if (!horario) return;
 
     document.getElementById('nombre_horario').value = horario.nombre_general;
@@ -53,15 +77,17 @@ function editarHorario(id) {
         el.value = '';
     });
 
+
     horario.dias.forEach(dia => {
-        console.log(dia);
+
         const d = dia.dia_semana;
 
         const set = (idEl, val) => {
+
             const el = document.getElementById(idEl);
+
             if (!el) return;
 
-            // Tratar 00:00 y 00:00:00 como vacío
             if (
                 val === null ||
                 val === undefined ||
@@ -73,13 +99,15 @@ function editarHorario(id) {
                 return;
             }
 
-            el.value = val.substring(0, 5);
+            el.value = val.substring(0,5);
         };
+
 
         set(`inicio_${d}`, dia.hora_inicio);
         set(`fin_${d}`, dia.hora_fin);
         set(`pausa_inicio_${d}`, dia.pausa_inicio);
         set(`pausa_fin_${d}`, dia.pausa_fin);
+
     });
 }
 

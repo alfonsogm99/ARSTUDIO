@@ -166,11 +166,17 @@ INNER JOIN cliente
     ON c.id_cliente = cliente.id_cliente
 WHERE c.estado_pago = 'pagado'
 AND c.estado NOT IN ('cancelada','pendiente_cancelacion')
+AND MONTH(p.fecha_pago) = ?
+AND YEAR(p.fecha_pago) = ?
 ORDER BY p.fecha_pago DESC
 LIMIT 10
 ";
 
-$ultimosPagos = $conn->query($sqlPagos);
+$stmt = $conn->prepare($sqlPagos);
+$stmt->bind_param("ii", $mes_actual, $year_actual);
+$stmt->execute();
+
+$ultimosPagos = $stmt->get_result();
 $tienePagos = $ultimosPagos->num_rows > 0;
 
 ?>

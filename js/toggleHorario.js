@@ -106,16 +106,11 @@ function toggleNuevoHorario(value){
             btnEliminarHorario.style.display = "none";
         }
 
-        if(btnEditarHorario){
-            btnEditarHorario.style.display = "none";
-        }
-
     } else {
 
         if(modo) modo.value = "edit";
         if(editando) editando.value = value;
 
-        // Ocultar formulario hasta pulsar Editar
         panel.style.display = "none";
 
         if(bloqueAusencias){
@@ -131,16 +126,16 @@ function toggleNuevoHorario(value){
         }
 
         if(btnGuardarCambios){
-            btnGuardarCambios.style.display = "inline-block";
+            btnGuardarCambios.style.display = "none";
         }
 
         if(btnEliminarHorario){
             btnEliminarHorario.style.display = "inline-block";
         }
 
-        if(btnEditarHorario){
-            btnEditarHorario.style.display = "inline-block";
-        }
+        panel.scrollIntoView({
+            behavior: 'smooth'
+        });
     }
 
     panel.scrollIntoView({
@@ -151,10 +146,20 @@ function toggleNuevoHorario(value){
 
 // estado inicial al cargar página
 document.addEventListener("DOMContentLoaded", () => {
+
     const select = document.getElementById("select_horario");
-    if(select){
-        toggleNuevoHorario(select.value);
-    }
+
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+
+        const value = select.value;
+
+        document.getElementById("id_general_editando").value =
+            value !== "new" ? value : "";
+
+    });
+
 });
 
 

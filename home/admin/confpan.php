@@ -28,21 +28,6 @@ $theme = $data['theme'] ?? 'dark';
 <link rel="stylesheet" href="../css/style.css">
 <title>ARSTUDIO · Configuración</title>
 </head>
-<style>
-    @font-face {
-        font-family: "AR_font";
-        src: url("../../fonts/blackletter_ds/BLACEB__.TTF") format("truetype");
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    .AR{
-        font-family: "AR_font", sans-serif;
-        opacity: .7;
-    }
-
-</style>
 
 <body id="confpan" class="<?php echo $theme === 'light' ? 'light-mode' : ''; ?>">
 

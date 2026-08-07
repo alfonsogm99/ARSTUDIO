@@ -1782,6 +1782,28 @@ body.light-mode .toggle_eye {
     margin-top: 10px;
 }
 
+.selector-horario {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    width: 100%;
+}
+
+.selector-horario select {
+    flex: 1;
+    min-width: 200px;
+    height: 40px;
+}
+
+.selector-horario button {
+    height: 40px;
+    white-space: nowrap;
+    margin: 0;
+    right: 0;
+}
+
 td a {
     margin-right: 5px;
     font-size: 13px;

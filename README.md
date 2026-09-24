@@ -6,13 +6,17 @@
 
 ## Main
 
-Nueva animación que indica al usuario que siga scrolleando por la página para ver el contenido 
+### Nueva animación de scroll
+
+Se ha añadido una nueva animación que indica al usuario que puede continuar haciendo scroll para descubrir el contenido disponible en la página.
 
 <p align="center">
   <img src="assets/1.png" width="500">
 </p>
 
-Se incorpora el apartado `Pedir cita` en la página principal. Este enlace reirecciona a la aplicación web de citas.
+### Pide tu cita
+
+Se ha incorporado el apartado `Pide tu cita` en la página principal. Este enlace permite al usuario acceder directamente a la aplicación de citas.
 
 ```
   /home
@@ -24,11 +28,11 @@ Se incorpora el apartado `Pedir cita` en la página principal. Este enlace reire
 
 ## Login
 
-Algunos cambios en la interfaz principal. Y de registro...
+Se han realizado algunos cambios y mejoras en la interfaz de inicio de sesión y registro de usuarios.
 
 ### Registro
 
-Una vez se ha registrado el usuario aparecerá por pantalla el siguiente mensaje, que hace saber al usuario que hasta que no es aceptado por un administrador. No podrá coger sus citas.
+Tras completar el proceso de registro, se mostrará un mensaje informativo indicando que la cuenta debe ser aceptada por un administrador antes de que el usuario pueda solicitar y gestionar sus citas.
 
 <p align="center">
   <img src="assets/3.png" width="500">
@@ -36,13 +40,15 @@ Una vez se ha registrado el usuario aparecerá por pantalla el siguiente mensaje
 
 ## Productos por cita
 
-Ahora se pueden incluir aquellos productos que se han vendido en la cita. Por ejemplo, si el barbero vende una cera al cliente. 
+Ahora es posible asociar productos vendidos a una cita.
+
+Por ejemplo, si durante una cita el barbero vende una cera al cliente, podrá registrar dicho producto directamente en la cita correspondiente.
 
 <p align="center">
   <img src="assets/4.png" width="500">
 </p>
 
-Todo esto se verá reflejado en el panel de contabilidad y stock de los productos vendidos.
+La información de los productos vendidos queda registrada y se refleja automáticamente en los paneles de contabilidad y stock, permitiendo llevar un mejor control de las ventas y del inventario.
 
 <p align="center">
   <img src="assets/5.png" width="500">

@@ -2,10 +2,9 @@
 
 define('BASE_URL', '/arbarber_project/home');
 
-#$host = "localhost";
-#$user = "alfgme7_ar_barber_project";
-#$password = "8ni0JoHT4)";
-#$dbname = "alfgme7_ar_barber_project";
+#4079748_arstudio
+#^Jt;.H#W1r14zm6h
+
 
 #$host = "fdb1033.awardspace.net";
 #$user = "4751326_arstudio";
@@ -18,6 +17,8 @@ $password = "";
 $dbname = "ar_barber_project";
 
 $conn = new mysqli($host, $user, $password, $dbname);
+
+
 
 
 if ($conn->connect_error) {

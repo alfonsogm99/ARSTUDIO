@@ -97,7 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="signup">
   <p class="signup-text">
-    ¿Aún no tienes cuenta? <a href="register.php">Tu próxima cita te espera 💈</a>
+    ¿Aún no tienes cuenta? <a href="register.php">Tu próxima cita te espera💈
+        <br>Regístrate aquí
+    </a>
   </p>
 </div>
 

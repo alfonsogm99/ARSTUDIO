@@ -18,7 +18,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $precio_venta = floatval($_POST['precio_venta']);
 
     $stock = intval($_POST['stock']);
-    $stock_minimo = intval($_POST['stock_minimo']);
+    $cantidad_cita = intval($_POST['cantidad_cita']);
 
 
     if(isset($_POST['id_producto']) && $_POST['id_producto'] != ''){
@@ -33,7 +33,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 precio_compra=?,
                 precio_venta=?,
                 stock=?,
-                stock_minimo=?
+                cantidad_cita=?
             WHERE id_producto=?
         ");
 
@@ -46,7 +46,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $precio_compra,
             $precio_venta,
             $stock,
-            $stock_minimo,
+            $cantidad_cita,
             $_POST['id_producto']
         );
 
@@ -66,7 +66,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 precio_compra,
                 precio_venta,
                 stock,
-                stock_minimo
+                cantidad_cita
             )
             VALUES (?,?,?,?,?,?,?)
         ");
@@ -80,7 +80,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $precio_compra,
             $precio_venta,
             $stock,
-            $stock_minimo
+            $cantidad_cita
         );
 
 
@@ -293,7 +293,7 @@ precio_venta:<?= $p["precio_venta"] ?>,
 
 stock:<?= $p["stock"] ?>,
 
-stock_minimo:<?= $p["stock_minimo"] ?>
+cantidad_cita:<?= $p["cantidad_cita"] ?>
 
 })'>
 
@@ -470,21 +470,8 @@ required
 value="<?= $edit['stock'] ?? 0 ?>">
 
 
-
-<label>
-Stock mínimo
-</label>
-
-<input type="number"
-name="stock_minimo"
-value="<?= $edit['stock_minimo'] ?? 0 ?>">
-
-
-
-<button type="submit">
-
-<?= $edit ? 'Actualizar' : 'Crear' ?>
-
+<button type="submit" id="btnGuardarProducto">
+    Crear
 </button>
 
 

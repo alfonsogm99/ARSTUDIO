@@ -1,6 +1,6 @@
 -- Usuario barbero
-INSERT INTO usuario (username, password, rol)
-VALUES ('aaleexrp', '', 'barbero');
+INSERT INTO usuario (username, email, password, rol)
+VALUES ('aaleexrp', 'alex@none.es', '', 'barbero');
 
 -- Barbero asociado
 INSERT INTO barbero (nombre, especialidad, activo, id_usuario)
@@ -8,8 +8,8 @@ VALUES ('Alejandro Rivilla', '', 1, LAST_INSERT_ID());
 
 
 -- Usuario admin
-INSERT INTO usuario (username, password, rol)
-VALUES ('alfonsogm', '', 'admin');
+INSERT INTO usuario (username, email, password, rol)
+VALUES ('alfonsogm','alfonsogm@none.es', '', 'admin');
 
 -- Admin asociado
 INSERT INTO `admin` (id_usuario)
@@ -17,9 +17,10 @@ VALUES (LAST_INSERT_ID());
 
 
 -- Usuario client
-INSERT INTO usuario (username, password, rol)
+INSERT INTO usuario (username, email, password, rol)
 VALUES (
     'cliente',
+    'unknown@none.es',
     '',
     'cliente'
 );

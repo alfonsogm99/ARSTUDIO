@@ -136,7 +136,7 @@ CREATE TABLE cita (
     ON DELETE SET NULL
 );
 
--- ALTER TABLE cita MODIFY COLUMN estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada', 'fallida', 'pendiente_cancelacion' DEFAULT 'pendiente';
+-- ALTER TABLE cita MODIFY COLUMN estado ENUM('pendiente', 'confirmada', 'completada', 'cancelada', 'fallida', 'pendiente_cancelacion') DEFAULT 'pendiente';
 
 -- ALTER TABLE cita
 -- ADD id_servicio INT NOT NULL;
@@ -363,6 +363,17 @@ CREATE TABLE producto (
         ON UPDATE CURRENT_TIMESTAMP
 );
 
+--ALTER TABLE producto
+--ADD COLUMN id_cita INT NULL AFTER id_producto,
+--ADD CONSTRAINT fk_producto_cita
+--    FOREIGN KEY (id_cita)
+--    REFERENCES cita(id_cita)
+--    ON DELETE SET NULL
+--    ON UPDATE CASCADE;
+
+--ALTER TABLE producto
+--DROP COLUMN stock_minimo,
+--ADD COLUMN cantidad_cita INT NOT NULL DEFAULT 0 AFTER stock;
 
 -- =========================
 -- VENTA DE PRODUCTOS
@@ -382,6 +393,14 @@ CREATE TABLE venta_producto (
         REFERENCES cliente(id_cliente)
         ON DELETE SET NULL
 );
+
+--ALTER TABLE venta_producto
+--ADD COLUMN id_cita INT NULL AFTER id_venta,
+--ADD CONSTRAINT fk_venta_producto_cita
+--    FOREIGN KEY (id_cita)
+--    REFERENCES cita(id_cita)
+--    ON DELETE CASCADE,
+--ADD UNIQUE KEY uk_venta_producto_cita (id_cita);
 
 -- =========================
 -- DETALLE VENTA PRODUCTOS

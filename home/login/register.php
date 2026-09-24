@@ -72,11 +72,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $success = "Solicitud enviada correctamente. Tu cuenta está pendiente de aprobación.";
 
-                // Opcional: redirigir
-                header("Location: ../login/?pending=1");
+                // Mostrar mensaje durante 5 segundos antes de ir al login
+                echo '
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Cuenta creada</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            min-height: 100vh;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background: #111;
+                            color: white;
+                            font-family: Arial, sans-serif;
+                            text-align: center;
+                        }
+
+                        .message {
+                            padding: 30px;
+                        }
+
+                        .message h2 {
+                            margin-bottom: 15px;
+                        }
+
+                        .message p {
+                            color: #ccc;
+                        }
+
+                        .countdown {
+                            margin-top: 20px;
+                            font-size: 14px;
+                            color: #999;
+                        }
+                    </style>
+                </head>
+                <body>
+
+                    <div class="message">
+                        <h4>✅ Cuenta creada correctamente</h4>
+                        <p>
+                            Tu solicitud ha sido enviada y está pendiente de aprobación.
+                        </p>
+
+                        <div class="countdown">
+                            Serás redirigido al inicio de sesión en
+                            <span id="countdown">5</span> segundos...
+                        </div>
+                    </div>
+
+                    <script>
+                        let seconds = 5;
+                        const countdown = document.getElementById("countdown");
+
+                        const timer = setInterval(() => {
+                            seconds--;
+                            countdown.textContent = seconds;
+
+                            if (seconds <= 0) {
+                                clearInterval(timer);
+                                window.location.href = "../login/?pending=1";
+                            }
+                        }, 1000);
+                    </script>
+
+                </body>
+                </html>
+                ';
+
                 exit;
 
             } else {
+
                 $error = "Error al crear la cuenta.";
             }
         }
@@ -138,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="signup">
     <p class="signup-text">
-        ¿Ya tienes cuenta? <a href="../login">Inicia sesión 💈</a>
+        ¿Ya tienes cuenta? <a href="../login">Inicia sesión💈</a>
     </p>
 </div>
 

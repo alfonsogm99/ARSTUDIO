@@ -118,6 +118,14 @@ h4.fluid {
   text-align: center;
 }
 
+h6.fluid {
+  font-family: 'ARBarber-LT';
+  font-size: clamp(0.70rem, 1.25rem, 1.25rem);
+  line-height: 0.6;
+  margin: 0;
+  text-align: center;
+}
+
 .slogan {
   font-family: 'ARBarber-LT';
   font-size: clamp(4rem, 12vw, 12rem);
@@ -814,4 +822,30 @@ button:hover {
 
 .alert-error {
     color: #b30000;
+}
+
+.arrow {
+    width: 40px;
+    position: fixed;
+    top: 97%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+.arrow.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translate(-50%, -50%);
+    }
+
+    50% {
+        transform: translate(-50%, -75%);
+    }
 }

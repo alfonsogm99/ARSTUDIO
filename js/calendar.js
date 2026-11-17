@@ -360,15 +360,15 @@ document.querySelectorAll('.day-cell[data-date]').forEach(cell => {
         cell.style.cursor = "not-allowed";
         cell.classList.add("disabled-day");
     } else {
-        cell.onclick = () => {
-            const [y, m, d] = date.split('-');
-            const params = new URLSearchParams(window.location.search);
+            cell.onclick = () => {
+                const [y, m, d] = date.split('-');
+                const params = new URLSearchParams(window.location.search);
 
-            window.location.href =
-                `?year=${y}&month=${m}&day=${d}` +
-                `&estado=${params.get('estado') ?? ''}` +
-                `&barbero=${params.get('barbero') ?? ''}`;
-        };
+                window.location.href =
+                    `?year=${y}&month=${m}&day=${d}` +
+                    `&estado=${params.get('estado') ?? ''}` +
+                    `&barbero=${params.get('barbero') ?? ''}`;
+            };
     }
 });
 
@@ -623,12 +623,14 @@ slot.onclick = () => {
         fechaHoraSlot.toDateString() !== hoy.toDateString() &&
         fechaHoraSlot < hoy;
 
-    if (
-        userType !== 'cliente' &&
-        esDiaAnterior
-    ) {
-        return;
-    }
+
+    // 🔴DESHABILITADO - EVITA QUE EL ADMIN/BARBERO ABRA O CREÉ CITAS EN DÍAS QUE YA PASARON
+    //if (
+    //    userType !== 'cliente' &&
+    //    esDiaAnterior
+    //) {
+    //    return;
+    //}
 
 
     setModalNuevaCita(fecha, hora);
